@@ -1,0 +1,12 @@
+Rarity Tier	Reserve Price (ETH)	Buyout Price (ETH)
+Ground Ball	0.00777	0.015
+Base Hit	0.025	0.05
+Double	0.05	0.1
+Stand-Up Double	0.1	0.25
+Line Drive	0.25	0.5
+Triple	0.5	1
+Pinch Hit Home Run	1	2
+Home Run	2	3
+Over-the-Fence Shot	3	4.5
+Walk-Off Home Run	4.5	6.75
+Grand Slam	6.75	10

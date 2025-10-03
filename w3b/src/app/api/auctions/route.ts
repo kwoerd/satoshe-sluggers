@@ -1,118 +1,178 @@
 // src/app/api/auctions/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
-const INSIGHT = process.env.INSIGHT_CLIENT_ID!;
-const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID!;
-const NFT_COLLECTION = process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!;
+// Helper functions for auction data
+function formatTimeRemaining(seconds: number): string {
+  if (seconds <= 0) return "Ended";
+
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (days > 0) {
+    return `${days}d ${hours}h ${minutes}m`;
+  } else if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else {
+    return `${minutes}m`;
+  }
+}
+
+// Load pricing data from price_by_tier.txt
+function getPricingByTier() {
+  try {
+    const filePath = path.join(process.cwd(), 'docs', 'price_by_tier.txt');
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const lines = fileContents.split('\n').filter(line => line.trim());
+    
+    const pricing: { [key: string]: { reserve: number; buyout: number } } = {};
+    
+    // Skip header line, process data lines
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split('\t');
+      if (parts.length >= 3) {
+        const tier = parts[0].trim();
+        const reserve = parseFloat(parts[1]);
+        const buyout = parseFloat(parts[2]);
+        pricing[tier] = { reserve, buyout };
+      }
+    }
+    
+    return pricing;
+  } catch (error) {
+    console.error("Error reading price_by_tier.txt:", error);
+    return {};
+  }
+}
+
+// Load auction mapping data
+function getAuctionMap() {
+  try {
+    const filePath = path.join(process.cwd(), 'docs', 'auction-map.json');
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(fileContents);
+  } catch (error) {
+    console.error("Error reading auction-map.json:", error);
+    return [];
+  }
+}
+
+// Load combined metadata
+function getCombinedMetadata() {
+  try {
+    const filePath = path.join(process.cwd(), 'docs', 'combined_metadata.json');
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(fileContents);
+  } catch (error) {
+    console.error("Error reading combined_metadata.json:", error);
+    return [];
+  }
+}
 
 export async function GET(req: NextRequest) {
   try {
-    // Check if environment variables are set
-    if (!INSIGHT || !CHAIN_ID || !NFT_COLLECTION) {
-      console.error("Missing environment variables:", {
-        INSIGHT: !!INSIGHT,
-        CHAIN_ID: !!CHAIN_ID,
-        NFT_COLLECTION: !!NFT_COLLECTION
-      });
-      return NextResponse.json(
-        { error: "Server configuration missing. Please check environment variables." },
-        { status: 500 }
-      );
-    }
-
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "24")));
     const tokenId = searchParams.get("tokenId");
-    const contractAddress = searchParams.get("contract") || NFT_COLLECTION;
-    const chainId = searchParams.get("chainId") || CHAIN_ID;
-    
-    // Validate tokenId if provided
-    if (tokenId && !/^\d+$/.test(tokenId)) {
-      return NextResponse.json(
-        { error: "Invalid tokenId format" },
-        { status: 400 }
-      );
-    }
 
-    // Use the correct Insight API format for NFT collection
-    // Use the official NFTs endpoint
-    let url = `https://${chainId}.insight.thirdweb.com/v1/nfts/${contractAddress}?limit=${limit}&page=${page}`;
-    
+    // Load all data
+    const auctionMap = getAuctionMap();
+    const combinedMetadata = getCombinedMetadata();
+    const pricingByTier = getPricingByTier();
+
+    // Create lookup maps for faster access
+    const auctionLookup = new Map();
+    auctionMap.forEach((item: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      auctionLookup.set(item.tokenId, item);
+    });
+
+    const metadataLookup = new Map();
+    combinedMetadata.forEach((item: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      metadataLookup.set(item.token_id, item);
+    });
+
+    let nfts;
+
     if (tokenId) {
-      url = `https://${chainId}.insight.thirdweb.com/v1/nfts/${contractAddress}/${tokenId}`;
-    }
+      // Single NFT request
+      const tokenIdNum = parseInt(tokenId);
+      const auctionData = auctionLookup.get(tokenIdNum);
+      const metadata = metadataLookup.get(tokenIdNum);
+      
+      if (!metadata) {
+        return NextResponse.json(
+          { error: "NFT not found" },
+          { status: 404 }
+        );
+      }
 
-    console.log("🔍 Fetching real NFTs from collection:", url);
-    console.log("📊 Environment check:", {
-      INSIGHT: INSIGHT ? "✅ Set" : "❌ Missing",
-      CHAIN_ID: CHAIN_ID ? "✅ Set" : "❌ Missing", 
-      NFT_COLLECTION: NFT_COLLECTION ? "✅ Set" : "❌ Missing"
-    });
-
-    const res = await fetch(url, {
-      headers: { "x-client-id": INSIGHT },
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("❌ Insight API error:", res.status, res.statusText);
-      console.error("❌ Error response:", errorText);
-      return NextResponse.json(
-        { error: `Insight API error: ${res.status} ${res.statusText}`, details: errorText },
-        { status: res.status }
-      );
-    }
-
-    const data = await res.json();
-    
-    // Process the NFTs collections response
-    const rawNfts = tokenId ? [data] : (data?.nfts || data?.data || []);
-    
-    // Map the response to our expected format
-    const nfts = rawNfts.map((nft: any) => {
-      // Convert IPFS URLs to HTTP URLs for Next.js Image component
-      const convertIpfsUrl = (url: string) => {
-        if (!url) return url;
-        if (url.startsWith('ipfs://')) {
-          const ipfsHash = url.replace('ipfs://', '');
-          return `https://ipfs.io/ipfs/${ipfsHash}`;
-        }
-        return url;
-      };
-
-      const imageUrl = nft.image_url || nft.extra_metadata?.image_url;
-      console.log("Original image URL:", imageUrl);
-      console.log("Converted image URL:", convertIpfsUrl(imageUrl));
-
-      return {
-        tokenId: nft.token_id || nft.tokenId,
+      nfts = [{
+        tokenId: tokenIdNum.toString(),
+        listingId: auctionData?.listingId || null,
         metadata: {
-          name: nft.name || nft.extra_metadata?.name,
-          image: convertIpfsUrl(imageUrl),
-          description: nft.description || nft.extra_metadata?.description,
-          attributes: nft.extra_metadata?.attributes || []
+          name: metadata.name,
+          image: metadata.image_url,
+          description: metadata.description,
+          attributes: metadata.attributes || []
         },
-        owner: nft.owner,
-        tokenURI: nft.metadata_url,
-        collection: nft.collection,
-        contract: nft.contract
-      };
-    });
-    
-    console.log("✅ Real NFT data returned:", {
-      nftsCount: nfts.length,
-      totalCount: data?.totalCount || data?.count || nfts.length,
-      page: data?.page || page,
-      sampleNft: nfts[0] // Log first NFT to see structure
-    });
+        auction: auctionData ? {
+          listingId: auctionData.listingId,
+          endTime: auctionData.endSec,
+          bidCount: auctionData.bidCount,
+          status: auctionData.status,
+          timeRemaining: Math.max(0, auctionData.endSec - Math.floor(Date.now() / 1000)),
+          timeRemainingFormatted: formatTimeRemaining(Math.max(0, auctionData.endSec - Math.floor(Date.now() / 1000))),
+          minBid: pricingByTier[metadata.rarity_tier]?.reserve?.toString() || "0.00777",
+          buyoutPrice: pricingByTier[metadata.rarity_tier]?.buyout?.toString() || "0.015",
+          rank: metadata.rank,
+          rarity: metadata.rarity_percent?.toString() + "%",
+          tier: metadata.rarity_tier
+        } : null
+      }];
+    } else {
+      // Paginated request
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      
+      nfts = combinedMetadata
+        .slice(startIndex, endIndex)
+        .map((metadata: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+          const auctionData = auctionLookup.get(metadata.token_id);
+          
+          return {
+            tokenId: metadata.token_id.toString(),
+            listingId: auctionData?.listingId || null,
+            metadata: {
+              name: metadata.name,
+              image: metadata.image_url,
+              description: metadata.description,
+              attributes: metadata.attributes || []
+            },
+            auction: auctionData ? {
+              listingId: auctionData.listingId,
+              endTime: auctionData.endSec,
+              bidCount: auctionData.bidCount,
+              status: auctionData.status,
+              timeRemaining: Math.max(0, auctionData.endSec - Math.floor(Date.now() / 1000)),
+              timeRemainingFormatted: formatTimeRemaining(Math.max(0, auctionData.endSec - Math.floor(Date.now() / 1000))),
+              minBid: pricingByTier[metadata.rarity_tier]?.reserve?.toString() || "0.00777",
+              buyoutPrice: pricingByTier[metadata.rarity_tier]?.buyout?.toString() || "0.015",
+              rank: metadata.rank,
+              rarity: metadata.rarity_percent?.toString() + "%",
+              tier: metadata.rarity_tier
+            } : null
+          };
+        });
+    }
 
     return NextResponse.json({
       events: nfts,
-      totalCount: data?.totalCount || data?.count || nfts.length,
-      page: data?.page || page
+      totalCount: combinedMetadata.length,
+      page: page
     }, {
       headers: {
         "Cache-Control": "s-maxage=10, stale-while-revalidate=30",
@@ -124,22 +184,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("API error:", error);
-    
-    // Return specific error messages based on error type
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      return NextResponse.json(
-        { error: "Network error: Unable to connect to Insight API" },
-        { status: 503 }
-      );
-    }
-    
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: `Server error: ${error.message}` },
-        { status: 500 }
-      );
-    }
-    
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -3,7 +3,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import NftCard from "./NftCard";
+import { NFTCard } from "./NftCard";
 
 interface NftCollectionProps {
   contractAddress: string;
@@ -69,10 +69,9 @@ export default function NftCollection({
   return (
     <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 ${className}`}>
       {nfts.map((nft: any, index: number) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
-        <NftCard 
+        <NFTCard 
           key={nft.tokenId || `nft-${index}`} 
           nft={nft} 
-          priority={index < 3} // Prioritize first 3 images for LCP
         />
       ))}
     </div>

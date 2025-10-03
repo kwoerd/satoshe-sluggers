@@ -17,7 +17,6 @@ export default function Header() {
 
       <nav className="flex gap-6">
         <Link href="/nfts">NFTs</Link>
-        {/* Only show if wallet connected */}
         {account && <Link href="/my-nfts">My NFTs</Link>}
       </nav>
 

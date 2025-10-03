@@ -2,10 +2,11 @@
 
 import NftDetails from "@/components/NftDetails";
 
-export default function TokenPage({ params }: { params: { tokenId: string } }) {
+export default async function TokenPage({ params }: { params: Promise<{ tokenId: string }> }) {
+  const { tokenId } = await params;
   return (
     <main className="p-8">
-      <NftDetails tokenId={params.tokenId} />
+      <NftDetails tokenId={tokenId} />
     </main>
   );
 }

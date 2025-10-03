@@ -2,50 +2,23 @@
 
 "use client";
 
-import { useActiveAccount } from "thirdweb/react";
 import { Button } from "@/components/ui/button";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useState } from "react";
 
-export function CancelBidButton({ auctionId }: { auctionId: bigint }) {
-  const account = useActiveAccount();
-  const queryClient = useQueryClient();
-  const [isLoading, setIsLoading] = useState(false);
+export function CancelBidButton({ listingId }: { listingId: bigint }) {
+  // DISABLED: All RPC calls disabled to prevent rate limiting
+  // This component is temporarily disabled until we can implement proper rate limiting controls
 
   const handleCancel = async () => {
-    if (!account) {
-      toast.error("Please connect your wallet");
-      return;
-    }
-
-    setIsLoading(true);
-    
-    try {
-      // TODO: Implement actual cancel bid functionality with correct thirdweb v5 approach
-      // For now, simulate the transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // 🔄 refresh auctions + my-bids immediately after cancel
-      queryClient.invalidateQueries({ queryKey: ["auctions"] });
-      queryClient.invalidateQueries({ queryKey: ["my-bids"] });
-      queryClient.invalidateQueries({ queryKey: ["bids"] });
-      
-      toast.success("Bid cancelled successfully!");
-    } catch (error) {
-      console.error("Cancel bid failed:", error);
-      toast.error("Failed to cancel bid");
-    } finally {
-      setIsLoading(false);
-    }
+    toast.error("Cancel bid temporarily disabled to prevent rate limiting");
   };
 
   return (
-    <Button 
-      disabled={!account || isLoading} 
+    <Button
+      disabled={true}
       onClick={handleCancel}
     >
-      {isLoading ? "Cancelling..." : "Cancel Bid"}
+      Cancel Bid (Disabled)
     </Button>
   );
 }

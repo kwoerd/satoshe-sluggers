@@ -1,0 +1,49 @@
+LEGAL LINKS
+
+TERMS
+https://retinaldelights.io/terms
+
+PRIVACY
+https://retinaldelights.io/privacy
+
+COOKIES
+https://retinaldelights.io/cookies
+
+LICENSE AGREEMENT
+https://retinaldelights.io/nft-license-agreement
+
+NFT LISTING
+https://retinaldelights.io/nft-listing-policy
+
+ACCEPTABLE USE
+https://retinaldelights.io/acceptable-use-policy
+
+DISCLAIMER
+https://retinaldelights.io/disclaimer
+
+---
+
+BLOCK EXPLORER
+
+NFT Contract
+https://basescan.org/address/0xE3f1694adCe46ffcF82D15dd88859147c72f7C5a
+
+Marketplace
+https://basescan.org/address/0xF0f26455b9869d4A788191f6AEdc78410731072C
+
+NFT Owner
+https://basescan.org/address/0x52C902ad7661618089e8BcDFcb3a6dD945ff383d
+
+---
+
+CONTRACT URLS
+
+MARKETPLACE CONTRACT
+0xF0f26455b9869d4A788191f6AEdc78410731072C
+BaseScan URL: https://basescan.org/address/0xF0f26455b9869d4A788191f6AEdc78410731072C
+Basescout URL: https://base.blockscout.com/address/0xF0f26455b9869d4A788191f6AEdc78410731072C
+
+NFT CONTRACT
+0xE3f1694adCe46ffcF82D15dd88859147c72f7C5a
+BaseScan URL: https://basescan.org/address/0xE3f1694adCe46ffcF82D15dd88859147c72f7C5a
+Basescout URL: https://base.blockscout.com/address/0xE3f1694adCe46ffcF82D15dd88859147c72f7C5a

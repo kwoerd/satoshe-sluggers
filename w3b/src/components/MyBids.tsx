@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { CancelBidButton } from "./CancelBidButton";
-import NftCard from "./NftCard";
+import { NFTCard } from "./NftCard";
 
 export default function MyBids({ wallet }: { wallet: string }) {
   const [bids, setBids] = useState<unknown[]>([]);
@@ -26,9 +26,9 @@ export default function MyBids({ wallet }: { wallet: string }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {bids.map((b: any) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
-        <div key={b.auctionId}>
-          <NftCard nft={b} />
-          <CancelBidButton auctionId={BigInt(b.auctionId)} />
+        <div key={b.listingId || b.auctionId}>
+          <NFTCard nft={b} />
+          {b.listingId && <CancelBidButton listingId={BigInt(b.listingId)} />}
         </div>
       ))}
     </div>

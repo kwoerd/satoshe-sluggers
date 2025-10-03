@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import NftCard from "./NftCard";
+import { NFTCard } from "./NftCard";
 
 export default function Favorites() {
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -18,7 +18,7 @@ export default function Favorites() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {favorites.map((id) => (
-        <NftCard key={id} nft={{ tokenId: id }} />
+        <NFTCard key={id} nft={{ tokenId: id }} />
       ))}
     </div>
   );

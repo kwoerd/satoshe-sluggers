@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import NftCard from "./NftCard";
+import { NFTCard } from "./NftCard";
 
 export default function OwnedNfts({ wallet }: { wallet: string }) {
   const [owned, setOwned] = useState<unknown[]>([]);
@@ -27,7 +27,7 @@ export default function OwnedNfts({ wallet }: { wallet: string }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {owned.map((o: any) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
-        <NftCard key={o.tokenId} nft={o} />
+        <NFTCard key={o.tokenId} nft={o} />
       ))}
     </div>
   );
