@@ -4,52 +4,80 @@ import { useLiveAuctions } from "@/hooks/useLiveAuctions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
-  const { data, isLoading, isError } = useLiveAuctions();
+  const { data, isLoading, error } = useLiveAuctions();
 
-  if (isLoading)
+  // Diagnostic UI with color-coded status
+  if (isLoading) 
     return (
-      <div className="flex justify-center items-center h-screen text-neutral-400">
-        Loading live auctions...
-      </div>
+      <main className="p-10 min-h-screen bg-neutral-900 text-neutral-100">
+        <h1 className="text-3xl font-bold mb-6">Satoshe Sluggers</h1>
+        <div className="text-yellow-400 text-xl">🟡 Loading Auctions...</div>
+      </main>
     );
 
-  if (isError)
+  if (error) 
     return (
-      <div className="flex justify-center items-center h-screen text-red-400">
-        Failed to load auctions.
-      </div>
+      <main className="p-10 min-h-screen bg-neutral-900 text-neutral-100">
+        <h1 className="text-3xl font-bold mb-6">Satoshe Sluggers</h1>
+        <div className="text-red-500 text-xl">🔴 Error fetching auctions: {error}</div>
+      </main>
     );
 
   const items = data?.items || [];
 
-  if (items.length === 0)
-    return (
-      <div className="flex justify-center items-center h-screen text-neutral-500">
-        No active auctions yet.
-      </div>
-    );
-
   return (
-    <main className="p-6 bg-neutral-900 text-neutral-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">DAO Sports Marketplace</h1>
-      <p className="text-sm text-neutral-400 mb-4">
-        🟢 Live Auctions ({data?.total || 0})
-      </p>
-
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {items.map((auction: { listingId: string; tokenId: string; bidCount: number; endSec: number }) => (
-          <Card key={auction.listingId} className="bg-neutral-800 border-neutral-700">
-            <CardHeader>
-              <CardTitle>Listing #{auction.listingId}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-neutral-300">
-              <p>Token ID: {auction.tokenId}</p>
-              <p>Bids: {auction.bidCount}</p>
-              <p>Ends: {auction.endSec}s</p>
-            </CardContent>
-          </Card>
-        ))}
+    <main className="p-10 min-h-screen bg-neutral-900 text-neutral-100">
+      <h1 className="text-3xl font-bold mb-6">Satoshe Sluggers</h1>
+      
+      {/* Diagnostic Status Banner */}
+      <div className="mb-6 p-4 rounded-lg border">
+        {data?.source === "insight" && (
+          <p className="text-green-400 text-lg">
+            🟢 Insight API — {data?.total || 0} listings loaded from Thirdweb Insight
+          </p>
+        )}
+        {data?.source === "static-json" && (
+          <p className="text-orange-400 text-lg">
+            🟠 Fallback: Static JSON — {data?.items?.length || 0} listings loaded from fallback data
+            {data?.reason && <span className="block text-sm text-orange-300">Reason: {data.reason}</span>}
+          </p>
+        )}
+        {!data?.source && (
+          <p className="text-red-500 text-lg">
+            🔴 No data source detected
+          </p>
+        )}
       </div>
+
+      {items.length === 0 ? (
+        <div className="text-neutral-500 text-xl">
+          No active auctions found.
+        </div>
+      ) : (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((auction: any, index: number) => (
+            <Card key={`${auction.listingId}-${auction.tokenId}-${index}`} className="p-4 border border-neutral-700 rounded-lg">
+              <CardHeader>
+                <CardTitle>Listing #{auction.listingId}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-neutral-300">
+                <p>Token ID: {auction.tokenId}</p>
+                <p>Bids: {auction.bidCount || 0}</p>
+                <p>Ends: {auction.endSec || 0}s</p>
+                <p>Start: {auction.startSec || 0}s</p>
+                <p>Reserve: {auction.reservePrice || "0"}</p>
+                <p>Buyout: {auction.buyoutPrice || "0"}</p>
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-xs text-neutral-500">Raw Data</summary>
+                  <pre className="text-xs text-neutral-600 mt-1 overflow-auto">
+                    {JSON.stringify(auction, null, 2)}
+                  </pre>
+                </details>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </main>
   );
 }
