@@ -80,6 +80,8 @@ export async function GET(req: NextRequest) {
       
       if (!auction) {
         console.log("❌ No decoded auction data found. Event keys:", Object.keys(event));
+        console.log("🔍 Event decoded structure:", event.decoded);
+        console.log("🔍 Event non_indexed_params:", event.decoded?.non_indexed_params);
         return { 
           listingId: 0, 
           tokenId: 0, 
