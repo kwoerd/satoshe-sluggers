@@ -65,14 +65,21 @@ export async function GET(req: NextRequest) {
 
     const insight = await res.json();
     
+    // Debug: log the actual response structure
+    console.log("🔍 Insight API response structure:", {
+      hasData: !!insight.data,
+      dataLength: insight.data?.length,
+      firstEventKeys: insight.data?.[0] ? Object.keys(insight.data[0]) : null,
+      firstEventDecoded: insight.data?.[0]?.decoded ? Object.keys(insight.data[0].decoded) : null
+    });
+    
     // Use the already-decoded values from Insight API - no manual hex parsing needed!
     const items = (insight.data || []).map((event: any) => {
       // Access the decoded auction data using the correct structure
       const auction = event.decoded?.non_indexed_params?.auction;
       
       if (!auction) {
-        console.log("❌ No decoded auction data found. Event structure:", Object.keys(event));
-        console.log("🔍 Full event object:", JSON.stringify(event, null, 2));
+        console.log("❌ No decoded auction data found. Event keys:", Object.keys(event));
         return { 
           listingId: 0, 
           tokenId: 0, 
@@ -86,7 +93,7 @@ export async function GET(req: NextRequest) {
         };
       }
       
-      // Extract values directly from decoded fields (as per your example)
+      // Extract values directly from decoded fields using the correct paths
       const listingId = Number(auction.auctionId || 0);
       const tokenId = Number(auction.tokenId || 0);
       const startTimestamp = Number(auction.startTimestamp || 0);
@@ -94,11 +101,11 @@ export async function GET(req: NextRequest) {
       const minimumBidAmount = auction.minimumBidAmount || "0";
       const buyoutBidAmount = auction.buyoutBidAmount || "0";
       
-      // Convert prices from wei to ETH using proper BigInt handling
+      // Convert prices from wei to ETH (18 decimals)
       const reservePrice = (Number(minimumBidAmount) / Math.pow(10, 18)).toString();
       const buyoutPrice = (Number(buyoutBidAmount) / Math.pow(10, 18)).toString();
       
-      console.log("✅ Decoded auction data:", {
+      console.log("✅ SUCCESS - Using decoded values:", {
         listingId,
         tokenId,
         startTimestamp,
