@@ -1,4 +1,4 @@
-import auctionMapData from "../auction-map.json";
+import auctionMapData from "../../docs/auction-map-static.json";
 
 /**
  * Get the listing ID associated with a given NFT tokenId.
