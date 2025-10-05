@@ -1,6 +1,8 @@
 // Consolidated auctions API route
 import { NextRequest, NextResponse } from "next/server";
 import staticMap from "../../../../docs/auction-map-static.json";
+import { parseEventLogs } from "thirdweb/utils";
+import { marketplaceV3Abi } from "thirdweb/extensions/marketplace";
 
 const BASE = process.env.INSIGHT_BASE_URL || "https://insight.thirdweb.com";
 const MARKETPLACE = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS!;
@@ -65,17 +67,13 @@ export async function GET(req: NextRequest) {
 
     const insight = await res.json();
     
-    // Parse raw events response
+    // Manual hex parsing with correct field mapping based on your analysis
     const items = (insight.data || []).map((event: any, index: number) => {
       // Extract from raw hex data
       const data = event.data;
       if (!data || data.length < 2) {
         return { listingId: 0, tokenId: 0, endSec: 0, startSec: 0, reservePrice: "0", buyoutPrice: "0", bidCount: 0, blockNumber: event.block_number, transactionHash: event.transaction_hash };
       }
-      
-      // Parse hex data properly for NewAuction event
-      // The data field contains: listingId, tokenId, auction tuple
-      // Each field is 32 bytes (64 hex characters)
       
       // Extract listingId (first 32 bytes after 0x)
       const listingId = parseInt(data.slice(2, 66), 16);
@@ -84,44 +82,54 @@ export async function GET(req: NextRequest) {
       const tokenId = parseInt(data.slice(66, 130), 16);
       
       // The auction tuple starts at offset 130 (after listingId and tokenId)
-      // Parse the auction tuple fields (each is 32 bytes = 64 hex chars)
+      // Based on your analysis: (assetContract, tokenId, quantity, currency, minimumBidAmount, buyoutBidAmount, timeBufferInSeconds, bidBufferBps, startTimestamp, endTimestamp)
       const auctionStart = 130;
       
-      // Parse auction tuple: (uint256, uint256, uint256, address, uint256, uint64, uint64, uint64, uint64, address, address, address, uint8, uint8)
-      // Fields: listingId, tokenId, quantity, currency, pricePerToken, startTimestamp, endTimestamp, ...
-      const quantity = parseInt(data.slice(auctionStart, auctionStart + 64), 16);
-      const currency = data.slice(auctionStart + 64, auctionStart + 128);
-      const pricePerToken = parseInt(data.slice(auctionStart + 128, auctionStart + 192), 16);
-      const startTimestamp = parseInt(data.slice(auctionStart + 192, auctionStart + 256), 16);
-      const endTimestamp = parseInt(data.slice(auctionStart + 256, auctionStart + 320), 16);
+      // Parse auction tuple fields (each is 32 bytes = 64 hex chars)
+      // Fields: assetContract(0), tokenId(1), quantity(2), currency(3), minimumBidAmount(4), buyoutBidAmount(5), timeBufferInSeconds(6), bidBufferBps(7), startTimestamp(8), endTimestamp(9)
+      // Each field is 32 bytes (64 hex characters), so offsets are: 0, 64, 128, 192, 256, 320, 384, 448, 512, 576
+      const minimumBidAmount = parseInt(data.slice(auctionStart + 256, auctionStart + 320), 16); // index 4: 256-320
+      const buyoutBidAmount = parseInt(data.slice(auctionStart + 320, auctionStart + 384), 16); // index 5: 320-384
+      const startTimestamp = parseInt(data.slice(auctionStart + 512, auctionStart + 576), 16); // index 8: 512-576
+      const endTimestamp = parseInt(data.slice(auctionStart + 576, auctionStart + 640), 16); // index 9: 576-640
       
-      // Debug: log the raw values to understand the data structure
-      console.log("Debug - Raw hex data:", data);
-      console.log("Debug - startTimestamp:", startTimestamp, "endTimestamp:", endTimestamp);
-      console.log("Debug - pricePerToken:", pricePerToken);
+      // Debug: log the extracted values to verify field mapping
+      console.log("Debug - Raw values:", {
+        minimumBidAmount,
+        buyoutBidAmount, 
+        startTimestamp,
+        endTimestamp
+      });
       
-      // For now, use pricePerToken for both reserve and buyout prices
-      // In a real implementation, we'd need to extract the actual reserve and buyout prices from the auction tuple
-      const reservePrice = pricePerToken;
-      const buyoutPrice = pricePerToken;
+      // Debug: log the complete raw event data for analysis
+      console.log("=== FULL EVENT DEBUG ===");
+      console.log("Event topics:", event.topics);
+      console.log("Event data length:", data.length);
+      console.log("Full event data:", data);
+      console.log("Auction start offset:", auctionStart);
+      console.log("Data from auction start:", data.slice(auctionStart));
+      console.log("=== FIELD EXTRACTION DEBUG ===");
+      console.log("Field 4 (minBid) hex:", data.slice(auctionStart + 256, auctionStart + 320));
+      console.log("Field 5 (buyout) hex:", data.slice(auctionStart + 320, auctionStart + 384));
+      console.log("Field 8 (start) hex:", data.slice(auctionStart + 512, auctionStart + 576));
+      console.log("Field 9 (end) hex:", data.slice(auctionStart + 576, auctionStart + 640));
+      console.log("=== END DEBUG ===");
       
       // Convert timestamps to seconds (they should be Unix timestamps)
-      // If they're already in seconds (Unix timestamp), use them directly
-      // If they're in milliseconds, divide by 1000
-      const startSec = startTimestamp > 1000000000 ? startTimestamp : Math.floor(startTimestamp / 1000);
-      const endSec = endTimestamp > 1000000000 ? endTimestamp : Math.floor(endTimestamp / 1000);
+      const startSec = startTimestamp;
+      const endSec = endTimestamp;
       
       // Convert prices to readable format (assuming 18 decimals for ETH)
-      const reservePriceFormatted = (reservePrice / Math.pow(10, 18)).toString();
-      const buyoutPriceFormatted = (buyoutPrice / Math.pow(10, 18)).toString();
+      const reservePrice = (minimumBidAmount / Math.pow(10, 18)).toString();
+      const buyoutPrice = (buyoutBidAmount / Math.pow(10, 18)).toString();
       
       const parsedItem = { 
         listingId, 
         tokenId, 
         endSec, 
         startSec,
-        reservePrice: reservePriceFormatted,
-        buyoutPrice: buyoutPriceFormatted,
+        reservePrice,
+        buyoutPrice,
         bidCount: 0,
         blockNumber: event.block_number,
         transactionHash: event.transaction_hash
