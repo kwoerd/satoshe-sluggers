@@ -73,6 +73,11 @@ export async function GET(req: NextRequest) {
       firstEventDecoded: insight.data?.[0]?.decoded ? Object.keys(insight.data[0].decoded) : null
     });
     
+    // Debug: log the first event to see the actual structure
+    if (insight.data?.[0]) {
+      console.log("🔍 First event structure:", JSON.stringify(insight.data[0], null, 2));
+    }
+    
     // Use the already-decoded values from Insight API - no manual hex parsing needed!
     const items = (insight.data || []).map((event: any) => {
       // Access the decoded auction data using the correct structure
