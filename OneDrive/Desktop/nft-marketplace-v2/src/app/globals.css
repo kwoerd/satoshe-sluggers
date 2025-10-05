@@ -1,6 +1,5 @@
 /* nft-marketplace/src/app/globals.css */
 @import "tailwindcss";
-@import "tw-animate-css";
 
 /* Local Inter font (variable range 100-900). */
 @font-face {

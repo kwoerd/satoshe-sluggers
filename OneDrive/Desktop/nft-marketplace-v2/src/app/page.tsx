@@ -20,7 +20,7 @@ export default function Home() {
       </div>
 
       {isLoading && <p className="text-sm text-[var(--text-secondary)]">Loading auctions…</p>}
-      {isError && <p className="text-sm text-red-400">Error: {(error as any)?.message}</p>}
+      {isError && <p className="text-sm text-red-400">Error: {(error as Error)?.message}</p>}
 
       {!isLoading && data && (
         <>

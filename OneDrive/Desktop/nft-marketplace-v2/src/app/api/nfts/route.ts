@@ -38,18 +38,19 @@ export async function GET(req: Request) {
     }
 
     const data = await res.json();
-    const items = (data.data || data.items || []).map((n: any) => {
-      const img =
-        n.image_url ||
-        n.extra_metadata?.image ||
-        n.extra_metadata?.image_url ||
+    const items = (data.data || data.items || []).map((n: Record<string, unknown>) => {
+      const extraMetadata = n.extra_metadata as Record<string, unknown> | undefined;
+      const img = (n.image_url as string) ||
+        (extraMetadata?.image as string) ||
+        (extraMetadata?.image_url as string) ||
         null;
+      const metadata = n.metadata as Record<string, unknown> | undefined;
       return {
         token_id: n.token_id ?? n.tokenId ?? null,
-        name: n.name ?? n.metadata?.name ?? `#${n.token_id ?? ""}`,
-        description: n.description ?? n.metadata?.description ?? "",
+        name: n.name ?? metadata?.name ?? `#${n.token_id ?? ""}`,
+        description: n.description ?? metadata?.description ?? "",
         image_url: ipfsToHttp(img) || "/placeholder-nft.webp",
-        attributes: n.extra_metadata?.attributes || n.metadata?.attributes || [],
+        attributes: extraMetadata?.attributes || metadata?.attributes || [],
       };
     });
 
