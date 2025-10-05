@@ -43,20 +43,14 @@ export async function GET(req: NextRequest) {
     if (minP) url += `&filter=buyoutPrice>=${minP}`;
     if (maxP) url += `&filter=buyoutPrice<=${maxP}`;
 
-    console.log("🔍 Fetching Insight URL:", url);
-    console.log("🔑 Client ID:", CLIENT_ID);
-    console.log("🏪 Marketplace:", MARKETPLACE);
-
     const res = await fetch(url, {
       method: "GET",
       headers: { "x-client-id": CLIENT_ID }
     });
 
-    console.log("📡 Insight response status:", res.status);
-
     if (!res.ok) {
       const errorText = await res.text();
-      console.error("❌ Insight fetch failed:", res.status, errorText);
+      console.error("Insight API failed:", res.status, errorText);
       return NextResponse.json({ 
         source: "static-json", 
         items: staticMap,
@@ -70,52 +64,71 @@ export async function GET(req: NextRequest) {
     }
 
     const insight = await res.json();
-    console.log("✅ Insight API success! Raw response:", JSON.stringify(insight, null, 2));
     
-    // Debug the actual structure
-    console.log("🔍 Response structure analysis:");
-    console.log("- insight.data:", insight.data?.length || 0, "items");
-    console.log("- First item structure:", insight.data?.[0] ? Object.keys(insight.data[0]) : "No data");
-    if (insight.data?.[0]) {
-      console.log("- First item sample:", insight.data[0]);
-    }
-    
-    // Parse raw events response (like working auction-map route)
+    // Parse raw events response
     const items = (insight.data || []).map((event: any, index: number) => {
-      console.log(`🔍 Processing raw event ${index}:`, JSON.stringify(event, null, 2));
-      
-      // Extract from raw hex data (same as auction-map route)
-      // The data field contains the hex-encoded event parameters
+      // Extract from raw hex data
       const data = event.data;
       if (!data || data.length < 2) {
-        console.log(`⚠️ No data for event ${index}`);
         return { listingId: 0, tokenId: 0, endSec: 0, startSec: 0, reservePrice: "0", buyoutPrice: "0", bidCount: 0, blockNumber: event.block_number, transactionHash: event.transaction_hash };
       }
       
-      // Parse hex data manually (this is the key!)
-      // The data contains: listingId, tokenId, auction data, etc.
-      const listingId = parseInt(data.slice(2, 66), 16); // First 32 bytes
-      const tokenId = parseInt(data.slice(66, 130), 16); // Next 32 bytes
+      // Parse hex data properly for NewAuction event
+      // The data field contains: listingId, tokenId, auction tuple
+      // Each field is 32 bytes (64 hex characters)
       
-      // For now, return basic data - we can enhance this later
+      // Extract listingId (first 32 bytes after 0x)
+      const listingId = parseInt(data.slice(2, 66), 16);
+      
+      // Extract tokenId (next 32 bytes) 
+      const tokenId = parseInt(data.slice(66, 130), 16);
+      
+      // The auction tuple starts at offset 130 (after listingId and tokenId)
+      // Parse the auction tuple fields (each is 32 bytes = 64 hex chars)
+      const auctionStart = 130;
+      
+      // Parse auction tuple: (uint256, uint256, uint256, address, uint256, uint64, uint64, uint64, uint64, address, address, address, uint8, uint8)
+      // Fields: listingId, tokenId, quantity, currency, pricePerToken, startTimestamp, endTimestamp, ...
+      const quantity = parseInt(data.slice(auctionStart, auctionStart + 64), 16);
+      const currency = data.slice(auctionStart + 64, auctionStart + 128);
+      const pricePerToken = parseInt(data.slice(auctionStart + 128, auctionStart + 192), 16);
+      const startTimestamp = parseInt(data.slice(auctionStart + 192, auctionStart + 256), 16);
+      const endTimestamp = parseInt(data.slice(auctionStart + 256, auctionStart + 320), 16);
+      
+      // Debug: log the raw values to understand the data structure
+      console.log("Debug - Raw hex data:", data);
+      console.log("Debug - startTimestamp:", startTimestamp, "endTimestamp:", endTimestamp);
+      console.log("Debug - pricePerToken:", pricePerToken);
+      
+      // For now, use pricePerToken for both reserve and buyout prices
+      // In a real implementation, we'd need to extract the actual reserve and buyout prices from the auction tuple
+      const reservePrice = pricePerToken;
+      const buyoutPrice = pricePerToken;
+      
+      // Convert timestamps to seconds (they should be Unix timestamps)
+      // If they're already in seconds (Unix timestamp), use them directly
+      // If they're in milliseconds, divide by 1000
+      const startSec = startTimestamp > 1000000000 ? startTimestamp : Math.floor(startTimestamp / 1000);
+      const endSec = endTimestamp > 1000000000 ? endTimestamp : Math.floor(endTimestamp / 1000);
+      
+      // Convert prices to readable format (assuming 18 decimals for ETH)
+      const reservePriceFormatted = (reservePrice / Math.pow(10, 18)).toString();
+      const buyoutPriceFormatted = (buyoutPrice / Math.pow(10, 18)).toString();
+      
       const parsedItem = { 
         listingId, 
         tokenId, 
-        endSec: 0, // TODO: Parse from hex data
-        startSec: 0, // TODO: Parse from hex data
-        reservePrice: "0", // TODO: Parse from hex data
-        buyoutPrice: "0", // TODO: Parse from hex data
+        endSec, 
+        startSec,
+        reservePrice: reservePriceFormatted,
+        buyoutPrice: buyoutPriceFormatted,
         bidCount: 0,
         blockNumber: event.block_number,
         transactionHash: event.transaction_hash
       };
       
-      console.log(`- Parsed raw event ${index}:`, parsedItem);
       return parsedItem;
     });
-
-    console.log("📊 Final parsed items:", items.length, "auctions found");
-    console.log("📊 Sample parsed item:", items[0]);
 
     // Check if we actually got meaningful data from Insight
     const hasRealData = items.length > 0 && items.some((item: any) => 
@@ -125,21 +138,6 @@ export async function GET(req: NextRequest) {
       (item.reservePrice && item.reservePrice !== "0") || 
       (item.buyoutPrice && item.buyoutPrice !== "0")
     );
-
-    console.log("🔍 Data quality check:", {
-      hasRealData,
-      sampleItem: items[0],
-      allZeros: items.every((item: any) => 
-        item.listingId === 0 && 
-        item.tokenId === 0 && 
-        item.endSec === 0 && 
-        item.reservePrice === "0" && 
-        item.buyoutPrice === "0"
-      )
-    });
-
-    // Return Insight data even if empty (like auction-map route does)
-    console.log("✅ Returning Insight data:", items.length, "items");
     return NextResponse.json({ 
       source: "insight", 
       total: items.length, 
