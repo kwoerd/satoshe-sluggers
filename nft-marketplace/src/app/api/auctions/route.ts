@@ -1,8 +1,6 @@
 // Consolidated auctions API route
 import { NextRequest, NextResponse } from "next/server";
 import staticMap from "../../../../docs/auction-map-static.json";
-import { parseEventLogs } from "thirdweb/utils";
-import { marketplaceV3Abi } from "thirdweb/extensions/marketplace";
 
 const BASE = process.env.INSIGHT_BASE_URL || "https://insight.thirdweb.com";
 const MARKETPLACE = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS!;
@@ -67,75 +65,61 @@ export async function GET(req: NextRequest) {
 
     const insight = await res.json();
     
-    // Manual hex parsing with correct field mapping based on your analysis
-    const items = (insight.data || []).map((event: any, index: number) => {
-      // Extract from raw hex data
-      const data = event.data;
-      if (!data || data.length < 2) {
-        return { listingId: 0, tokenId: 0, endSec: 0, startSec: 0, reservePrice: "0", buyoutPrice: "0", bidCount: 0, blockNumber: event.block_number, transactionHash: event.transaction_hash };
+    // Use the already-decoded values from Insight API - no manual hex parsing needed!
+    const items = (insight.data || []).map((event: any) => {
+      // Access the decoded auction data using the correct structure
+      const auction = event.decoded?.non_indexed_params?.auction;
+      
+      if (!auction) {
+        console.log("❌ No decoded auction data found. Event structure:", Object.keys(event));
+        console.log("🔍 Full event object:", JSON.stringify(event, null, 2));
+        return { 
+          listingId: 0, 
+          tokenId: 0, 
+          endSec: 0, 
+          startSec: 0, 
+          reservePrice: "0", 
+          buyoutPrice: "0", 
+          bidCount: 0, 
+          blockNumber: event.block_number, 
+          transactionHash: event.transaction_hash 
+        };
       }
       
-      // Extract listingId (first 32 bytes after 0x)
-      const listingId = parseInt(data.slice(2, 66), 16);
+      // Extract values directly from decoded fields (as per your example)
+      const listingId = Number(auction.auctionId || 0);
+      const tokenId = Number(auction.tokenId || 0);
+      const startTimestamp = Number(auction.startTimestamp || 0);
+      const endTimestamp = Number(auction.endTimestamp || 0);
+      const minimumBidAmount = auction.minimumBidAmount || "0";
+      const buyoutBidAmount = auction.buyoutBidAmount || "0";
       
-      // Extract tokenId (next 32 bytes) 
-      const tokenId = parseInt(data.slice(66, 130), 16);
+      // Convert prices from wei to ETH using proper BigInt handling
+      const reservePrice = (Number(minimumBidAmount) / Math.pow(10, 18)).toString();
+      const buyoutPrice = (Number(buyoutBidAmount) / Math.pow(10, 18)).toString();
       
-      // The auction tuple starts at offset 130 (after listingId and tokenId)
-      // Based on your analysis: (assetContract, tokenId, quantity, currency, minimumBidAmount, buyoutBidAmount, timeBufferInSeconds, bidBufferBps, startTimestamp, endTimestamp)
-      const auctionStart = 130;
-      
-      // Parse auction tuple fields (each is 32 bytes = 64 hex chars)
-      // Fields: assetContract(0), tokenId(1), quantity(2), currency(3), minimumBidAmount(4), buyoutBidAmount(5), timeBufferInSeconds(6), bidBufferBps(7), startTimestamp(8), endTimestamp(9)
-      // Each field is 32 bytes (64 hex characters), so offsets are: 0, 64, 128, 192, 256, 320, 384, 448, 512, 576
-      const minimumBidAmount = parseInt(data.slice(auctionStart + 256, auctionStart + 320), 16); // index 4: 256-320
-      const buyoutBidAmount = parseInt(data.slice(auctionStart + 320, auctionStart + 384), 16); // index 5: 320-384
-      const startTimestamp = parseInt(data.slice(auctionStart + 512, auctionStart + 576), 16); // index 8: 512-576
-      const endTimestamp = parseInt(data.slice(auctionStart + 576, auctionStart + 640), 16); // index 9: 576-640
-      
-      // Debug: log the extracted values to verify field mapping
-      console.log("Debug - Raw values:", {
-        minimumBidAmount,
-        buyoutBidAmount, 
+      console.log("✅ Decoded auction data:", {
+        listingId,
+        tokenId,
         startTimestamp,
-        endTimestamp
+        endTimestamp,
+        minimumBidAmount,
+        buyoutBidAmount,
+        reservePrice,
+        buyoutPrice
       });
       
-      // Debug: log the complete raw event data for analysis
-      console.log("=== FULL EVENT DEBUG ===");
-      console.log("Event topics:", event.topics);
-      console.log("Event data length:", data.length);
-      console.log("Full event data:", data);
-      console.log("Auction start offset:", auctionStart);
-      console.log("Data from auction start:", data.slice(auctionStart));
-      console.log("=== FIELD EXTRACTION DEBUG ===");
-      console.log("Field 4 (minBid) hex:", data.slice(auctionStart + 256, auctionStart + 320));
-      console.log("Field 5 (buyout) hex:", data.slice(auctionStart + 320, auctionStart + 384));
-      console.log("Field 8 (start) hex:", data.slice(auctionStart + 512, auctionStart + 576));
-      console.log("Field 9 (end) hex:", data.slice(auctionStart + 576, auctionStart + 640));
-      console.log("=== END DEBUG ===");
-      
-      // Convert timestamps to seconds (they should be Unix timestamps)
-      const startSec = startTimestamp;
-      const endSec = endTimestamp;
-      
-      // Convert prices to readable format (assuming 18 decimals for ETH)
-      const reservePrice = (minimumBidAmount / Math.pow(10, 18)).toString();
-      const buyoutPrice = (buyoutBidAmount / Math.pow(10, 18)).toString();
-      
-      const parsedItem = { 
-        listingId, 
-        tokenId, 
-        endSec, 
-        startSec,
+      return {
+        listingId,
+        tokenId,
+        endSec: endTimestamp,
+        startSec: startTimestamp,
         reservePrice,
         buyoutPrice,
         bidCount: 0,
         blockNumber: event.block_number,
         transactionHash: event.transaction_hash
       };
-      
-      return parsedItem;
     });
 
     // Check if we actually got meaningful data from Insight
