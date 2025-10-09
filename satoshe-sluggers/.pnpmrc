@@ -1,0 +1,4 @@
+# Disable build scripts for these packages to prevent Vercel warnings
+never-built-dependencies=@vercel/speed-insights,sharp,unrs-resolver
+# Additional configuration to suppress warnings
+shamefully-hoist=true

@@ -1,0 +1,4 @@
+# Ignore build scripts for these packages to prevent warnings
+node_modules/@vercel/speed-insights/build
+node_modules/sharp/build
+node_modules/unrs-resolver/build
