@@ -1,0 +1,114 @@
+confetti.ts
+
+import confetti from 'canvas-confetti';
+
+// Confetti configurations for different events
+export const CONFETTI_CONFIGS = {
+  bidSuccess: {
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: ['#ff0099', '#00ff99', '#9900ff', '#ffff00', '#ff6600'],
+    gravity: 0.8,
+    ticks: 200,
+  },
+  purchaseSuccess: {
+    particleCount: 150,
+    spread: 80,
+    origin: { y: 0.6 },
+    colors: ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'],
+    gravity: 0.6,
+    ticks: 300,
+  },
+  celebration: {
+    particleCount: 200,
+    spread: 90,
+    origin: { y: 0.5 },
+    colors: ['#ff0099', '#00ff99', '#9900ff', '#ffff00', '#ff6600', '#00ffff', '#ff00ff'],
+    gravity: 0.5,
+    ticks: 400,
+  }
+};
+
+// Trigger confetti for successful bid
+export function triggerBidConfetti() {
+  // Main burst
+  confetti({
+    ...CONFETTI_CONFIGS.bidSuccess,
+    angle: 60,
+    origin: { x: 0.2, y: 0.6 }
+  });
+
+  // Secondary burst
+  confetti({
+    ...CONFETTI_CONFIGS.bidSuccess,
+    angle: 120,
+    origin: { x: 0.8, y: 0.6 }
+  });
+
+  // Center burst
+  setTimeout(() => {
+    confetti({
+      ...CONFETTI_CONFIGS.bidSuccess,
+      angle: 90,
+      origin: { x: 0.5, y: 0.6 }
+    });
+  }, 200);
+}
+
+// Trigger confetti for successful purchase
+export function triggerPurchaseConfetti() {
+  // Main celebration burst
+  confetti({
+    ...CONFETTI_CONFIGS.purchaseSuccess,
+    angle: 60,
+    origin: { x: 0.2, y: 0.6 }
+  });
+
+  confetti({
+    ...CONFETTI_CONFIGS.purchaseSuccess,
+    angle: 120,
+    origin: { x: 0.8, y: 0.6 }
+  });
+
+  // Center burst
+  setTimeout(() => {
+    confetti({
+      ...CONFETTI_CONFIGS.purchaseSuccess,
+      angle: 90,
+      origin: { x: 0.5, y: 0.6 }
+    });
+  }, 300);
+
+  // Additional celebration burst
+  setTimeout(() => {
+    confetti({
+      ...CONFETTI_CONFIGS.celebration,
+      angle: 45,
+      origin: { x: 0.3, y: 0.7 }
+    });
+
+    confetti({
+      ...CONFETTI_CONFIGS.celebration,
+      angle: 135,
+      origin: { x: 0.7, y: 0.7 }
+    });
+  }, 600);
+}
+
+// Trigger confetti for general celebration
+export function triggerCelebrationConfetti() {
+  confetti({
+    ...CONFETTI_CONFIGS.celebration,
+    angle: 90,
+    origin: { x: 0.5, y: 0.6 }
+  });
+}
+
+// Trigger confetti with custom configuration
+export function triggerCustomConfetti(config: Partial<typeof CONFETTI_CONFIGS.bidSuccess> = {}) {
+  confetti({
+    ...CONFETTI_CONFIGS.bidSuccess,
+    ...config
+  });
+}

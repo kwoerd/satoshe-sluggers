@@ -1,0 +1,36 @@
+# Contract Addresses (Replace with your actual addresses)
+NEXT_PUBLIC_NFT_COLLECTION_ADDRESS=0xYourNFTCollectionAddress
+NEXT_PUBLIC_MARKETPLACE_ADDRESS=0xYourMarketplaceAddress
+NEXT_PUBLIC_NFT_CONTRACT_OWNER=0xYourContractOwnerAddress
+NEXT_PUBLIC_NFT_COLLECTION_OWNER=0xYourCollectionOwnerAddress
+NEXT_PUBLIC_CHAIN_ID=8453
+RPC_URL=https://8453.rpc.thirdweb.com/your-api-key-here
+
+# Chain Configuration
+NEXT_PUBLIC_CHAIN_ID=8453
+NEXT_PUBLIC_CHAIN_NAME=Base
+NEXT_PUBLIC_RPC_URL=https://8453.rpc.thirdweb.com
+
+-----------------------
+
+# Client-side or frontend applications (Replace with your actual client ID)
+NEXT_PUBLIC_CLIENT_ID=your-thirdweb-client-id
+NEXT_PUBLIC_THIRDWEB_CLIENT_ID=your-thirdweb-client-id
+THIRDWEB_CLIENT_ID=your-thirdweb-client-id
+
+-----------------------
+
+# Donation wallet address (Replace with your actual address)
+NEXT_PUBLIC_DONATION_ADDRESS=0xYourDonationAddress
+
+# SAFE wallet address (Replace with your actual address)
+SAFE_WALLET=0xYourSafeWalletAddress
+# Your ENS name
+YOUR_ENS_NAME=0xYourENSAddress
+
+-----------------------
+
+# Contact form backend (Keep these private!)
+RESEND_API_KEY=(private - store in .env.local)
+CONTACT_EMAIL=your-email@yourdomain.com
+EMAIL_DOMAIN=yourdomain.com
