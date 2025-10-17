@@ -157,7 +157,7 @@ export default function ProvenancePage() {
           <h2 className="text-7xl font-bold mb-8 uppercase tracking-tight text-foreground">
             PROVENANCE RECORD
           </h2>
-          <div className="text-muted-foreground leading-relaxed max-w-4xl space-y-6">
+          <div className="text-muted-foreground leading-relaxed max-w-4xl space-y-2">
             <p className="text-lg whitespace-nowrap">
               Every NFT in the Satoshe Sluggers collection is permanently recorded, traceable, and verifiably authentic.
             </p>
@@ -272,33 +272,33 @@ export default function ProvenancePage() {
                 </div>
                 <div className="text-sm font-mono break-all" style={{ fontWeight: '300' }}>{MERKLE_ROOT}</div>
               </div>
-            </div>
 
-            <div>
-              <div className="bg-card border border-neutral-700 p-2 rounded">
-                <div
-                  className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap scrollbar-custom"
-                  style={{ fontWeight: '300', height: "200px" }}
-                >
-                  {merkleTree || "Loading..."}
-                </div>
-              </div>
-              
-              {/* Collection Stats - Directly under Merkle Tree, horizontally arranged */}
-              <div className="mt-4">
-                <div className="flex gap-6 text-sm">
+              {/* Collection Stats - Under Important Information */}
+              <div className="mt-6">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground uppercase tracking-wider">Collection Size:</span>
                     <span className="font-mono" style={{ fontWeight: '300' }}>7,777</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground uppercase tracking-wider">Blockchain:</span>
-                    <span className="font-mono" style={{ fontWeight: '300' }}>Base</span>
+                    <span className="font-mono" style={{ fontWeight: '300' }}>BASE</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground uppercase tracking-wider">Chain ID:</span>
                     <span className="font-mono" style={{ fontWeight: '300' }}>8453</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="bg-card border border-neutral-700 p-2 rounded">
+                <div
+                  className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap scrollbar-custom"
+                  style={{ fontWeight: '300', height: "300px" }}
+                >
+                  {merkleTree || "Loading..."}
                 </div>
               </div>
             </div>
@@ -332,7 +332,7 @@ export default function ProvenancePage() {
                     <th className="w-56 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
                       Media IPFS CID
                     </th>
-                    <th className="w-56 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-56 pl-2 pr-4 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
                       Metadata IPFS CID
                     </th>
                   </tr>
@@ -382,7 +382,7 @@ export default function ProvenancePage() {
                           </div>
                         </td>
                         <td className="w-56 px-2 py-4">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-start gap-2">
                             <a
                               href={record.media_url}
                               target="_blank"
@@ -392,11 +392,11 @@ export default function ProvenancePage() {
                             >
                               {record.media_cid || "N/A"}
                             </a>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0 mt-0.5" />
                           </div>
                         </td>
-                        <td className="w-56 px-2 py-4">
-                          <div className="flex items-center gap-2">
+                        <td className="w-56 pl-2 pr-4 py-4">
+                          <div className="flex items-start gap-2">
                             <a
                               href={record.metadata_url}
                               target="_blank"
@@ -406,7 +406,7 @@ export default function ProvenancePage() {
                             >
                               {record.metadata_cid || "N/A"}
                             </a>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0 mt-0.5" />
                           </div>
                         </td>
                       </tr>
