@@ -115,7 +115,7 @@ export default function ProvenancePage() {
         <div className="container mx-auto px-8 sm:px-12 lg:px-16 xl:px-20 py-8 max-w-7xl flex-grow">
         <div className="mb-16">
           <h1 className="text-4xl font-bold mb-3 uppercase tracking-tight">
-            <span className="text-[#FF0099]">S</span><span className="text-[#FF0099]">H</span><span className="text-[#FF0099]">E</span> Sluggers
+            <span className="text-[#FFFBEB]">S</span><span className="text-[#FFFBEB]">A</span><span className="text-[#FFFBEB]">T</span><span className="text-[#FFFBEB]">O</span><span className="text-[#FF0099]">S</span><span className="text-[#FF0099]">H</span><span className="text-[#FF0099]">E</span> <span className="text-[#FFFBEB]">Sluggers</span>
           </h1>
           <h2 className="text-7xl font-bold mb-8 uppercase tracking-tight text-foreground">
             PROVENANCE RECORD
