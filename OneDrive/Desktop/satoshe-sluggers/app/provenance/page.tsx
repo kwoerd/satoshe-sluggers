@@ -53,9 +53,10 @@ export default function ProvenancePage() {
           .filter((line) => line.trim())
           .map((sha256, index) => {
             const tokenNum = index
-            // Find the corresponding URL data by TokenID
+            // Find the corresponding URL data by TokenID (TokenID should match the index)
             const urlData = urlsData.find((item: IpfsUrlData) => item.TokenID === tokenNum)
             const ipfsCid = urlData ? urlData["Metadata URL"] : ""
+
 
             return {
               token_id: tokenNum,
@@ -114,16 +115,16 @@ export default function ProvenancePage() {
         <div className="container mx-auto px-8 sm:px-12 lg:px-16 xl:px-20 py-8 max-w-7xl flex-grow">
         <div className="mb-16">
           <h1 className="text-4xl font-bold mb-3 uppercase tracking-tight">
-            ⚾ Satoshe Sluggers
+            <span className="text-[#FF0099]">S</span><span className="text-[#FF0099]">H</span><span className="text-[#FF0099]">E</span> Sluggers
           </h1>
           <h2 className="text-7xl font-bold mb-8 uppercase tracking-tight text-foreground">
             PROVENANCE RECORD
           </h2>
           <div className="text-muted-foreground leading-relaxed max-w-4xl space-y-6">
-            <p className="text-lg">
+            <p className="text-lg whitespace-nowrap">
               Every NFT in the Satoshe Sluggers collection is permanently recorded, traceable, and verifiably authentic.
             </p>
-            <p className="text-lg">
+            <p className="text-lg whitespace-nowrap">
               This record is your assurance and source of truth — verified by math, preserved by code.
             </p>
           </div>
@@ -184,24 +185,6 @@ export default function ProvenancePage() {
             <h2 className="text-2xl font-bold uppercase tracking-tight">Merkle Tree</h2>
           </div>
 
-          {/* Collection Stats - Compact Format */}
-          <div className="mb-6">
-            <div className="flex flex-wrap gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground uppercase tracking-wider">Collection Size:</span>
-                <span className="font-semibold">7,777</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground uppercase tracking-wider">Blockchain:</span>
-                <span className="font-semibold">Base</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground uppercase tracking-wider">Chain ID:</span>
-                <span className="font-semibold">8453</span>
-              </div>
-            </div>
-          </div>
-
           {/* Main Information Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Column - Contract and Hashes */}
@@ -219,7 +202,7 @@ export default function ProvenancePage() {
                     {copiedHash === 'contract' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
-                <div className="text-sm font-semibold break-all">{CONTRACT_ADDRESS}</div>
+                <div className="text-sm font-mono break-all" style={{ fontWeight: '300' }}>{CONTRACT_ADDRESS}</div>
               </div>
 
               <div className="bg-card border border-neutral-700 p-4 rounded">
@@ -233,7 +216,7 @@ export default function ProvenancePage() {
                     {copiedProof ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
-                <div className="text-sm font-semibold break-all">{FINAL_PROOF_HASH}</div>
+                <div className="text-sm font-mono break-all" style={{ fontWeight: '300' }}>{FINAL_PROOF_HASH}</div>
               </div>
 
               <div className="bg-card border border-neutral-700 p-4 rounded">
@@ -247,18 +230,36 @@ export default function ProvenancePage() {
                     {copiedMerkle ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
-                <div className="text-sm font-semibold break-all">{MERKLE_ROOT}</div>
+                <div className="text-sm font-mono break-all" style={{ fontWeight: '300' }}>{MERKLE_ROOT}</div>
               </div>
             </div>
 
             {/* Right Column - Merkle Tree */}
             <div>
-              <div className="bg-card border border-neutral-700 p-3 rounded">
+              <div className="bg-card border border-neutral-700 p-2 rounded">
                 <div
-                  className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap"
+                  className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap scrollbar-custom"
                   style={{ fontWeight: '300', height: "200px" }}
                 >
                   {merkleTree || "Loading..."}
+                </div>
+              </div>
+              
+              {/* Collection Stats - Under Merkle Tree */}
+              <div className="mt-4">
+                <div className="flex flex-wrap gap-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground uppercase tracking-wider">Collection Size:</span>
+                    <span className="font-semibold">7,777</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground uppercase tracking-wider">Blockchain:</span>
+                    <span className="font-semibold">Base</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground uppercase tracking-wider">Chain ID:</span>
+                    <span className="font-semibold">8453</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -304,7 +305,7 @@ export default function ProvenancePage() {
                         <td className="p-4 text-sm font-mono" style={{ fontWeight: '300' }}>{record.nft_number}</td>
                         <td className="p-4">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-mono break-all" style={{ fontWeight: '300' }}>{record.sha256_hash}</span>
+                            <span className="text-sm font-mono whitespace-nowrap" style={{ fontWeight: '300' }}>{record.sha256_hash}</span>
                             <button
                               onClick={() => copyToClipboard(record.sha256_hash, `sha-${record.token_id}`)}
                               className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex-shrink-0 rounded"
@@ -320,7 +321,7 @@ export default function ProvenancePage() {
                         </td>
                         <td className="p-4">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-mono break-all" style={{ fontWeight: '300' }}>{record.keccak256_hash}</span>
+                            <span className="text-sm font-mono whitespace-nowrap" style={{ fontWeight: '300' }}>{record.keccak256_hash}</span>
                             <button
                               onClick={() => copyToClipboard(record.keccak256_hash, `keccak-${record.token_id}`)}
                               className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex-shrink-0 rounded"
@@ -340,10 +341,10 @@ export default function ProvenancePage() {
                               href={record.ipfs_cid}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm hover:text-primary transition-colors font-mono break-all"
+                              className="text-sm hover:text-primary transition-colors font-mono whitespace-nowrap"
                               style={{ fontWeight: '300' }}
                             >
-                              {record.ipfs_cid ? record.ipfs_cid.split("/").pop() : "N/A"}
+                              {record.ipfs_cid ? record.ipfs_cid.replace('https://ipfs.io/ipfs/', '') : "N/A"}
                             </a>
                             <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                           </div>
