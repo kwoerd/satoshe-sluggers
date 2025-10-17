@@ -179,9 +179,32 @@ export default function ProvenancePage() {
         </div>
 
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 uppercase tracking-tight">Important Information</h2>
+          <div className="flex flex-col lg:flex-row lg:items-start gap-6 mb-6">
+            <h2 className="text-2xl font-bold uppercase tracking-tight">Important Information</h2>
+            <h2 className="text-2xl font-bold uppercase tracking-tight">Merkle Tree</h2>
+          </div>
 
+          {/* Collection Stats - Compact Format */}
+          <div className="mb-6">
+            <div className="flex flex-wrap gap-6 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground uppercase tracking-wider">Collection Size:</span>
+                <span className="font-semibold">7,777</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground uppercase tracking-wider">Blockchain:</span>
+                <span className="font-semibold">Base</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground uppercase tracking-wider">Chain ID:</span>
+                <span className="font-semibold">8453</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Information Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Contract and Hashes */}
             <div className="space-y-4">
               <div className="bg-card border border-neutral-700 p-4 rounded">
                 <div className="flex items-center justify-between mb-2">
@@ -228,34 +251,15 @@ export default function ProvenancePage() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="bg-card border border-neutral-700 p-4 rounded">
-                <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Collection Size</div>
-                <div className="text-xl font-semibold">7,777</div>
-              </div>
-
-              <div className="bg-card border border-neutral-700 p-4 rounded">
-                <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Blockchain</div>
-                <div className="text-xl font-semibold">Base</div>
-              </div>
-
-              <div className="bg-card border border-neutral-700 p-4 rounded">
-                <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Chain ID</div>
-                <div className="text-xl font-semibold">8453</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 uppercase tracking-tight">Merkle Tree</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card border border-neutral-700 p-4 rounded">
-              <div
-                className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap"
-                style={{ fontWeight: '300', height: "150px" }}
-              >
-                {merkleTree || "Loading..."}
+            {/* Right Column - Merkle Tree */}
+            <div>
+              <div className="bg-card border border-neutral-700 p-3 rounded">
+                <div
+                  className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap"
+                  style={{ fontWeight: '300', height: "200px" }}
+                >
+                  {merkleTree || "Loading..."}
+                </div>
               </div>
             </div>
           </div>
