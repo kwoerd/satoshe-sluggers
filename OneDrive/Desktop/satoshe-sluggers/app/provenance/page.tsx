@@ -13,13 +13,31 @@ interface ProvenanceRecord {
   nft_number: number
   sha256_hash: string
   keccak256_hash: string
-  ipfs_cid: string
+  media_cid: string
+  metadata_cid: string
+  media_url: string
+  metadata_url: string
 }
 
-interface IpfsUrlData {
-  TokenID: number
-  "Media URL": string
-  "Metadata URL": string
+interface CompleteMetadataItem {
+  name: string
+  description: string
+  token_id: number
+  card_number: number
+  collection_number: number
+  edition: number
+  series: string
+  rarity_score: number
+  merged_data: {
+    nft: number
+    token_id: number
+    listing_id: number
+    metadata_cid: string
+    media_cid: string
+    metadata_url: string
+    media_url: string
+    price_eth: number
+  }
 }
 
 export default function ProvenancePage() {
@@ -35,15 +53,22 @@ export default function ProvenancePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [merkleRes, urlsRes, hashesRes] = await Promise.all([
+        const [merkleRes, metadataRes, hashesRes] = await Promise.all([
           fetch("/data/merkle_tree.txt"),
-          fetch("/data/ipfs_urls.json"),
+          fetch("/data/complete_metadata.json"),
           fetch("/data/sha256_hashes.txt"),
         ])
 
         const merkleText = await merkleRes.text()
-        const urlsData = await urlsRes.json()
+        const metadataData = await metadataRes.json()
         const hashesText = await hashesRes.text()
+
+        console.log("[DEBUG] Metadata data loaded:", {
+          totalItems: metadataData.length,
+          firstItem: metadataData[0],
+          firstItemMergedData: metadataData[0]?.merged_data
+        })
+
 
         setMerkleTree(merkleText)
 
@@ -53,17 +78,29 @@ export default function ProvenancePage() {
           .filter((line) => line.trim())
           .map((sha256, index) => {
             const tokenNum = index
-            // Find the corresponding URL data by TokenID (TokenID should match the index)
-            const urlData = urlsData.find((item: IpfsUrlData) => item.TokenID === tokenNum)
-            const ipfsCid = urlData ? urlData["Metadata URL"] : ""
-
+            // Find the corresponding metadata by token_id
+            const metadataItem = metadataData.find((item: any) => item.merged_data?.token_id === tokenNum)
+            
+            // Debug logging for first few records
+            if (index < 3) {
+              console.log(`[DEBUG] Token ${tokenNum}:`, {
+                found: !!metadataItem,
+                media_cid: metadataItem?.merged_data?.media_cid,
+                metadata_cid: metadataItem?.merged_data?.metadata_cid,
+                media_url: metadataItem?.merged_data?.media_url,
+                metadata_url: metadataItem?.merged_data?.metadata_url
+              })
+            }
 
             return {
               token_id: tokenNum,
               nft_number: tokenNum + 1,
               sha256_hash: sha256.trim(),
               keccak256_hash: sha256.trim(), // Using sha256 as placeholder
-              ipfs_cid: ipfsCid,
+              media_cid: metadataItem?.merged_data?.media_cid || "",
+              metadata_cid: metadataItem?.merged_data?.metadata_cid || "",
+              media_url: metadataItem?.merged_data?.media_url || "",
+              metadata_url: metadataItem?.merged_data?.metadata_url || "",
             }
           })
 
@@ -180,14 +217,17 @@ export default function ProvenancePage() {
         </div>
 
         <div className="mb-12">
-          <div className="flex flex-col lg:flex-row lg:items-start gap-6 mb-6">
-            <h2 className="text-2xl font-bold uppercase tracking-tight">Important Information</h2>
-            <h2 className="text-2xl font-bold uppercase tracking-tight">Merkle Tree</h2>
-          </div>
+          {/* 2 Column, 3 Row Grid */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Row 1 - Headers */}
+            <div>
+              <h2 className="text-2xl font-bold uppercase tracking-tight">Important Information</h2>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold uppercase tracking-tight">Merkle Tree</h2>
+            </div>
 
-          {/* Main Information Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column - Contract and Hashes */}
+            {/* Row 2 - Content Boxes */}
             <div className="space-y-4">
               <div className="bg-card border border-neutral-700 p-4 rounded">
                 <div className="flex items-center justify-between mb-2">
@@ -234,7 +274,6 @@ export default function ProvenancePage() {
               </div>
             </div>
 
-            {/* Right Column - Merkle Tree */}
             <div>
               <div className="bg-card border border-neutral-700 p-2 rounded">
                 <div
@@ -245,24 +284,28 @@ export default function ProvenancePage() {
                 </div>
               </div>
               
-              {/* Collection Stats - Under Merkle Tree */}
+              {/* Collection Stats - Directly under Merkle Tree, horizontally arranged */}
               <div className="mt-4">
-                <div className="flex flex-wrap gap-6 text-sm">
+                <div className="flex gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground uppercase tracking-wider">Collection Size:</span>
-                    <span className="font-semibold">7,777</span>
+                    <span className="font-mono" style={{ fontWeight: '300' }}>7,777</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground uppercase tracking-wider">Blockchain:</span>
-                    <span className="font-semibold">Base</span>
+                    <span className="font-mono" style={{ fontWeight: '300' }}>Base</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground uppercase tracking-wider">Chain ID:</span>
-                    <span className="font-semibold">8453</span>
+                    <span className="font-mono" style={{ fontWeight: '300' }}>8453</span>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Row 3 - Empty to maintain grid alignment */}
+            <div></div>
+            <div></div>
           </div>
         </div>
 
@@ -270,45 +313,48 @@ export default function ProvenancePage() {
           <h2 className="text-2xl font-bold mb-6 uppercase tracking-tight">Provenance Record</h2>
 
           <div className="bg-card border border-neutral-700 overflow-hidden rounded">
-            <div className="overflow-x-auto" style={{ maxHeight: "600px", overflowY: "auto" }}>
-              <table className="w-full">
+            <div className="overflow-x-auto scrollbar-custom" style={{ maxHeight: "600px", overflowY: "auto" }}>
+              <table className="w-full table-fixed">
                 <thead className="sticky top-0 z-10 border-b border-neutral-700" style={{ backgroundColor: '#1a1a1a' }}>
                   <tr>
-                    <th className="pl-2 pr-4 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-20 pl-4 pr-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
                       Token ID
                     </th>
-                    <th className="p-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-16 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
                       NFT #
                     </th>
-                    <th className="p-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-44 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
                       SHA-256 Hash
                     </th>
-                    <th className="p-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-44 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
                       Keccak-256 Hash
                     </th>
-                    <th className="p-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
-                      IPFS CID
+                    <th className="w-56 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                      Media IPFS CID
+                    </th>
+                    <th className="w-56 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                      Metadata IPFS CID
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                      <td colSpan={6} className="p-8 text-center text-muted-foreground">
                         Loading provenance records...
                       </td>
                     </tr>
                   ) : (
                     paginatedRecords.map((record) => (
                       <tr key={record.token_id} className="border-b border-neutral-700 hover:bg-accent/30 transition-colors">
-                        <td className="pl-2 pr-4 py-4 text-sm font-mono" style={{ fontWeight: '300' }}>{record.token_id}</td>
-                        <td className="p-4 text-sm font-mono" style={{ fontWeight: '300' }}>{record.nft_number}</td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-mono whitespace-nowrap" style={{ fontWeight: '300' }}>{record.sha256_hash}</span>
+                        <td className="w-20 pl-4 pr-2 py-4 text-xs font-mono" style={{ fontWeight: '300' }}>{record.token_id}</td>
+                        <td className="w-16 px-2 py-4 text-xs font-mono" style={{ fontWeight: '300' }}>{record.nft_number}</td>
+                        <td className="w-44 px-2 py-4">
+                          <div className="flex items-start gap-2">
+                            <span className="text-xs font-mono break-all" style={{ fontWeight: '300' }}>{record.sha256_hash}</span>
                             <button
                               onClick={() => copyToClipboard(record.sha256_hash, `sha-${record.token_id}`)}
-                              className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex-shrink-0 rounded"
+                              className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex-shrink-0 rounded mt-0.5"
                               title="Copy to clipboard"
                             >
                               {copiedHash === `sha-${record.token_id}` ? (
@@ -319,12 +365,12 @@ export default function ProvenancePage() {
                             </button>
                           </div>
                         </td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-mono whitespace-nowrap" style={{ fontWeight: '300' }}>{record.keccak256_hash}</span>
+                        <td className="w-44 px-2 py-4">
+                          <div className="flex items-start gap-2">
+                            <span className="text-xs font-mono break-all" style={{ fontWeight: '300' }}>{record.keccak256_hash}</span>
                             <button
                               onClick={() => copyToClipboard(record.keccak256_hash, `keccak-${record.token_id}`)}
-                              className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex-shrink-0 rounded"
+                              className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex-shrink-0 rounded mt-0.5"
                               title="Copy to clipboard"
                             >
                               {copiedHash === `keccak-${record.token_id}` ? (
@@ -335,16 +381,30 @@ export default function ProvenancePage() {
                             </button>
                           </div>
                         </td>
-                        <td className="p-4">
+                        <td className="w-56 px-2 py-4">
                           <div className="flex items-center gap-2">
                             <a
-                              href={record.ipfs_cid}
+                              href={record.media_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm hover:text-primary transition-colors font-mono whitespace-nowrap"
+                              className="text-xs hover:text-primary transition-colors font-mono break-all"
                               style={{ fontWeight: '300' }}
                             >
-                              {record.ipfs_cid ? record.ipfs_cid.replace('https://ipfs.io/ipfs/', '') : "N/A"}
+                              {record.media_cid || "N/A"}
+                            </a>
+                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                          </div>
+                        </td>
+                        <td className="w-56 px-2 py-4">
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={record.metadata_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs hover:text-primary transition-colors font-mono break-all"
+                              style={{ fontWeight: '300' }}
+                            >
+                              {record.metadata_cid || "N/A"}
                             </a>
                             <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                           </div>

@@ -229,3 +229,36 @@ a[href*="thirdweb"],
 .scrollbar-custom::-webkit-scrollbar-button:hover {
   background: #f5f5f0;
 }
+
+/* Global scrollbar styling for all scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #fffbeb #2a2a2a;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #2a2a2a;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #fffbeb;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #f5f5f0;
+}
+
+*::-webkit-scrollbar-button {
+  background: #fffbeb;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-button:hover {
+  background: #f5f5f0;
+}
