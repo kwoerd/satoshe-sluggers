@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -16,7 +16,7 @@ import { getAllNFTs, searchNFTs, getTraitCounts, convertToLegacyFormat } from "@
 import NFTCard from "./nft-card";
 import { track } from '@vercel/analytics';
 import { triggerPurchaseConfetti } from "@/lib/confetti";
-import { LayoutGrid, Rows3, Grid3x3, Heart, Square } from "lucide-react";
+import { LayoutGrid, Rows3, Grid3x3, Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import Link from "next/link";
 
@@ -109,7 +109,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         const mappedResults = searchResults.map(convertToLegacyFormat);
         
         // Apply sorting
-        let sortedResults = [...mappedResults];
+        const sortedResults = [...mappedResults];
         switch (sortBy) {
           case "rank-low":
             sortedResults.sort((a, b) => Number(a.rank) - Number(b.rank));
@@ -175,6 +175,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         contract: marketplace,
         listingId: BigInt(listingId),
         quantity: 1n,
+        recipient: account.address,
       });
 
       await sendTransaction(transaction);
@@ -387,6 +388,8 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
+            totalItems={filteredNFTs.length}
+            itemsPerPage={itemsPerPage}
             onPageChange={setCurrentPage}
           />
         </div>

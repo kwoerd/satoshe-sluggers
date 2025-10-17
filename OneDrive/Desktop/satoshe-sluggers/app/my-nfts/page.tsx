@@ -11,8 +11,6 @@ import { useActiveAccount } from "thirdweb/react"
 import { client } from "@/lib/thirdweb"
 import { useFavorites } from "@/hooks/useFavorites"
 import { Heart, Package } from "lucide-react"
-import { nftCollection } from "@/lib/contracts"
-import { getNFTs } from "thirdweb/extensions/erc721"
 
 // Types for NFT data
 interface NFT {
@@ -56,7 +54,7 @@ function MyNFTsContent() {
         const allMetadata = await response.json();
         
         // For demo purposes, show first 10 NFTs as "owned"
-        const demoOwnedNFTs = allMetadata.slice(0, 10).map((meta: any) => ({
+        const demoOwnedNFTs = allMetadata.slice(0, 10).map((meta: { token_id?: number; name?: string; media_url?: string; rarity_tier?: string }) => ({
           id: meta.token_id?.toString() || "0",
           tokenId: meta.token_id?.toString() || "0",
           name: meta.name || `Satoshe Slugger #${meta.token_id}`,

@@ -12,7 +12,6 @@ import Pagination from "@/components/ui/pagination";
 import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { buyFromListing } from "thirdweb/extensions/marketplace";
 import { marketplace } from "@/lib/contracts";
-import { getAllNFTs, searchNFTs, getTraitCounts, convertToLegacyFormat } from "@/lib/data-service";
 import NFTCard from "./nft-card";
 import { track } from '@vercel/analytics';
 import { triggerPurchaseConfetti } from "@/lib/confetti";
@@ -235,21 +234,19 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     setIsProcessingPurchase((prev) => ({ ...prev, [nft.id]: true }));
 
     try {
-      // Check if there's a listing for this token
-      const listing = await getListing({
-        contract: marketplace,
-        listingId: BigInt(nft.tokenId),
-      });
+      // Use static price data from metadata - no RPC calls for display
+      const priceEth = nft.priceWei ? parseFloat(nft.priceWei.toString()) / 1e18 : 0;
+      const isForSale = nft.isForSale || false;
 
-      if (!listing || Number(listing.status) !== 1) {
-        alert("No active listing found for this NFT");
+      if (!isForSale) {
+        alert("This NFT is not for sale");
         setIsProcessingPurchase((prev) => ({ ...prev, [nft.id]: false }));
         return;
       }
 
       const tx = buyFromListing({
         contract: marketplace,
-        listingId: listing.id,
+        listingId: BigInt(nft.tokenId),
         quantity: 1n,
         recipient: account.address,
       });

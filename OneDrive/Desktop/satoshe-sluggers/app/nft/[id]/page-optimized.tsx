@@ -14,7 +14,7 @@ import { getNFTByTokenId } from "@/lib/data-service";
 import { useFavorites } from "@/hooks/useFavorites";
 import { track } from '@vercel/analytics';
 import { triggerPurchaseConfetti } from "@/lib/confetti";
-import { ArrowLeft, ArrowRight, Heart, ExternalLink, Copy, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Heart } from "lucide-react";
 
 // Color mapping for attributes
 const COLORS = {
@@ -45,14 +45,28 @@ function getColorForAttribute(attributeName: string) {
 export default function NFTDetailPage() {
   const params = useParams<{ id: string }>();
   const tokenId = params.id;
-  const [nftData, setNftData] = useState<any>(null);
+  const [nftData, setNftData] = useState<{
+    name: string;
+    description: string;
+    token_id: number;
+    rarity_tier: string;
+    rarity_percent: number;
+    rank: number;
+    attributes: Array<{ trait_type: string; value: string; occurrence: number; rarity: number }>;
+    merged_data: {
+      media_url: string;
+      price_eth: number;
+      listing_id: number;
+    };
+    series: string;
+    artist: string;
+    platform: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const account = useActiveAccount();
-  const { isFavorited, toggleFavorite, isConnected } = useFavorites();
+  const { isFavorited, toggleFavorite } = useFavorites();
   const { mutate: sendTransaction } = useSendTransaction();
 
   // Load NFT data using optimized service
@@ -78,7 +92,7 @@ export default function NFTDetailPage() {
   const attributes = useMemo(() => {
     if (!nftData?.attributes) return [];
     
-    return nftData.attributes.map((attr: any, index: number) => {
+    return nftData.attributes.map((attr: { trait_type: string; value: string; occurrence: number; rarity: number }, index: number) => {
       const displayPercentages = [10.84, 16.29, 14.58, 2.65, 81.75, 6.51];
       const color = getColorForAttribute(attr.trait_type);
       
@@ -109,6 +123,7 @@ export default function NFTDetailPage() {
         contract: marketplace,
         listingId: BigInt(nftData.merged_data.listing_id),
         quantity: 1n,
+        recipient: account.address,
       });
 
       await sendTransaction(transaction);
@@ -129,12 +144,6 @@ export default function NFTDetailPage() {
     }
   };
 
-  // Copy to clipboard
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   // Navigation helpers
   const currentTokenId = parseInt(tokenId);
@@ -167,7 +176,7 @@ export default function NFTDetailPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">NFT Not Found</h1>
-            <p className="text-neutral-400 mb-6">The NFT you're looking for doesn't exist.</p>
+            <p className="text-neutral-400 mb-6">The NFT you&apos;re looking for doesn&apos;t exist.</p>
             <Link href="/nfts">
               <Button>Back to Collection</Button>
             </Link>

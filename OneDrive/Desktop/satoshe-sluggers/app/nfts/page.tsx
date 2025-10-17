@@ -41,12 +41,12 @@ export default function NFTsPage() {
           <div className="lg:sticky lg:top-[76px] lg:self-start z-10 w-full lg:w-72 xl:w-80 2xl:w-96">
             <NFTSidebar
               searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
               searchMode={searchMode}
-              setSearchMode={setSearchMode}
               selectedFilters={selectedFilters}
-              setSelectedFilters={setSelectedFilters}
-              traitCounts={traitCounts}
+              onSearchChange={setSearchTerm}
+              onSearchModeChange={(mode) => setSearchMode(mode as "exact" | "contains")}
+              onFilterChange={setSelectedFilters}
+              onTraitCountsChange={handleTraitCountsChange}
             />
           </div>
           <div className="flex-1 min-w-0">

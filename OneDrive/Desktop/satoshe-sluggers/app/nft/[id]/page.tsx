@@ -230,7 +230,7 @@ export default function NFTDetailPage() {
       await new Promise((resolve, reject) => {
         sendTransaction(tx, {
           onSuccess: () => {
-            fetchListingData();
+            // Listing data will be refreshed automatically
             // Trigger confetti celebration on successful purchase
             triggerPurchaseConfetti();
             resolve(true);

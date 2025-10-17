@@ -45,7 +45,8 @@ export async function loadCompleteMetadata(): Promise<CompleteNFTData[]> {
 
   try {
     const response = await fetch('/data/complete_metadata.json');
-    completeMetadataCache = await response.json();
+    const data = await response.json();
+    completeMetadataCache = data as CompleteNFTData[];
     return completeMetadataCache;
   } catch (error) {
     console.error('Error loading complete metadata:', error);
