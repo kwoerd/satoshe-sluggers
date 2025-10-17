@@ -19,7 +19,7 @@ export default function NFTsPage() {
     <main className="min-h-screen bg-background text-foreground pt-24 sm:pt-28">
       <Navigation activePage="nfts" />
 
-      <section className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <section className="w-full mx-auto px-8 sm:px-12 lg:px-16 xl:px-20 py-4 sm:py-6">
         <div className="mb-6">
           <h1 id="collection-heading" className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-1 text-white">
             SATO<span className="text-[#ff0099]">SHE</span> SLUGGERS
@@ -44,13 +44,13 @@ export default function NFTsPage() {
             />
           </div>
           <div className="flex-1 min-w-0">
-                    <NFTGrid
-                      searchTerm={searchTerm}
-                      searchMode={searchMode}
-                      selectedFilters={selectedFilters}
-                      onFilteredCountChange={() => {}} // Empty callback since we don't use the count
-                      onTraitCountsChange={() => {}} // Empty callback since we don't use the counts
-                    />
+            <NFTGrid
+              searchTerm={searchTerm}
+              searchMode={searchMode}
+              selectedFilters={selectedFilters}
+              onFilteredCountChange={() => {}} // Empty callback since we don't use the count
+              onTraitCountsChange={() => {}} // Empty callback since we don't use the counts
+            />
           </div>
         </div>
       </section>
