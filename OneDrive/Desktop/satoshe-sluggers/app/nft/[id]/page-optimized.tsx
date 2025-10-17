@@ -1,3 +1,6 @@
+// app/nft/[id]/page-optimized.tsx
+
+// app/nft/[id]/page-optimized.tsx
 "use client";
 
 import { useState, useEffect, useMemo } from "react";

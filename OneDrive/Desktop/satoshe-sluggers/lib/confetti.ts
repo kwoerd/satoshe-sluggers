@@ -1,3 +1,4 @@
+// lib/confetti.ts
 import confetti from 'canvas-confetti';
 
 // Confetti configurations for different events

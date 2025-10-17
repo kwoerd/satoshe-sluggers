@@ -1,3 +1,4 @@
+// app/nfts/page.tsx
 "use client"
 import NFTGrid from "@/components/nft-grid"
 import CollectionStats from "@/components/collection-stats"

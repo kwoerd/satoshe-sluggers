@@ -1,3 +1,5 @@
+// components/nft-grid.tsx
+// components/nft-grid.tsx
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";

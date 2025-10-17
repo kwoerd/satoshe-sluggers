@@ -1,3 +1,4 @@
+<!-- docs/SECURITY_AUDIT.md -->
 # Security & Configuration Audit
 **Date**: October 11, 2025  
 **Status**: ✅ PASSED

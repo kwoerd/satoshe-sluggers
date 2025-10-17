@@ -1,3 +1,4 @@
+// app/page.tsx
 "use client"
 
 import Header80 from "@/components/header-80"

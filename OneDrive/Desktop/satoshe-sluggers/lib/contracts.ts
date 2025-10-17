@@ -1,3 +1,4 @@
+// lib/contracts.ts
 // lib/contracts.ts - Smart Contract Configuration
 import { getContract } from "thirdweb";
 import { base } from "thirdweb/chains";

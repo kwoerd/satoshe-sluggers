@@ -1,3 +1,4 @@
+// hooks/useFavorites.ts
 import { useState, useEffect } from 'react';
 import { useActiveAccount } from 'thirdweb/react';
 

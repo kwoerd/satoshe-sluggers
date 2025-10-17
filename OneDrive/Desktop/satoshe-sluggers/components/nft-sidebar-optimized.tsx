@@ -1,3 +1,4 @@
+// components/nft-sidebar-optimized.tsx
 "use client"
 
 import React, { useState, useRef } from "react"

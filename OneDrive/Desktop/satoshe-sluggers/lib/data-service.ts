@@ -1,3 +1,4 @@
+// lib/data-service.ts
 // Lightweight data service using complete metadata as single source of truth
 export interface CompleteNFTData {
   name: string;

@@ -1,3 +1,4 @@
+// components/simple-connect-button.tsx
 import { ConnectButton, darkTheme } from "thirdweb/react";
 import { createThirdwebClient } from "thirdweb";
 import { inAppWallet, createWallet } from "thirdweb/wallets";

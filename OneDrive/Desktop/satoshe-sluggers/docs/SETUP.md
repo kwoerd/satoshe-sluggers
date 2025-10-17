@@ -1,3 +1,4 @@
+<!-- docs/SETUP.md -->
 # Satoshe Sluggers - Setup Guide
 
 ## 📦 Install Dependencies

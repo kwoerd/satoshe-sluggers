@@ -1,3 +1,4 @@
+<!-- docs/PRE_DEPLOYMENT_CHECKLIST.md -->
 # Pre-Deployment Checklist
 **Date**: October 11, 2025  
 **Status**: ✅ READY FOR DEPLOYMENT

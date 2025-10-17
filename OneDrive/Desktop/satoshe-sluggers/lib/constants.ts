@@ -1,3 +1,4 @@
+// lib/constants.ts
 // Collection constants for Provenance page
 export const COLLECTION_NAME = "Satoshe Sluggers";
 export const CONTRACT_ADDRESS = "0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc"; 

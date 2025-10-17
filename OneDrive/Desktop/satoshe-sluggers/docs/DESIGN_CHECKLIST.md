@@ -1,3 +1,4 @@
+<!-- docs/DESIGN_CHECKLIST.md -->
 # ✅ Design Consistency Checklist
 
 Use this checklist before committing any UI component or page.

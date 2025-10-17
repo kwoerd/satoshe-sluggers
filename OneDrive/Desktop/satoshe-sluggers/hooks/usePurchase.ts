@@ -1,3 +1,5 @@
+// hooks/usePurchase.ts
+// hooks/usePurchase.ts
 "use client";
 
 import { useState } from "react";

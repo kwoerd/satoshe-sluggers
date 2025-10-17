@@ -1,3 +1,5 @@
+// components/cart-modal.tsx
+// components/cart-modal.tsx
 "use client";
 
 // Removed unused useState import

@@ -1,3 +1,4 @@
+// lib/design-system.ts
 /**
  * SATOSHE SLUGGERS DESIGN SYSTEM
  * Centralized design tokens for consistent styling across the entire application

@@ -1,3 +1,4 @@
+// components/attribute-rarity-chart.tsx
 "use client"
 
 import * as React from "react"

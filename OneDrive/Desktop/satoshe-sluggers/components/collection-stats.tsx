@@ -1,3 +1,4 @@
+// components/collection-stats.tsx
 export default function CollectionStats() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">

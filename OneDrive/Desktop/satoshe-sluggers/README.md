@@ -1,3 +1,4 @@
+<!-- README.md -->
 # Satoshe Sluggers NFT Marketplace
 
 A clean, modern NFT marketplace for the Satoshe Sluggers collection built with Next.js 15, Thirdweb v5, and ShadCN.

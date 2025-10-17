@@ -1,3 +1,6 @@
+// components/nft-card.tsx
+
+// components/nft-card.tsx
 "use client"
 
 import Link from "next/link";

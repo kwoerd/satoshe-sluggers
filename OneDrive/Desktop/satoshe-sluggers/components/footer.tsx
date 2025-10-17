@@ -13,6 +13,7 @@ const legalLinks = [
   { label: "DISCLAIMER", href: "https://retinaldelights.io/disclaimer" },
 ]
 
+// components/footer.tsx
 export default function Footer() {
 
   return (
