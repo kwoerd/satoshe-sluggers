@@ -2,10 +2,12 @@ import { ConnectButton, darkTheme } from "thirdweb/react";
 import { createThirdwebClient } from "thirdweb";
 import { inAppWallet, createWallet } from "thirdweb/wallets";
 
+// Initialize your Thirdweb client
 const client = createThirdwebClient({
-  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "....",
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "YOUR_CLIENT_ID_HERE", // replace with your actual Thirdweb clientId
 });
 
+// Define available wallets
 const wallets = [
   inAppWallet({
     auth: {
@@ -29,51 +31,15 @@ const wallets = [
   createWallet("walletConnect"),
 ];
 
+// Main ConnectButton component
 export default function CustomAuthButton() {
   return (
     <ConnectButton
-      auth={{
-        async doLogin(_params) {
-          // call your backend to verify the signed payload passed in params
-          return;
-        },
-        async doLogout() {
-          // call your backend to logout the user if needed
-          return;
-        },
-        async getLoginPayload(params) {
-          // call your backend and return the payload
-          const now = new Date();
-          const expirationTime = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours from now
-          
-          return {
-            domain: window.location.host,
-            address: params.address,
-            statement: "Please sign this message to authenticate",
-            uri: window.location.origin,
-            version: "1",
-            chainId: params.chainId,
-            nonce: Math.random().toString(36).substring(2, 15),
-            issuedAt: now.toISOString(),
-            issued_at: now.toISOString(),
-            expirationTime: expirationTime.toISOString(),
-            expiration_time: expirationTime.toISOString(),
-            invalidBefore: now.toISOString(),
-            invalid_before: now.toISOString(),
-          };
-        },
-        async isLoggedIn(_address) {
-          // call your backend to check if the user is logged in
-          return false;
-        },
-      }}
       client={client}
-      connectButton={{ 
-        label: "CONNECT",
-      }}
+      connectButton={{ label: "CONNECT" }}
       connectModal={{
-        privacyPolicyUrl: "https://retinaldelights.io/privacy",
         size: "wide",
+        privacyPolicyUrl: "https://retinaldelights.io/privacy",
         termsOfServiceUrl: "https://retinaldelights.io/terms",
       }}
       theme={darkTheme({
