@@ -1,9 +1,9 @@
 "use client"
-import NFTGrid from "@/components/nft-grid"
+import NFTGrid from "@/components/nft-grid-optimized"
 import CollectionStats from "@/components/collection-stats"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
-import NFTSidebar from "@/components/nft-sidebar"
+import NFTSidebar from "@/components/nft-sidebar-optimized"
 import { useState, useCallback } from "react"
 
 export default function NFTsPage() {

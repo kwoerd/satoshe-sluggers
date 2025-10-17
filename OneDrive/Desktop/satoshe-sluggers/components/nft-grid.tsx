@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/select";
 import Pagination from "@/components/ui/pagination";
 import { useActiveAccount, useSendTransaction } from "thirdweb/react";
-import { getListing, buyFromListing } from "thirdweb/extensions/marketplace";
+import { buyFromListing } from "thirdweb/extensions/marketplace";
 import { marketplace } from "@/lib/contracts";
+import { getAllNFTs, searchNFTs, getTraitCounts, convertToLegacyFormat } from "@/lib/data-service";
 import NFTCard from "./nft-card";
 import { track } from '@vercel/analytics';
 import { triggerPurchaseConfetti } from "@/lib/confetti";
