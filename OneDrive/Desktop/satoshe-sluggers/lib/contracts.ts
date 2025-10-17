@@ -10,9 +10,9 @@ export const nftCollection = getContract({
   client,
 });
 
-// Marketplace Contract (v3 with Direct Listings)
+// Marketplace Contract (v3 with Direct Listings) - TEST CONTRACT
 export const marketplace = getContract({
-  address: process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS!,
+  address: "0xCEf0B3219c6C3e9e79FcF30071FfDC731F1cc7c2", // Real test contract with 10 NFTs
   chain: base,
   client,
   abi: [
@@ -47,9 +47,5 @@ if (!process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS) {
   );
 }
 
-if (!process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS) {
-  throw new Error(
-    "❌ Missing NEXT_PUBLIC_MARKETPLACE_ADDRESS environment variable"
-  );
-}
+// Using hardcoded test marketplace contract address
 
