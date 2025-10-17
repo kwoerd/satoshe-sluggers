@@ -66,7 +66,7 @@ export default function SimpleConnectButton() {
           selectedTextBg: "hsl(324, 100%, 50%)",
           primaryText: "hsl(48, 100%, 96%)",
           selectedTextColor: "hsl(48, 100%, 96%)",
-          secondaryText: "hsl(0, 0%, 45%)",
+          secondaryText: "hsl(48, 100%, 96%)",
           tertiaryBg: "hsl(0, 0%, 15%)",
           separatorLine: "hsl(0, 0%, 15%)",
           accentText: "hsl(324, 100%, 50%)",

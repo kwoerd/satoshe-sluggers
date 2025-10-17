@@ -147,7 +147,7 @@ const Header80: React.FC = () => {
                 <Link href="/nfts">
                   <Button
                     variant="outline"
-                    className="relative z-10 text-xl md:text-2xl lg:text-3xl px-10 py-8 md:px-14 md:py-10 font-bold text-blue-400 border-blue-400 border hover:border-transparent hover:bg-[hsl(0,0%,4%)] transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] bg-neutral-900/80 rounded"
+                    className="relative z-10 text-xl md:text-2xl lg:text-3xl px-10 py-8 md:px-14 md:py-10 font-bold text-blue-400 border-blue-400 border hover:border-transparent hover:bg-[hsl(0,0%,4%)] transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] bg-neutral-900/80 rounded cursor-pointer"
                     title="BUY A SLUGGER"
                   >
                     BUY A SLUGGER
