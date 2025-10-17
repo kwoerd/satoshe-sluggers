@@ -7,7 +7,7 @@ import Navigation from "@/components/navigation"
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col pt-24 sm:pt-28">
+    <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
       <Navigation activePage="home" />
 
       <div className="flex-grow">

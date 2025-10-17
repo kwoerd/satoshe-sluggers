@@ -73,12 +73,12 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col pt-24 sm:pt-28">
+    <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
       <Navigation activePage="contact" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-grow" role="main" aria-labelledby="contact-heading">
         <div className="text-center mb-6 sm:mb-8">
-          <h1 id="contact-heading" className="text-2xl sm:text-3xl font-bold mb-3 text-neutral-100">
+          <h1 id="contact-heading" className="text-2xl sm:text-3xl font-bold mb-3 text-[#FFFBEB]">
             CONTACT US
           </h1>
           <p className="text-neutral-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed px-4 font-normal">
@@ -111,7 +111,7 @@ export default function ContactPage() {
               <p className="text-neutral-300 mb-6">Thank you for reaching out. We&apos;ll get back to you as soon as possible.</p>
               <Button
                 onClick={() => setSubmitted(false)}
-                className="py-3 px-6 text-base font-normal transition-all duration-200 border bg-transparent text-[#FF0099] border-[#FF0099] hover:bg-[#FF0099]/90 hover:text-white"
+                className="py-3 px-6 text-base font-normal transition-all duration-200 border bg-transparent text-[#FF0099] border-[#FF0099] hover:bg-[#FF0099]/90 hover:text-[#FFFBEB]"
               >
                 Send Another Message
               </Button>
@@ -274,7 +274,7 @@ export default function ContactPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="py-3 px-8 text-lg font-normal transition-all duration-200 border bg-transparent text-[#FF0099] border-[#FF0099] hover:bg-[#FF0099]/90 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="py-3 px-8 text-lg font-normal transition-all duration-200 border bg-transparent text-[#FF0099] border-[#FF0099] hover:bg-[#FF0099]/90 hover:text-[#FFFBEB] disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-live="polite"
                 >
                   {isSubmitting ? (

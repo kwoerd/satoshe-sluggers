@@ -4,7 +4,7 @@ import NFTGrid from "@/components/nft-grid"
 import CollectionStats from "@/components/collection-stats"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
-import NFTSidebar from "@/components/nft-sidebar-optimized"
+import NFTSidebar from "@/components/nft-sidebar"
 import { useState } from "react"
 
 export default function NFTsPage() {
@@ -16,31 +16,32 @@ export default function NFTsPage() {
   // Removed unused callback functions
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-24 sm:pt-28">
+    <main className="min-h-screen bg-background text-[#FFFBEB] pt-24 sm:pt-28">
       <Navigation activePage="nfts" />
 
-      <section className="w-full mx-auto px-8 sm:px-12 lg:px-16 xl:px-20 py-4 sm:py-6">
-        <div className="mb-6">
-          <h1 id="collection-heading" className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-1 text-white">
+      <section className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 py-6 sm:py-8 lg:py-10">
+        <div className="mb-8 lg:mb-12">
+          <h1 id="collection-heading" className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-center mb-3 text-[#FFFBEB]">
             SATO<span className="text-[#ff0099]">SHE</span> SLUGGERS
           </h1>
-          <p className="text-lg sm:text-2xl text-neutral-300 text-center max-w-2xl mx-auto tracking-wider">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-neutral-300 text-center max-w-3xl mx-auto tracking-wider">
             A RETINAL DELIGHTS NFT MARKETPLACE
           </p>
         </div>
 
-        <CollectionStats />
+        <div className="mb-8 lg:mb-12">
+          <CollectionStats />
+        </div>
 
-        <div className="mt-6 sm:mt-8 flex flex-col lg:flex-row gap-4 lg:gap-6" suppressHydrationWarning>
-          <div className="lg:sticky lg:top-[76px] lg:self-start z-10 w-full lg:w-72 xl:w-80 2xl:w-96">
+        <div className="flex flex-col xl:flex-row gap-6 lg:gap-8" suppressHydrationWarning>
+          <div className="xl:sticky xl:top-[76px] xl:self-start z-10 w-full xl:w-80 2xl:w-96">
             <NFTSidebar
               searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
               searchMode={searchMode}
+              setSearchMode={setSearchMode}
               selectedFilters={selectedFilters}
-              onSearchChange={setSearchTerm}
-              onSearchModeChange={(mode) => setSearchMode(mode as "exact" | "contains")}
-              onFilterChange={setSelectedFilters}
-              onTraitCountsChange={() => {}} // Empty callback since we don't use the counts
+              setSelectedFilters={setSelectedFilters}
             />
           </div>
           <div className="flex-1 min-w-0">

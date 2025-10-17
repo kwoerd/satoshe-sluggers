@@ -112,7 +112,7 @@ export default function NFTDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-950 text-white">
+      <div className="min-h-screen bg-neutral-950 text-[#FFFBEB]">
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-neutral-800 rounded w-1/4 mb-6"></div>
@@ -132,7 +132,7 @@ export default function NFTDetailPage() {
 
   if (!nftData) {
     return (
-      <div className="min-h-screen bg-neutral-950 text-white">
+      <div className="min-h-screen bg-neutral-950 text-[#FFFBEB]">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">NFT Not Found</h1>
@@ -150,7 +150,7 @@ export default function NFTDetailPage() {
   const listingPrice = nftData.merged_data?.price_eth?.toFixed(6) || "0";
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
+    <div className="min-h-screen bg-neutral-950 text-[#FFFBEB]">
       <div className="container mx-auto px-4 py-8">
         {/* Navigation */}
         <div className="flex items-center gap-4 mb-8">
@@ -274,7 +274,7 @@ export default function NFTDetailPage() {
                     track('NFT Purchase Failed', { tokenId: nftData.token_id });
                     alert(`Purchase failed: ${error.message}`);
                   }}
-                  className="w-full h-12 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-semibold text-lg rounded-sm disabled:opacity-50"
+                  className="w-full h-12 bg-blue-500 text-[#FFFBEB] hover:bg-blue-600 transition-all duration-200 font-semibold text-lg rounded-sm disabled:opacity-50"
                 >
                   BUY
                 </BuyDirectListingButton>
@@ -294,19 +294,19 @@ export default function NFTDetailPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-neutral-400">Token ID:</span>
-                  <span className="text-white">{nftData.token_id}</span>
+                  <span className="text-[#FFFBEB]">{nftData.token_id}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-400">Series:</span>
-                  <span className="text-white">{nftData.series}</span>
+                  <span className="text-[#FFFBEB]">{nftData.series}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-400">Artist:</span>
-                  <span className="text-white">{nftData.artist}</span>
+                  <span className="text-[#FFFBEB]">{nftData.artist}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-400">Platform:</span>
-                  <span className="text-white">{nftData.platform}</span>
+                  <span className="text-[#FFFBEB]">{nftData.platform}</span>
                 </div>
               </div>
             </Card>
@@ -328,7 +328,7 @@ export default function NFTDetailPage() {
                       {attr.displayPercentage}%
                     </Badge>
                   </div>
-                  <p className="font-medium text-base text-white">{attr.value}</p>
+                  <p className="font-medium text-base text-[#FFFBEB]">{attr.value}</p>
                   <p className="text-xs text-neutral-500 mt-1">
                     {attr.occurrence} occurrences
                   </p>

@@ -54,14 +54,16 @@ export default function ProvenancePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [merkleRes, metadataRes, hashesRes] = await Promise.all([
+        const [merkleRes, hashesRes] = await Promise.all([
           fetch("/data/merkle_tree.txt"),
-          fetch("/data/complete_metadata.json"),
           fetch("/data/sha256_hashes.txt"),
         ])
+        
+        // Load metadata using chunked data service
+        const { chunkedDataService } = await import("@/lib/chunked-data-service");
+        const metadataData = await chunkedDataService.loadAllMetadata();
 
         const merkleText = await merkleRes.text()
-        const metadataData = await metadataRes.json()
         const hashesText = await hashesRes.text()
 
         // Metadata data loaded successfully
@@ -143,30 +145,30 @@ export default function ProvenancePage() {
 
   return (
     <TooltipProvider>
-      <main className="min-h-screen bg-background text-foreground flex flex-col pt-24 sm:pt-28">
+      <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
         <Navigation activePage="provenance" />
 
         <div className="container mx-auto px-8 sm:px-12 lg:px-16 xl:px-20 py-8 max-w-7xl flex-grow">
         <div className="mb-16">
-          <h1 className="text-4xl font-bold mb-3 uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 uppercase tracking-tight">
             <span className="text-[#FFFBEB]">S</span><span className="text-[#FFFBEB]">A</span><span className="text-[#FFFBEB]">T</span><span className="text-[#FFFBEB]">O</span><span className="text-[#FF0099]">S</span><span className="text-[#FF0099]">H</span><span className="text-[#FF0099]">E</span> <span className="text-[#FFFBEB]">Sluggers</span>
           </h1>
-          <h2 className="text-7xl font-bold mb-8 uppercase tracking-tight text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-8 uppercase tracking-tight text-[#FFFBEB]">
             PROVENANCE RECORD
           </h2>
           <div className="text-muted-foreground leading-relaxed max-w-4xl space-y-2">
-            <p className="text-lg whitespace-nowrap">
+            <p className="text-sm sm:text-base md:text-lg">
               Every NFT in the Satoshe Sluggers collection is permanently recorded, traceable, and verifiably authentic.
             </p>
-            <p className="text-lg whitespace-nowrap">
+            <p className="text-sm sm:text-base md:text-lg">
               This record is your assurance and source of truth — verified by math, preserved by code.
             </p>
           </div>
         </div>
 
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 uppercase tracking-tight">Verification Summary</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 uppercase tracking-tight">Verification Summary</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-card border border-neutral-700 p-4 rounded">
               <div className="flex items-start gap-3">
                 <div className="text-green-500 text-lg flex-shrink-0 mt-0.5">✓</div>
@@ -215,7 +217,7 @@ export default function ProvenancePage() {
 
         <div className="mb-12">
           {/* 2 Column, 3 Row Grid */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Row 1 - Headers */}
             <div>
               <h2 className="text-2xl font-bold uppercase tracking-tight">Important Information</h2>
@@ -233,7 +235,7 @@ export default function ProvenancePage() {
                   </div>
                   <button
                     onClick={() => copyToClipboard(CONTRACT_ADDRESS, 'contract')}
-                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors rounded"
+                    className="p-2 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors rounded"
                     title="Copy to clipboard"
                   >
                     {copiedHash === 'contract' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -247,7 +249,7 @@ export default function ProvenancePage() {
                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Final Proof Hash</div>
                   <button
                     onClick={copyProofHash}
-                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors rounded"
+                    className="p-2 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors rounded"
                     title="Copy to clipboard"
                   >
                     {copiedProof ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -261,7 +263,7 @@ export default function ProvenancePage() {
                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Merkle Root</div>
                   <button
                     onClick={copyMerkleRoot}
-                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors rounded"
+                    className="p-2 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors rounded"
                     title="Copy to clipboard"
                   >
                     {copiedMerkle ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -270,8 +272,20 @@ export default function ProvenancePage() {
                 <div className="text-sm font-mono break-all" style={{ fontWeight: '300' }}>{MERKLE_ROOT}</div>
               </div>
 
-              {/* Collection Stats - Under Important Information */}
-              <div className="mt-6">
+            </div>
+
+            <div>
+              <div className="bg-card border border-neutral-700 p-2 rounded">
+                <div
+                  className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap scrollbar-custom"
+                  style={{ fontWeight: '300', height: "200px" }}
+                >
+                  {merkleTree || "Loading..."}
+                </div>
+              </div>
+              
+              {/* Collection Stats - Under Merkle Tree */}
+              <div className="mt-4">
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground uppercase tracking-wider">Collection Size:</span>
@@ -289,17 +303,6 @@ export default function ProvenancePage() {
               </div>
             </div>
 
-            <div>
-              <div className="bg-card border border-neutral-700 p-2 rounded">
-                <div
-                  className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap scrollbar-custom"
-                  style={{ fontWeight: '300', height: "300px" }}
-                >
-                  {merkleTree || "Loading..."}
-                </div>
-              </div>
-            </div>
-
             {/* Row 3 - Empty to maintain grid alignment */}
             <div></div>
             <div></div>
@@ -311,25 +314,25 @@ export default function ProvenancePage() {
 
           <div className="bg-card border border-neutral-700 overflow-hidden rounded">
             <div className="overflow-x-auto scrollbar-custom" style={{ maxHeight: "600px", overflowY: "auto" }}>
-              <table className="w-full table-fixed">
+              <table className="w-full table-fixed min-w-[800px]">
                 <thead className="sticky top-0 z-10 border-b border-neutral-700" style={{ backgroundColor: '#1a1a1a' }}>
                   <tr>
-                    <th className="w-20 pl-4 pr-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-20 pl-4 pr-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       Token ID
                     </th>
-                    <th className="w-16 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-16 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       NFT #
                     </th>
-                    <th className="w-44 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-44 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       SHA-256 Hash
                     </th>
-                    <th className="w-44 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-44 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       Keccak-256 Hash
                     </th>
-                    <th className="w-56 px-2 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-56 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       Media IPFS CID
                     </th>
-                    <th className="w-56 pl-2 pr-4 py-4 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                    <th className="w-56 pl-2 pr-4 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       Metadata IPFS CID
                     </th>
                   </tr>
@@ -351,7 +354,7 @@ export default function ProvenancePage() {
                             <span className="text-xs font-mono break-all" style={{ fontWeight: '300' }}>{record.sha256_hash}</span>
                             <button
                               onClick={() => copyToClipboard(record.sha256_hash, `sha-${record.token_id}`)}
-                              className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex-shrink-0 rounded mt-0.5"
+                              className="p-1 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors flex-shrink-0 rounded mt-0.5"
                               title="Copy to clipboard"
                             >
                               {copiedHash === `sha-${record.token_id}` ? (
@@ -367,7 +370,7 @@ export default function ProvenancePage() {
                             <span className="text-xs font-mono break-all" style={{ fontWeight: '300' }}>{record.keccak256_hash}</span>
                             <button
                               onClick={() => copyToClipboard(record.keccak256_hash, `keccak-${record.token_id}`)}
-                              className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex-shrink-0 rounded mt-0.5"
+                              className="p-1 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors flex-shrink-0 rounded mt-0.5"
                               title="Copy to clipboard"
                             >
                               {copiedHash === `keccak-${record.token_id}` ? (

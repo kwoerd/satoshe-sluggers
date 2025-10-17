@@ -122,7 +122,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
             <Link
               href="/"
               className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 animate-in fade-in slide-in-from-top-1 delay-200 ${
-                activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+                activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
@@ -134,7 +134,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
             <Link
               href="/about"
               className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 animate-in fade-in slide-in-from-top-1 delay-300 ${
-                activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+                activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
@@ -146,7 +146,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
             <Link
               href="/nfts"
               className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 animate-in fade-in slide-in-from-top-1 delay-400 ${
-                activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+                activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
@@ -158,7 +158,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
             <Link
               href="/provenance"
               className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 animate-in fade-in slide-in-from-top-1 delay-500 ${
-                activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+                activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
@@ -170,7 +170,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
             <Link
               href="/contact"
               className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 animate-in fade-in slide-in-from-top-1 delay-600 ${
-                activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+                activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >

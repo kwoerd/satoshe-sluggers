@@ -17,7 +17,17 @@ const legalLinks = [
 // components/footer.tsx
 export default function Footer() {
   const handleCookieSettings = () => {
-    // TODO: Open cookie settings modal
+    // Open Termly consent preferences
+    const termlyLink = document.querySelector('.termly-display-preferences') as HTMLAnchorElement;
+    if (termlyLink) {
+      termlyLink.click();
+    } else {
+      // Fallback: try to trigger Termly programmatically
+      const termlyButton = document.querySelector('[data-termly="preferences"]') as HTMLElement;
+      if (termlyButton) {
+        termlyButton.click();
+      }
+    }
   }
 
   return (
@@ -43,7 +53,7 @@ export default function Footer() {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-neutral-100 transition-colors"
+                className="hover:text-[#FFFBEB] transition-colors"
               >
                 {link.label}
               </Link>
@@ -59,7 +69,7 @@ export default function Footer() {
             Created with <Heart className="inline-block h-3 w-3 mx-1 text-[#ff0099] fill-[#ff0099]" /> in Los Angeles by{" "}
             <a
               href="https://kristenwoerdeman.com"
-              className="text-[#ff0099] hover:text-[#ff0099]/80 transition-colors"
+              className="text-[#ff0099] hover:text-[#ff0099]/80 transition-colors font-medium"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -71,7 +81,7 @@ export default function Footer() {
             2025 ©{" "}
             <a
               href="https://retinaldelights.io"
-              className="text-[#ff0099] hover:text-[#ff0099]/80 transition-colors"
+              className="text-[#ff0099] hover:text-[#ff0099]/80 transition-colors font-medium"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -81,6 +91,11 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {/* Hidden Termly Preference Center Link */}
+      <a href="#" className="termly-display-preferences" style={{ display: 'none' }}>
+        Consent Preferences
+      </a>
 
       {/* Cookie Settings Button - Bottom Left Corner */}
       <TooltipProvider>
@@ -100,7 +115,7 @@ export default function Footer() {
               />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="bg-neutral-800 text-neutral-100 border-neutral-600">
+          <TooltipContent side="top" className="bg-neutral-800 text-[#FFFBEB] border-neutral-600">
             <p>Cookie Settings</p>
           </TooltipContent>
         </Tooltip>

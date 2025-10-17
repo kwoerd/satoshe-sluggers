@@ -68,7 +68,7 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
   return (
     <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-8 rounded-sm">
       <CardHeader className="items-center pb-3">
-        <CardTitle className="text-lg font-medium text-neutral-100">Attribute Rarity Distribution</CardTitle>
+        <CardTitle className="text-lg font-medium text-[#FFFBEB]">Attribute Rarity Distribution</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 pb-6">
         <ChartContainer
@@ -80,11 +80,11 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
               cursor={false}
               content={<ChartTooltipContent
                 hideLabel
-                className="bg-neutral-900 border-neutral-600 text-neutral-100"
+                className="bg-neutral-900 border-neutral-600 text-[#FFFBEB]"
                 formatter={(value, name) => {
                   const item = chartData.find(d => d.name === name);
                   return [
-                    <span key={name} className="text-neutral-100 font-medium">
+                    <span key={name} className="text-[#FFFBEB] font-medium">
                       {name}: {item?.value} ({value}%)
                     </span>,
                     ""

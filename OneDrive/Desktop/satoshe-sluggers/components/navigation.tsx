@@ -31,7 +31,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/"
           className={`text-base font-medium relative group ${
-            activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           HOME
@@ -42,7 +42,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/about"
           className={`text-base font-medium relative group ${
-            activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           ABOUT
@@ -53,7 +53,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/nfts"
           className={`text-base font-medium relative group ${
-            activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           NFTS
@@ -64,7 +64,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/provenance"
           className={`text-base font-medium relative group ${
-            activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           PROVENANCE
@@ -75,7 +75,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/contact"
           className={`text-base font-medium relative group ${
-            activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           CONTACT

@@ -110,7 +110,7 @@ function MyNFTsContent() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-background text-foreground flex flex-col">
+      <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col">
         <Navigation />
         <div className="flex-grow flex justify-center items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -121,7 +121,7 @@ function MyNFTsContent() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col pt-24 sm:pt-28">
+    <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow">
@@ -212,7 +212,7 @@ function MyNFTsContent() {
                     <div className="space-y-2">
                       <Button
                         onClick={() => router.push(`/nft/${nft.id}`)}
-                        className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white text-sm py-2"
+                        className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-[#FFFBEB] text-sm py-2"
                       >
                         View Details
                       </Button>
