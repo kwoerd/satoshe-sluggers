@@ -229,7 +229,7 @@ export default function NFTCard({
       
       {/* NFT Image */}
       <Link href={`/nft/${tokenId}`} className="block w-full">
-        <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.9/1" }}>
+        <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.8/1" }}>
           <Image
             src={showPlaceholder ? placeholder : image}
             alt={name}
@@ -267,12 +267,43 @@ export default function NFTCard({
       </Link>
 
       {/* NFT Title Section - Medium grid design */}
-      <div className="px-2 pt-2 pb-2">
-        <Link href={`/nft/${tokenId}`} className="block">
-          <h3 className="font-medium text-xs leading-tight text-neutral-100 truncate">
+      <div className="px-3 pt-3 pb-3 flex-1 flex flex-col">
+        <Link href={`/nft/${tokenId}`} className="block flex-1">
+          <h3 className="font-medium text-sm leading-tight text-neutral-100 mb-3 line-clamp-2">
             {name}
           </h3>
         </Link>
+        
+        {/* Buy Button for Medium Grid */}
+        {isForSale && listingId ? (
+          <div className="w-full mt-auto">
+            <BuyDirectListingButton
+              contractAddress={marketplace.address}
+              chain={marketplace.chain}
+              client={marketplace.client}
+              listingId={BigInt(listingId)}
+              quantity={BigInt(1)}
+              onTransactionSent={() => {
+                track('NFT Purchase Attempted', { tokenId });
+              }}
+              onTransactionConfirmed={() => {
+                track('NFT Purchase Success', { tokenId });
+                if (onPurchase) onPurchase();
+              }}
+              onError={(error) => {
+                console.error('Purchase failed:', error);
+                track('NFT Purchase Failed', { tokenId });
+              }}
+              className="w-full h-7 px-3 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-medium text-xs rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              BUY
+            </BuyDirectListingButton>
+          </div>
+        ) : price !== "--" ? (
+          <div className="w-full h-7 bg-neutral-700/50 border border-neutral-600 rounded-sm flex items-center justify-center mt-auto">
+            <span className="text-xs font-medium text-blue-500">SOLD</span>
+          </div>
+        ) : null}
       </div>
 
     </div>

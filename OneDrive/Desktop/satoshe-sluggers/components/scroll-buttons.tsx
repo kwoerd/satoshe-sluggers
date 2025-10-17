@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from "react"
 import { ArrowUp, ArrowDown } from "lucide-react"
-import Image from "next/image"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function ScrollButtons() {
@@ -50,10 +49,6 @@ export default function ScrollButtons() {
     requestAnimationFrame(animation)
   }
 
-  const handleCookieSettings = () => {
-    // TODO: Open cookie settings modal
-  }
-
   return (
     <TooltipProvider>
       {/* Scroll Up/Down Button - Bottom Right - Always Visible */}
@@ -73,28 +68,6 @@ export default function ScrollButtons() {
         </TooltipTrigger>
         <TooltipContent side="top" className="bg-neutral-800 text-neutral-100 border-neutral-600">
           <p>{isAtTop ? "Scroll to bottom" : "Scroll to top"}</p>
-        </TooltipContent>
-      </Tooltip>
-
-      {/* Cookie Settings Button - Bottom Left */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            onClick={handleCookieSettings}
-            className="fixed bottom-6 left-8 sm:left-12 lg:left-16 xl:left-20 z-50 w-12 h-12 flex items-center justify-center hover:bg-neutral-700/50 rounded-full transition-all duration-300"
-            aria-label="Cookie settings"
-          >
-            <Image
-              src="/icons/cookies/cookies-icon-48px.png"
-              alt="Cookie settings"
-              width={48}
-              height={48}
-              className="w-12 h-12"
-            />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="bg-neutral-800 text-neutral-100 border-neutral-600">
-          <p>Cookie Settings</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

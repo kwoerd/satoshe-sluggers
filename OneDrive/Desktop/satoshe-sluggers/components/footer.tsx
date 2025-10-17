@@ -2,6 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Heart } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 const legalLinks = [
   { label: "TERMS", href: "https://retinaldelights.io/terms" },
@@ -15,9 +16,12 @@ const legalLinks = [
 
 // components/footer.tsx
 export default function Footer() {
+  const handleCookieSettings = () => {
+    // TODO: Open cookie settings modal
+  }
 
   return (
-    <footer className="border-t border-neutral-700 bg-background">
+    <footer className="border-t border-neutral-700 bg-background relative">
       <div className="container mx-auto py-4 px-4 text-center">
         <div className="flex flex-col items-center justify-center">
           <div className="flex items-center justify-center mt-6 mb-8">
@@ -77,6 +81,30 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {/* Cookie Settings Button - Bottom Left Corner */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={handleCookieSettings}
+              className="absolute bottom-4 left-4 w-10 h-10 flex items-center justify-center hover:bg-neutral-700/50 rounded-full transition-all duration-300"
+              aria-label="Cookie settings"
+            >
+              <Image
+                src="/icons/cookies/cookies-icon-48px.png"
+                alt="Cookie settings"
+                width={40}
+                height={40}
+                className="w-10 h-10"
+              />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="bg-neutral-800 text-neutral-100 border-neutral-600">
+            <p>Cookie Settings</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
     </footer>
   )
