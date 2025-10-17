@@ -47,21 +47,6 @@ interface NFTGridProps {
   onTraitCountsChange: (counts: Record<string, Record<string, number>>) => void;
 }
 
-// Calculate trait counts for filtering
-function calculateTraitCounts(nfts: NFTGridItem[]): Record<string, Record<string, number>> {
-  const counts: Record<string, Record<string, number>> = {};
-  
-  nfts.forEach(nft => {
-    nft.attributes.forEach(attr => {
-      if (!counts[attr.trait_type]) {
-        counts[attr.trait_type] = {};
-      }
-      counts[attr.trait_type][attr.value] = (counts[attr.trait_type][attr.value] || 0) + 1;
-    });
-  });
-  
-  return counts;
-}
 
 export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFilteredCountChange, onTraitCountsChange }: NFTGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,7 +73,10 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         const { nfts: allNFTs } = await getAllNFTs(1, 7777); // Get all NFTs
         const mappedNFTs = allNFTs.map(convertToLegacyFormat);
         setNfts(mappedNFTs);
-        onTraitCountsChange(calculateTraitCounts(mappedNFTs));
+        
+        // Get trait counts from data service
+        const traitCounts = await getTraitCounts();
+        onTraitCountsChange(traitCounts);
       } catch (error) {
         console.error('[NFTGrid] Error loading NFTs:', error);
       } finally {
@@ -104,67 +92,63 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     setCurrentPage(1);
   }, [itemsPerPage, searchTerm]);
 
-  // Filter and search NFTs
-  const filteredNFTs = useMemo(() => {
-    let filtered = [...nfts];
+  // Filter and search NFTs using data service
+  const [filteredNFTs, setFilteredNFTs] = useState<NFTGridItem[]>([]);
+  const [isFiltering, setIsFiltering] = useState(false);
 
-    // Apply search
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      if (searchMode === "contains") {
-        filtered = filtered.filter(nft => 
-          nft.name.toLowerCase().includes(searchLower) ||
-          nft.description.toLowerCase().includes(searchLower) ||
-          nft.rarity.toLowerCase().includes(searchLower)
-        );
-      } else if (searchMode === "exact") {
-        filtered = filtered.filter(nft => 
-          nft.name.toLowerCase() === searchLower ||
-          nft.rarity.toLowerCase() === searchLower
-        );
+  useEffect(() => {
+    const applyFilters = async () => {
+      if (nfts.length === 0) return;
+      
+      try {
+        setIsFiltering(true);
+        
+        // Use data service for search and filtering
+        const searchQuery = searchMode === "exact" ? searchTerm : searchTerm;
+        const searchResults = await searchNFTs(searchQuery, selectedFilters);
+        const mappedResults = searchResults.map(convertToLegacyFormat);
+        
+        // Apply sorting
+        let sortedResults = [...mappedResults];
+        switch (sortBy) {
+          case "rank-low":
+            sortedResults.sort((a, b) => Number(a.rank) - Number(b.rank));
+            break;
+          case "rank-high":
+            sortedResults.sort((a, b) => Number(b.rank) - Number(a.rank));
+            break;
+          case "price-low":
+            sortedResults.sort((a, b) => a.price - b.price);
+            break;
+          case "price-high":
+            sortedResults.sort((a, b) => b.price - a.price);
+            break;
+          case "rarity-low":
+            sortedResults.sort((a, b) => Number(a.rarityPercent) - Number(b.rarityPercent));
+            break;
+          case "rarity-high":
+            sortedResults.sort((a, b) => Number(b.rarityPercent) - Number(a.rarityPercent));
+            break;
+          case "name-a-z":
+            sortedResults.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+          case "name-z-a":
+            sortedResults.sort((a, b) => b.name.localeCompare(a.name));
+            break;
+        }
+
+        setFilteredNFTs(sortedResults);
+        onFilteredCountChange(sortedResults.length);
+      } catch (error) {
+        console.error('Error filtering NFTs:', error);
+        setFilteredNFTs(nfts);
+        onFilteredCountChange(nfts.length);
+      } finally {
+        setIsFiltering(false);
       }
-    }
+    };
 
-    // Apply filters
-    Object.entries(selectedFilters).forEach(([traitType, values]) => {
-      if (values.length > 0) {
-        filtered = filtered.filter(nft => {
-          const attribute = nft.attributes.find(attr => attr.trait_type === traitType);
-          return attribute && values.includes(attribute.value);
-        });
-      }
-    });
-
-    // Apply sorting
-    switch (sortBy) {
-      case "rank-low":
-        filtered.sort((a, b) => Number(a.rank) - Number(b.rank));
-        break;
-      case "rank-high":
-        filtered.sort((a, b) => Number(b.rank) - Number(a.rank));
-        break;
-      case "price-low":
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case "rarity-low":
-        filtered.sort((a, b) => Number(a.rarityPercent) - Number(b.rarityPercent));
-        break;
-      case "rarity-high":
-        filtered.sort((a, b) => Number(b.rarityPercent) - Number(a.rarityPercent));
-        break;
-      case "name-a-z":
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case "name-z-a":
-        filtered.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-    }
-
-    onFilteredCountChange(filtered.length);
-    return filtered;
+    applyFilters();
   }, [nfts, searchTerm, searchMode, selectedFilters, sortBy, onFilteredCountChange]);
 
   // Pagination
@@ -218,7 +202,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   };
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || isFiltering) {
     return (
       <div className="mt-8 mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
         {Array.from({ length: 20 }).map((_, i) => (
