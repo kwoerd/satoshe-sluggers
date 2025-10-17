@@ -9,12 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Pagination from "@/components/ui/pagination";
-import { useActiveAccount, useSendTransaction } from "thirdweb/react";
-import { buyFromListing } from "thirdweb/extensions/marketplace";
+import { BuyDirectListingButton } from "thirdweb/react";
 import { marketplace } from "@/lib/contracts";
 import NFTCard from "./nft-card";
 import { track } from '@vercel/analytics';
-import { triggerPurchaseConfetti } from "@/lib/confetti";
 import { LayoutGrid, Rows3, Grid3x3, Heart, Square } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import Link from "next/link";
@@ -46,10 +44,12 @@ function displayPrice(val: string | number | bigint) {
 }
 
 const METADATA_URL = "/docs/combined_metadata.json";
+const TEST_METADATA_URL = "/test-nfts";
 
 type NFTGridItem = {
   id: string;
   tokenId: string;
+  listingId?: string | number;
   name: string;
   image: string;
   priceWei: string | number | bigint;
@@ -135,29 +135,76 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [sortBy, setSortBy] = useState("default");
+  const [columnSort, setColumnSort] = useState<{ field: string; direction: 'asc' | 'desc' } | null>(null);
   const [nfts, setNfts] = useState<NFTGridItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isProcessingPurchase, setIsProcessingPurchase] = useState<{
-    [id: string]: boolean;
-  }>({});
   const [allMetadata, setAllMetadata] = useState<NFTMetadata[]>([]);
   const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
   
 
-  const account = useActiveAccount();
-  const { mutate: sendTransaction } = useSendTransaction();
   
   // Favorites functionality
   const { isFavorited, toggleFavorite } = useFavorites();
+
+  // Column sort handler
+  const handleColumnSort = (field: string) => {
+    if (columnSort?.field === field) {
+      // Toggle direction if same field
+      setColumnSort({
+        field,
+        direction: columnSort.direction === 'asc' ? 'desc' : 'asc'
+      });
+    } else {
+      // New field, start with ascending
+      setColumnSort({ field, direction: 'asc' });
+    }
+    // Reset dropdown sort when using column sort
+    setSortBy("default");
+  };
 
   // Load metadata
   useEffect(() => {
     const loadMetadata = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(METADATA_URL);
-        const metadataArray = await response.json();
-        setAllMetadata(metadataArray || []);
+        
+        // Load main collection
+        const mainResponse = await fetch(METADATA_URL);
+        const mainMetadata = await mainResponse.json();
+        
+        // Load test NFTs
+        const testMetadata = [];
+        
+        // Load all 10 test NFTs
+        for (let i = 0; i < 10; i++) {
+          try {
+            const testFileResponse = await fetch(`${TEST_METADATA_URL}/test-nft-metadata-${i}.json`);
+            const testFileData = await testFileResponse.json();
+            
+            // Add missing fields for compatibility with main collection
+            const enhancedTestData = {
+              ...testFileData,
+              price_eth: 0.001, // Default test price
+              listing_id: i + 7777, // Test listing IDs starting from 7777
+              token_id: i + 7777, // Adjust token_id to be after main collection
+              card_number: i + 7778, // Adjust card_number
+              image: `/test-nfts/placeholder-nft-${i}.webp`, // Correct image path
+            };
+            
+            testMetadata.push(enhancedTestData);
+          } catch (error) {
+            console.warn(`Failed to load test NFT ${i}:`, error);
+          }
+        }
+        
+        // Combine main collection with test NFTs
+        const combinedMetadata = [...(mainMetadata || []), ...testMetadata];
+        console.log('[NFTGrid] Loaded metadata:', {
+          mainCollection: mainMetadata?.length || 0,
+          testNFTs: testMetadata.length,
+          total: combinedMetadata.length
+        });
+        setAllMetadata(combinedMetadata);
 
       } catch (error) {
         console.error('[NFTGrid] Error loading metadata:', error);
@@ -201,6 +248,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               return {
                 id: tokenId,
                 tokenId,
+                listingId: (meta.listing_id as string | number) || meta.token_id,
                 name,
                 image: imageUrl,
                 priceWei: priceWei,
@@ -225,63 +273,16 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     }
   }, [allMetadata]);
 
-  // Handle purchase
-  const handlePurchase = async (nft: NFTGridItem) => {
-    if (!account?.address) {
-      alert("Please connect your wallet first");
-      return;
-    }
-
-    setIsProcessingPurchase((prev) => ({ ...prev, [nft.id]: true }));
-
-    try {
-      // Use static price data from metadata - no RPC calls for display
-      // const _priceEth = nft.priceWei ? parseFloat(nft.priceWei.toString()) / 1e18 : 0; // eslint-disable-line @typescript-eslint/no-unused-vars
-      const isForSale = nft.isForSale || false;
-
-      if (!isForSale) {
-        alert("This NFT is not for sale");
-        setIsProcessingPurchase((prev) => ({ ...prev, [nft.id]: false }));
-        return;
-      }
-
-      const tx = buyFromListing({
-        contract: marketplace,
-        listingId: BigInt(nft.tokenId),
-        quantity: 1n,
-        recipient: account.address,
-      });
-
-      await new Promise((resolve, reject) => {
-        sendTransaction(tx, {
-          onSuccess: () => {
-            track('NFT Purchase Success', { tokenId: nft.tokenId });
-            // Trigger confetti celebration
-            triggerPurchaseConfetti();
-            alert("NFT purchased successfully! 🎉");
-            
-            // Update NFT status to sold - keep the NFT visible but mark as sold
-            setNfts(prevNfts => 
-              prevNfts.map(n => 
-                n.id === nft.id 
-                  ? { ...n, isForSale: false, priceWei: "0" } 
-                  : n
-              )
-            );
-            
-            resolve(true);
-          },
-          onError: reject,
-        });
-      });
-
-    } catch (error) {
-      console.error("Error buying NFT:", error);
-      track('NFT Purchase Failed', { tokenId: nft.tokenId });
-      alert("Failed to buy NFT. Please try again.");
-    } finally {
-      setIsProcessingPurchase((prev) => ({ ...prev, [nft.id]: false }));
-    }
+  // Handle purchase success callback
+  const handlePurchaseSuccess = (nft: NFTGridItem) => {
+    // Update NFT status to sold
+    setNfts(prevNfts => 
+      prevNfts.map(n => 
+        n.id === nft.id 
+          ? { ...n, isForSale: false, priceWei: "0" } 
+          : n
+      )
+    );
   };
 
   // Filter NFTs
@@ -378,6 +379,28 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   // Sort filtered NFTs
   const sortedNFTs = useMemo(() => {
     return [...filteredNFTs].sort((a, b) => {
+      // Column sort takes precedence
+      if (columnSort) {
+        const { field, direction } = columnSort;
+        const multiplier = direction === 'asc' ? 1 : -1;
+        
+        switch (field) {
+          case 'nft':
+            return multiplier * (a.name.localeCompare(b.name));
+          case 'rank':
+            return multiplier * (Number(a.rank) - Number(b.rank));
+          case 'rarity':
+            return multiplier * (Number(a.rarityPercent) - Number(b.rarityPercent));
+          case 'tier':
+            return multiplier * (a.rarity.localeCompare(b.rarity));
+          case 'price':
+            return multiplier * (Number(a.priceWei) - Number(b.priceWei));
+          default:
+            return 0;
+        }
+      }
+      
+      // Fallback to dropdown sort
       switch (sortBy) {
         case "rank-asc":
           return Number(a.rank) - Number(b.rank);
@@ -395,7 +418,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           return 0;
       }
     });
-  }, [filteredNFTs, sortBy]);
+  }, [filteredNFTs, sortBy, columnSort]);
 
 
   // Pagination
@@ -480,7 +503,10 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="text-sm text-neutral-500">Sort by:</span>
-            <Select value={sortBy} onValueChange={setSortBy}>
+            <Select value={sortBy} onValueChange={(value) => {
+              setSortBy(value);
+              setColumnSort(null); // Clear column sort when using dropdown
+            }}>
               <SelectTrigger className="w-[180px] bg-neutral-900 border-neutral-700 rounded-sm text-neutral-100 text-sm font-normal">
                 <SelectValue placeholder="Default" />
               </SelectTrigger>
@@ -565,9 +591,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                   rarityPercent={nft.rarityPercent}
                   price={displayPrice(nft.priceWei)}
                   tokenId={nft.tokenId}
+                  listingId={nft.listingId}
                   isForSale={nft.isForSale}
-                  onPurchase={() => handlePurchase(nft)}
-                  isProcessing={isProcessingPurchase[nft.id] || false}
+                  onPurchase={() => handlePurchaseSuccess(nft)}
                   viewMode={viewMode}
                 />
               ))}
@@ -581,11 +607,71 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               <table className="w-full">
                 <thead className="bg-neutral-800/50 border-b border-neutral-700">
                   <tr>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">NFT</th>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Rank</th>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Rarity</th>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Tier</th>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Price</th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400 hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('nft')}
+                    >
+                      <div className="flex items-center gap-1">
+                        NFT
+                        {columnSort?.field === 'nft' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400 hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('rank')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Rank
+                        {columnSort?.field === 'rank' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400 hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('rarity')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Rarity
+                        {columnSort?.field === 'rarity' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400 hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('tier')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Tier
+                        {columnSort?.field === 'tier' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400 hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('price')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Price
+                        {columnSort?.field === 'price' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
                     <th className="text-center px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Favorite</th>
                     <th className="text-right px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Actions</th>
                   </tr>
@@ -635,13 +721,33 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                             >
                               View
                             </Link>
-                            <button
-                              onClick={() => handlePurchase(nft)}
-                              disabled={isProcessingPurchase[nft.id] || !nft.isForSale}
-                              className="px-2 sm:px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 transition-all rounded-sm text-xs sm:text-sm font-medium disabled:opacity-50"
-                            >
-                              {isProcessingPurchase[nft.id] ? "..." : "Buy"}
-                            </button>
+                            {nft.isForSale && nft.listingId ? (
+                              <BuyDirectListingButton
+                                contractAddress={marketplace.address}
+                                chain={marketplace.chain}
+                                client={marketplace.client}
+                                listingId={BigInt(nft.listingId)}
+                                quantity={BigInt(1)}
+                                onTransactionSent={() => {
+                                  track('NFT Purchase Attempted', { tokenId: nft.tokenId });
+                                }}
+                                onTransactionConfirmed={() => {
+                                  track('NFT Purchase Success', { tokenId: nft.tokenId });
+                                  handlePurchaseSuccess(nft);
+                                }}
+                                onError={(error) => {
+                                  console.error('Purchase failed:', error);
+                                  track('NFT Purchase Failed', { tokenId: nft.tokenId });
+                                }}
+                                className="px-2 sm:px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 transition-all rounded-sm text-xs sm:text-sm font-medium disabled:opacity-50"
+                              >
+                                Buy
+                              </BuyDirectListingButton>
+                            ) : (
+                              <span className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-neutral-400">
+                                {nft.isForSale ? "No Listing" : "Sold"}
+                              </span>
+                            )}
                         </div>
                       </td>
                     </tr>

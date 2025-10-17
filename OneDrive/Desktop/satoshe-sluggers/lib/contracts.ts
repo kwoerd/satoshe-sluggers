@@ -15,8 +15,8 @@ export const marketplace = getContract({
   address: "0xCEf0B3219c6C3e9e79FcF30071FfDC731F1cc7c2", // Real test contract with 10 NFTs
   chain: base,
   client,
+  // Using the official Thirdweb marketplace ABI
   abi: [
-    // Basic marketplace ABI for direct listings
     {
       "inputs": [
         {"internalType": "uint256", "name": "_listingId", "type": "uint256"},
@@ -28,6 +28,36 @@ export const marketplace = getContract({
       "name": "buyFromListing",
       "outputs": [],
       "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {"internalType": "uint256", "name": "_listingId", "type": "uint256"}
+      ],
+      "name": "getListing",
+      "outputs": [
+        {
+          "components": [
+            {"internalType": "uint256", "name": "listingId", "type": "uint256"},
+            {"internalType": "address", "name": "tokenOwner", "type": "address"},
+            {"internalType": "address", "name": "assetContract", "type": "address"},
+            {"internalType": "uint256", "name": "tokenId", "type": "uint256"},
+            {"internalType": "uint256", "name": "startTime", "type": "uint256"},
+            {"internalType": "uint256", "name": "endTime", "type": "uint256"},
+            {"internalType": "uint256", "name": "quantity", "type": "uint256"},
+            {"internalType": "address", "name": "currency", "type": "address"},
+            {"internalType": "uint256", "name": "reservePricePerToken", "type": "uint256"},
+            {"internalType": "uint256", "name": "buyoutPricePerToken", "type": "uint256"},
+            {"internalType": "uint8", "name": "tokenType", "type": "uint8"},
+            {"internalType": "uint8", "name": "listingType", "type": "uint8"},
+            {"internalType": "bool", "name": "reserved", "type": "bool"}
+          ],
+          "internalType": "struct IMarketplace.Listing",
+          "name": "listing",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     }
   ]

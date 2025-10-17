@@ -7,8 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useActiveAccount, useSendTransaction } from "thirdweb/react";
-import { buyFromListing } from "thirdweb/extensions/marketplace";
+import { BuyDirectListingButton } from "thirdweb/react";
 import { marketplace } from "@/lib/contracts";
 import { getNFTByTokenId } from "@/lib/data-service";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -63,11 +62,8 @@ export default function NFTDetailPage() {
     platform: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  const account = useActiveAccount();
   const { isFavorited, toggleFavorite } = useFavorites();
-  const { mutate: sendTransaction } = useSendTransaction();
 
   // Load NFT data using optimized service
   useEffect(() => {
@@ -104,62 +100,6 @@ export default function NFTDetailPage() {
     });
   }, [nftData]);
 
-  // Purchase handler
-  const handlePurchase = async () => {
-    if (!account) {
-      alert('Please connect your wallet to purchase NFTs');
-      return;
-    }
-
-    if (!nftData?.merged_data?.price_eth || nftData.merged_data.price_eth <= 0) {
-      alert('This NFT is not for sale');
-      return;
-    }
-
-    if (!nftData.merged_data.listing_id) {
-      alert('No listing ID available for this NFT');
-      return;
-    }
-
-    try {
-      setIsProcessing(true);
-      
-      const transaction = await buyFromListing({
-        contract: marketplace,
-        listingId: BigInt(nftData.merged_data.listing_id),
-        quantity: 1n,
-        recipient: account.address,
-      });
-
-      await sendTransaction(transaction);
-      
-      track('NFT Purchased', { 
-        tokenId: nftData.token_id, 
-        listingId: nftData.merged_data.listing_id,
-        price: nftData.merged_data.price_eth,
-        rarity: nftData.rarity_tier 
-      });
-      
-      triggerPurchaseConfetti();
-      alert('NFT purchased successfully! 🎉');
-      
-      // Update UI to reflect purchase - mark as sold
-      setNftData(prev => prev ? {
-        ...prev,
-        merged_data: {
-          ...prev.merged_data,
-          price_eth: 0
-        }
-      } : null);
-      
-    } catch (error) {
-      console.error('Purchase failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Purchase failed. Please try again.';
-      alert(`Purchase failed: ${errorMessage}`);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
 
   // Navigation helpers
@@ -305,13 +245,36 @@ export default function NFTDetailPage() {
                     <div className="text-sm text-neutral-400">ETH</div>
                   </div>
                 </div>
-                <Button
-                  onClick={handlePurchase}
-                  disabled={isProcessing}
+                <BuyDirectListingButton
+                  contractAddress={marketplace.address}
+                  chain={marketplace.chain}
+                  client={marketplace.client}
+                  listingId={BigInt(nftData.merged_data.listing_id)}
+                  quantity={BigInt(1)}
+                  onTransactionSent={() => {
+                    track('NFT Purchase Attempted', { tokenId: nftData.token_id });
+                  }}
+                  onTransactionConfirmed={() => {
+                    track('NFT Purchase Success', { tokenId: nftData.token_id });
+                    triggerPurchaseConfetti();
+                    // Update UI to reflect purchase - mark as sold
+                    setNftData(prev => prev ? {
+                      ...prev,
+                      merged_data: {
+                        ...prev.merged_data,
+                        price_eth: 0
+                      }
+                    } : null);
+                  }}
+                  onError={(error) => {
+                    console.error('Purchase failed:', error);
+                    track('NFT Purchase Failed', { tokenId: nftData.token_id });
+                    alert(`Purchase failed: ${error.message}`);
+                  }}
                   className="w-full h-12 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-semibold text-lg rounded-sm disabled:opacity-50"
                 >
-                  {isProcessing ? "Processing..." : "BUY"}
-                </Button>
+                  BUY
+                </BuyDirectListingButton>
               </Card>
             ) : (
               <Card className="p-6 bg-neutral-800 border-neutral-700">

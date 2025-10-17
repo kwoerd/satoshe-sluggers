@@ -398,7 +398,6 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               tokenId={nft.tokenId}
               isForSale={nft.isForSale}
               onPurchase={() => handlePurchase(nft)}
-              isProcessing={isProcessingPurchase[nft.id] || false}
               viewMode={viewMode}
             />
           ))}

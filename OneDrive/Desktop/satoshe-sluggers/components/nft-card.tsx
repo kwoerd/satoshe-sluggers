@@ -7,6 +7,8 @@ import { useState } from "react";
 import { Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { track } from '@vercel/analytics';
+import { BuyDirectListingButton } from "thirdweb/react";
+import { marketplace } from "@/lib/contracts";
 
 interface NFTCardProps {
   image: string;
@@ -16,9 +18,9 @@ interface NFTCardProps {
   rarityPercent: string | number;
   price: string;
   tokenId: string;
+  listingId?: string | number;
   isForSale: boolean;
   onPurchase?: () => void;
-  isProcessing?: boolean;
   viewMode?: 'grid-large' | 'grid-medium' | 'grid-small' | 'compact';
 }
 
@@ -30,9 +32,9 @@ export default function NFTCard({
   rarityPercent,
   price,
   tokenId,
+  listingId,
   isForSale,
   onPurchase,
-  isProcessing = false,
   viewMode = 'grid-medium',
 }: NFTCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -71,23 +73,6 @@ export default function NFTCard({
     });
   };
 
-  const handlePurchase = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (!isConnected) {
-      alert('Please connect your wallet to purchase NFTs');
-      return;
-    }
-
-    if (isProcessing) return;
-
-    // Call the parent's purchase handler if provided
-    if (onPurchase) {
-      track('NFT Purchase Attempted', { tokenId });
-      onPurchase();
-    }
-  };
 
   // Small grid - just images, tightly packed
   if (viewMode === 'grid-small') {
@@ -173,7 +158,7 @@ export default function NFTCard({
               className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0"
               onClick={handleFavoriteClick}
             >
-              <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-neutral-300"}`} />
+              <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
             </Button>
           </div>
 
@@ -195,19 +180,33 @@ export default function NFTCard({
 
           {/* Buy Section */}
           <div className="mt-4">
-            {isForSale ? (
+            {isForSale && listingId ? (
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-9 bg-neutral-800/50 rounded-sm px-3 flex items-center justify-between">
                   <span className="text-xs sm:text-sm font-normal text-blue-500 truncate">{price}</span>
                   <span className="text-xs text-neutral-400 font-normal">ETH</span>
                 </div>
-                <Button
-                  onClick={handlePurchase}
-                  disabled={isProcessing}
-                  className="h-8 px-4 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-medium text-xs rounded-sm disabled:opacity-50"
+                <BuyDirectListingButton
+                  contractAddress={marketplace.address}
+                  chain={marketplace.chain}
+                  client={marketplace.client}
+                  listingId={BigInt(listingId)}
+                  quantity={BigInt(1)}
+                  onTransactionSent={() => {
+                    track('NFT Purchase Attempted', { tokenId });
+                  }}
+                  onTransactionConfirmed={() => {
+                    track('NFT Purchase Success', { tokenId });
+                    if (onPurchase) onPurchase();
+                  }}
+                  onError={(error) => {
+                    console.error('Purchase failed:', error);
+                    track('NFT Purchase Failed', { tokenId });
+                  }}
+                  className="h-8 px-4 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-medium text-xs rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isProcessing ? "..." : "BUY"}
-                </Button>
+                  BUY
+                </BuyDirectListingButton>
               </div>
             ) : price !== "--" ? (
               <div className="w-full h-9 bg-neutral-700/50 border border-neutral-600 rounded-sm flex items-center justify-center">
@@ -249,35 +248,28 @@ export default function NFTCard({
               <div className="animate-pulse text-neutral-400 text-sm">Loading...</div>
             </div>
           )}
-        </div>
-      </Link>
-
-      {/* NFT Title and Rarity Section - Medium grid design */}
-      <div className="px-2 pt-2">
-        <div className="flex items-center justify-between">
-          <Link href={`/nft/${tokenId}`} className="block">
-            <h3 className="font-medium text-xs sm:text-sm leading-tight text-neutral-100 truncate">
-              {name}
-            </h3>
-          </Link>
           
-          <div className="flex items-center gap-1">
-            {/* Heart Icon */}
+          {/* Heart Icon - Upper Right Corner */}
+          <div className="absolute top-2 right-2 z-30">
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 w-5 p-0 hover:bg-transparent"
+              className="h-6 w-6 p-0 hover:bg-transparent bg-black/20 rounded-full"
               onClick={handleFavoriteClick}
             >
-              <Heart className={`w-3 h-3 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-neutral-300"}`} />
+              <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-white hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
             </Button>
-            
-            {/* Rarity Square */}
-            <div className="bg-transparent border border-teal-400 rounded-sm px-1.5 py-0.5 flex items-center justify-center">
-              <span className="text-xs text-teal-400 font-mono">{rank}</span>
-            </div>
           </div>
         </div>
+      </Link>
+
+      {/* NFT Title Section - Medium grid design */}
+      <div className="px-2 pt-2 pb-2">
+        <Link href={`/nft/${tokenId}`} className="block">
+          <h3 className="font-medium text-xs leading-tight text-neutral-100 truncate">
+            {name}
+          </h3>
+        </Link>
       </div>
 
     </div>

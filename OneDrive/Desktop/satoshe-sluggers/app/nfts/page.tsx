@@ -1,5 +1,5 @@
 "use client"
-import NFTGrid from "@/components/nft-grid-test"
+import NFTGrid from "@/components/nft-grid"
 import CollectionStats from "@/components/collection-stats"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"

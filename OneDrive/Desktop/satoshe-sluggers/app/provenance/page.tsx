@@ -19,26 +19,26 @@ interface ProvenanceRecord {
   metadata_url: string
 }
 
-interface CompleteMetadataItem {
-  name: string
-  description: string
-  token_id: number
-  card_number: number
-  collection_number: number
-  edition: number
-  series: string
-  rarity_score: number
-  merged_data: {
-    nft: number
-    token_id: number
-    listing_id: number
-    metadata_cid: string
-    media_cid: string
-    metadata_url: string
-    media_url: string
-    price_eth: number
-  }
-}
+// interface CompleteMetadataItem {
+//   name: string
+//   description: string
+//   token_id: number
+//   card_number: number
+//   collection_number: number
+//   edition: number
+//   series: string
+//   rarity_score: number
+//   merged_data: {
+//     nft: number
+//     token_id: number
+//     listing_id: number
+//     metadata_cid: string
+//     media_cid: string
+//     metadata_url: string
+//     media_url: string
+//     price_eth: number
+//   }
+// }
 
 export default function ProvenancePage() {
   const [copiedHash, setCopiedHash] = useState<string | null>(null)

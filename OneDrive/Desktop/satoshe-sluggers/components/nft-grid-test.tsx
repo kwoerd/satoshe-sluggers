@@ -405,7 +405,6 @@ export default function NFTGridTest({
                   tokenId={nft.tokenId}
                   isForSale={nft.isForSale}
                   onPurchase={() => handlePurchase(nft)}
-                  isProcessing={isProcessingPurchase[nft.id] || false}
                   viewMode={viewMode}
                 />
               ))}
