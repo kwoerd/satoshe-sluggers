@@ -64,11 +64,7 @@ export default function ProvenancePage() {
         const metadataData = await metadataRes.json()
         const hashesText = await hashesRes.text()
 
-        console.log("[DEBUG] Metadata data loaded:", {
-          totalItems: metadataData.length,
-          firstItem: metadataData[0],
-          firstItemMergedData: metadataData[0]?.merged_data
-        })
+        // Metadata data loaded successfully
 
 
         setMerkleTree(merkleText)
