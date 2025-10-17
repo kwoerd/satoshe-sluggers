@@ -155,6 +155,7 @@ export function convertToLegacyFormat(nft: CompleteNFTData) {
   return {
     id: nft.token_id.toString(),
     tokenId: nft.token_id.toString(),
+    listingId: nft.merged_data.listing_id, // Include actual listing ID
     name: nft.name,
     image: nft.merged_data.media_url,
     rank: nft.rank,

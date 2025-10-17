@@ -4,22 +4,15 @@ import CollectionStats from "@/components/collection-stats"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
 import NFTSidebar from "@/components/nft-sidebar-optimized"
-import { useState, useCallback } from "react"
+import { useState } from "react"
 
 export default function NFTsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [searchMode, setSearchMode] = useState<"contains" | "exact">("contains")
   const [selectedFilters, setSelectedFilters] = useState({})
-  const [filteredCount, setFilteredCount] = useState(0)
-  const [traitCounts, setTraitCounts] = useState<Record<string, Record<string, number>>>({})
+  // Removed unused filteredCount and traitCounts state variables
 
-  const handleFilteredCountChange = useCallback((count: number) => {
-    setFilteredCount(count)
-  }, [])
-
-  const handleTraitCountsChange = useCallback((counts: Record<string, Record<string, number>>) => {
-    setTraitCounts(counts)
-  }, [])
+  // Removed unused callback functions
 
   return (
     <main className="min-h-screen bg-background text-foreground pt-24 sm:pt-28">
@@ -46,17 +39,17 @@ export default function NFTsPage() {
               onSearchChange={setSearchTerm}
               onSearchModeChange={(mode) => setSearchMode(mode as "exact" | "contains")}
               onFilterChange={setSelectedFilters}
-              onTraitCountsChange={handleTraitCountsChange}
+              onTraitCountsChange={() => {}} // Empty callback since we don't use the counts
             />
           </div>
           <div className="flex-1 min-w-0">
-            <NFTGrid
-              searchTerm={searchTerm}
-              searchMode={searchMode}
-              selectedFilters={selectedFilters}
-              onFilteredCountChange={handleFilteredCountChange}
-              onTraitCountsChange={handleTraitCountsChange}
-            />
+                    <NFTGrid
+                      searchTerm={searchTerm}
+                      searchMode={searchMode}
+                      selectedFilters={selectedFilters}
+                      onFilteredCountChange={() => {}} // Empty callback since we don't use the count
+                      onTraitCountsChange={() => {}} // Empty callback since we don't use the counts
+                    />
           </div>
         </div>
       </section>

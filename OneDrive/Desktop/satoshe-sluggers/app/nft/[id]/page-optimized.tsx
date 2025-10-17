@@ -116,6 +116,11 @@ export default function NFTDetailPage() {
       return;
     }
 
+    if (!nftData.merged_data.listing_id) {
+      alert('No listing ID available for this NFT');
+      return;
+    }
+
     try {
       setIsProcessing(true);
       
@@ -130,15 +135,27 @@ export default function NFTDetailPage() {
       
       track('NFT Purchased', { 
         tokenId: nftData.token_id, 
+        listingId: nftData.merged_data.listing_id,
         price: nftData.merged_data.price_eth,
         rarity: nftData.rarity_tier 
       });
       
       triggerPurchaseConfetti();
+      alert('NFT purchased successfully! 🎉');
+      
+      // Update UI to reflect purchase - mark as sold
+      setNftData(prev => prev ? {
+        ...prev,
+        merged_data: {
+          ...prev.merged_data,
+          price_eth: 0
+        }
+      } : null);
       
     } catch (error) {
       console.error('Purchase failed:', error);
-      alert('Purchase failed. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Purchase failed. Please try again.';
+      alert(`Purchase failed: ${errorMessage}`);
     } finally {
       setIsProcessing(false);
     }

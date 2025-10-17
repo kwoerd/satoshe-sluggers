@@ -3,20 +3,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Heart, X } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+// Removed unused Tabs components
 import AttributeRarityChart from "@/components/attribute-rarity-chart";
 import Footer from "@/components/footer";
 import Navigation from "@/components/navigation";
 import { MediaRenderer } from "thirdweb/react";
 import {
-  useReadContract,
   useSendTransaction,
   useActiveAccount,
 } from "thirdweb/react";
@@ -24,10 +19,10 @@ import {
   nftCollection,
   marketplace,
 } from "@/lib/contracts";
-import { getListing, buyFromListing } from "thirdweb/extensions/marketplace";
+import { buyFromListing } from "thirdweb/extensions/marketplace";
 import { client } from "@/lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
-import { ownerOf } from "thirdweb/extensions/erc721";
+// Removed unused ownerOf import
 import { triggerPurchaseConfetti } from "@/lib/confetti";
 
 const METADATA_URL = "/docs/combined_metadata.json";
@@ -62,15 +57,7 @@ function getIPFSUrls(tokenId: string) {
 }
 
 // Helper to format price
-function formatPrice(priceWei: string | number | bigint) {
-  if (!priceWei || priceWei === "0") return "0";
-  try {
-    const price = Number(priceWei) / 1e18;
-    return price.toString();
-  } catch {
-    return "0";
-  }
-}
+// Removed unused formatPrice function
 
 // Helper to get color for attribute
 function getColorForAttribute(attributeName: string) {
@@ -98,7 +85,7 @@ export default function NFTDetailPage() {
   const [imageUrl, setImageUrl] = useState<string>("/placeholder-nft.webp");
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  // Removed unused showPurchaseModal state
 
   const account = useActiveAccount();
   const { isFavorited, toggleFavorite, isConnected } = useFavorites();
@@ -113,7 +100,7 @@ export default function NFTDetailPage() {
     status: string;
     [key: string]: unknown;
   } | null>(null);
-  const [isLoadingListing, setIsLoadingListing] = useState(false);
+  // Removed unused isLoadingListing state
 
   useEffect(() => {
     console.log(`[NFT Detail] Loading data for token ID: ${tokenId}`);
@@ -260,7 +247,7 @@ export default function NFTDetailPage() {
     }
   };
 
-  const salesHistory: Array<{ date: string; price: string; buyer: string }> = [];
+  // Removed unused salesHistory array
 
   if (isLoading) {
     return (
@@ -623,9 +610,11 @@ export default function NFTDetailPage() {
                   </svg>
                 </div>
                 <div className="flex items-center gap-2">
-                  <img 
+                  <Image 
                     src="/brands/kristen-woerdeman/artist-logo-kristen-woerdeman-26px.png" 
                     alt="Kristen Woerdeman" 
+                    width={26}
+                    height={26}
                     className="w-[26px] h-[26px]"
                   />
                   <p className="text-neutral-100 font-normal group-hover:text-[#ff0099] transition-colors leading-tight">Kristen Woerdeman</p>
@@ -644,9 +633,11 @@ export default function NFTDetailPage() {
                   </svg>
                 </div>
                 <div className="flex items-center gap-2">
-                  <img 
+                  <Image 
                     src="/brands/retinal-delights/platform-logo-retinal-delights-26px.png" 
                     alt="Retinal Delights" 
+                    width={26}
+                    height={26}
                     className="w-[26px] h-[26px]"
                   />
                   <p className="text-neutral-100 font-normal group-hover:text-[#ff0099] transition-colors leading-tight">Retinal Delights</p>

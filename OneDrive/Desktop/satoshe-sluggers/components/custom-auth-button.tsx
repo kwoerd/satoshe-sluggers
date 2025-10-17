@@ -33,7 +33,7 @@ export default function CustomAuthButton() {
   return (
     <ConnectButton
       auth={{
-        async doLogin(params) {
+        async doLogin(_params) {
           // call your backend to verify the signed payload passed in params
           return;
         },
@@ -62,7 +62,7 @@ export default function CustomAuthButton() {
             invalid_before: now.toISOString(),
           };
         },
-        async isLoggedIn(address) {
+        async isLoggedIn(_address) {
           // call your backend to check if the user is logged in
           return false;
         },

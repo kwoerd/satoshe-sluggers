@@ -15,6 +15,22 @@ export const marketplace = getContract({
   address: process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS!,
   chain: base,
   client,
+  abi: [
+    // Basic marketplace ABI for direct listings
+    {
+      "inputs": [
+        {"internalType": "uint256", "name": "_listingId", "type": "uint256"},
+        {"internalType": "address", "name": "_buyFor", "type": "address"},
+        {"internalType": "uint256", "name": "_quantityToBuy", "type": "uint256"},
+        {"internalType": "address", "name": "_currency", "type": "address"},
+        {"internalType": "uint256", "name": "_totalPrice", "type": "uint256"}
+      ],
+      "name": "buyFromListing",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ]
 });
 
 // Collection configuration

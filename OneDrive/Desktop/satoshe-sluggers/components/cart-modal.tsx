@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+// Removed unused useState import
 import { X, Trash2, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
@@ -21,7 +21,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
     clearCart 
   } = useCart();
   
-  const { purchaseAll, isProcessing, isPending, isConfirming, receipt } = useBatchedPurchase();
+  const { purchaseAll, isProcessing, isPending, isConfirming } = useBatchedPurchase();
 
   const handlePurchaseAll = async () => {
     if (items.length === 0) return;

@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Heart } from "lucide-react";
@@ -97,13 +98,11 @@ export default function NFTCard({
         {/* NFT Image Only */}
         <Link href={`/nft/${tokenId}`} className="block w-full">
           <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.9/1" }}>
-            <img
+            <Image
               src={showPlaceholder ? placeholder : image}
               alt={name}
-              width="100%"
-              height="100%"
+              fill
               loading="lazy"
-              decoding="async"
               className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
               onLoad={() => {
                 setImgLoaded(true);
@@ -113,6 +112,7 @@ export default function NFTCard({
                 setImgError(true);
                 setImgLoading(false);
               }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             {imgLoading && !showPlaceholder && (
               <div className="absolute inset-0 bg-neutral-900/80 flex items-center justify-center">
@@ -134,13 +134,11 @@ export default function NFTCard({
         {/* NFT Image */}
         <Link href={`/nft/${tokenId}`} className="block w-full">
           <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.9/1" }}>
-            <img
+            <Image
               src={showPlaceholder ? placeholder : image}
               alt={name}
-              width="100%"
-              height="100%"
+              fill
               loading="lazy"
-              decoding="async"
               className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
               onLoad={() => {
                 setImgLoaded(true);
@@ -150,6 +148,7 @@ export default function NFTCard({
                 setImgError(true);
                 setImgLoading(false);
               }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             {imgLoading && !showPlaceholder && (
               <div className="absolute inset-0 bg-neutral-900/80 flex items-center justify-center">
@@ -229,13 +228,11 @@ export default function NFTCard({
       {/* NFT Image */}
       <Link href={`/nft/${tokenId}`} className="block w-full">
         <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.9/1" }}>
-          <img
+          <Image
             src={showPlaceholder ? placeholder : image}
             alt={name}
-            width="100%"
-            height="100%"
+            fill
             loading="lazy"
-            decoding="async"
             className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
             onLoad={() => {
               setImgLoaded(true);
@@ -245,6 +242,7 @@ export default function NFTCard({
               setImgError(true);
               setImgLoading(false);
             }}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {imgLoading && !showPlaceholder && (
             <div className="absolute inset-0 bg-neutral-900/80 flex items-center justify-center">

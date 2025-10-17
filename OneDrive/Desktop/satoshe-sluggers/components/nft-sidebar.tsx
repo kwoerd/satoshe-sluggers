@@ -5,11 +5,11 @@ import { ChevronDown, ChevronRight, Search, X, ArrowDown, ArrowUp, ExternalLink 
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+// Removed unused Select components
 // import { track } from '@vercel/analytics'; // Commented out - package not installed
 
 // Stub analytics function to prevent errors
-const track = (...args: unknown[]) => {
+const track = (..._args: unknown[]) => {
   // Analytics tracking - implement as needed
 };
 
@@ -32,16 +32,16 @@ const shortenSkinToneName = (name: string): string => {
 // Create a context for filter reset functionality
 interface FilterContextType {
   resetAllFilters: () => void;
-  registerResetFunction: (fn: () => void) => void;
+  registerResetFunction: (_fn: () => void) => void;
   closeAllDropdowns: () => void;
-  registerCloseFunction: (fn: () => void) => void;
+  registerCloseFunction: (_fn: () => void) => void;
 }
 
 const defaultContextValue: FilterContextType = {
   resetAllFilters: () => {},
-  registerResetFunction: (fn: () => void) => {},
+  registerResetFunction: (_fn: () => void) => {},
   closeAllDropdowns: () => {},
-  registerCloseFunction: (fn: () => void) => {},
+  registerCloseFunction: (_fn: () => void) => {},
 };
 
 export const FilterContext = React.createContext(defaultContextValue);
@@ -82,7 +82,7 @@ function FilterCategory({ title, color, options, twoColumns = false, icon, selec
   const { registerResetFunction, registerCloseFunction } = context as FilterContextType;
 
   // Keep category open if it has active selections, but allow manual closing
-  const hasActiveSelections = selected && selected.length > 0;
+  const _hasActiveSelections = selected && selected.length > 0;
   const shouldBeOpen = isOpen;
 
   // Register reset function
@@ -111,7 +111,7 @@ function FilterCategory({ title, color, options, twoColumns = false, icon, selec
   }
 
   // Map color names to border classes for underlines
-  const borderColorClasses: Record<string, string> = {
+  const _borderColorClasses: Record<string, string> = {
     purple: "border-purple-400",
     blue: "border-blue-500",
     amber: "border-amber-500",
@@ -147,7 +147,7 @@ function FilterCategory({ title, color, options, twoColumns = false, icon, selec
           console.log('FilterCategory clicked:', title, 'Current state:', isOpen)
           setIsOpen(!isOpen)
         }}
-        className={`w-full flex items-center justify-between text-neutral-100 py-2 focus:outline-none ${shouldBeOpen ? `border-b ${borderColorClasses[color]} pb-2` : ''}`}
+        className={`w-full flex items-center justify-between text-neutral-100 py-2 focus:outline-none ${shouldBeOpen ? `border-b ${_borderColorClasses[color]} pb-2` : ''}`}
         aria-expanded={shouldBeOpen}
       >
         <div className="flex items-center gap-2">
@@ -260,7 +260,7 @@ function RarityTiersCategory({ title, color, icon, selected = [], onChange, trai
   }
 
   // Map color names to border classes for underlines
-  const borderColorClasses: Record<string, string> = {
+  const _borderColorClasses: Record<string, string> = {
     purple: "border-purple-400",
     blue: "border-blue-500",
     amber: "border-amber-500",
@@ -334,7 +334,7 @@ function RarityTiersCategory({ title, color, icon, selected = [], onChange, trai
           </div>
 
       <div className="space-y-0.5">
-            {currentOptions.map((option, index) => (
+            {currentOptions.map((option, _index) => (
               <div key={option.value} className="flex items-center group hover:bg-neutral-800/50 rounded px-1 py-0.5 transition-colors">
                 <div className="relative flex items-center w-full">
                   <input
@@ -377,7 +377,7 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
   const { registerResetFunction, registerCloseFunction } = context as FilterContextType;
 
   // Keep category open if it has active selections, but allow manual closing
-  const hasActiveSelections = selected && Object.values(selected).some(arr => arr && arr.length > 0);
+  const _hasActiveSelections = selected && Object.values(selected).some(arr => arr && arr.length > 0);
   const shouldBeOpen = isOpen;
 
   React.useEffect(() => {
@@ -405,7 +405,7 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
   }
 
   // Map color names to border classes for underlines
-  const borderColorClasses: Record<string, string> = {
+  const _borderColorClasses: Record<string, string> = {
     purple: "border-purple-400",
     blue: "border-blue-500",
     amber: "border-amber-500",
@@ -430,7 +430,7 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
   const handleSubcategoryCheckbox = (subcategoryName: string) => {
     if (selected[subcategoryName]) {
       // Uncheck: remove subcategory
-      const { [subcategoryName]: _, ...rest } = selected;
+      const { [subcategoryName]: _unused, ...rest } = selected;
       onChange(rest);
     } else {
       // Check: add subcategory with empty array (all colors)
@@ -458,7 +458,7 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
           console.log('FilterCategory clicked:', title, 'Current state:', isOpen)
           setIsOpen(!isOpen)
         }}
-        className={`w-full flex items-center justify-between text-neutral-100 py-2 focus:outline-none ${shouldBeOpen ? `border-b ${borderColorClasses[color]} pb-2` : ''}`}
+        className={`w-full flex items-center justify-between text-neutral-100 py-2 focus:outline-none ${shouldBeOpen ? `border-b ${_borderColorClasses[color]} pb-2` : ''}`}
         aria-expanded={shouldBeOpen}
       >
         <div className="flex items-center gap-2">
@@ -495,7 +495,7 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
                   />
                   <label
                     htmlFor={`subcat-${subcategory.name}`}
-                    className={`text-sm cursor-pointer py-1 pr-2 block flex-1 ${isChecked ? `border-b ${borderColorClasses[color]} pb-2` : ''}`}
+                    className={`text-sm cursor-pointer py-1 pr-2 block flex-1 ${isChecked ? `border-b ${_borderColorClasses[color]} pb-2` : ''}`}
                     onClick={(e: React.MouseEvent) => e.stopPropagation()}
                   >
                     <div className="grid grid-cols-2 gap-x-4 items-center pb-1">

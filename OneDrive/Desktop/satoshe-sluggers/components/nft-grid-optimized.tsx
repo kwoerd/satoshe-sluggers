@@ -19,10 +19,12 @@ import { triggerPurchaseConfetti } from "@/lib/confetti";
 import { LayoutGrid, Rows3, Grid3x3, Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import Link from "next/link";
+import Image from "next/image";
 
 interface NFTGridItem {
   id: string;
   tokenId: string;
+  listingId?: number; // Add listing ID for marketplace purchases
   name: string;
   image: string;
   rank: number | string;
@@ -163,14 +165,23 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
       return;
     }
 
+    if (!nft.isForSale) {
+      alert('This NFT is not for sale');
+      return;
+    }
+
     if (isProcessingPurchase[nft.id]) return;
 
     try {
       setIsProcessingPurchase(prev => ({ ...prev, [nft.id]: true }));
       
-      // Use the listing ID from the complete metadata
-      const listingId = nft.tokenId; // This maps to the listing ID in our data
+      // Use the actual listing ID from metadata, fallback to tokenId if not available
+      const listingId = nft.listingId || nft.tokenId;
       
+      if (!listingId) {
+        throw new Error('No listing ID available for this NFT');
+      }
+
       const transaction = await buyFromListing({
         contract: marketplace,
         listingId: BigInt(listingId),
@@ -182,15 +193,27 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
       
       track('NFT Purchased', { 
         tokenId: nft.tokenId, 
+        listingId: listingId,
         price: nft.price,
         rarity: nft.rarity 
       });
       
       triggerPurchaseConfetti();
+      alert('NFT purchased successfully! 🎉');
+      
+      // Update UI to reflect purchase - mark as sold
+      setNfts(prevNfts => 
+        prevNfts.map(n => 
+          n.id === nft.id 
+            ? { ...n, isForSale: false, price: 0, priceWei: "0" } 
+            : n
+        )
+      );
       
     } catch (error) {
       console.error('Purchase failed:', error);
-      alert('Purchase failed. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Purchase failed. Please try again.';
+      alert(`Purchase failed: ${errorMessage}`);
     } finally {
       setIsProcessingPurchase(prev => ({ ...prev, [nft.id]: false }));
     }
@@ -304,7 +327,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <Link href={`/nft/${nft.tokenId}`} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                        <img src={nft.image} alt={nft.name} className="w-10 h-10 rounded object-contain" />
+                        <Image src={nft.image} alt={nft.name} width={40} height={40} className="rounded object-contain" />
                         <div>
                           <p className="text-xs sm:text-sm font-medium text-neutral-100 truncate">{nft.name}</p>
                           <p className="text-xs text-neutral-500 truncate">Token ID: {nft.tokenId}</p>

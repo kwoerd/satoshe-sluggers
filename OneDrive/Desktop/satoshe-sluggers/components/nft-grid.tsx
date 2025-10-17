@@ -18,6 +18,7 @@ import { triggerPurchaseConfetti } from "@/lib/confetti";
 import { LayoutGrid, Rows3, Grid3x3, Heart, Square } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import Link from "next/link";
+import Image from "next/image";
 
 // Utility to display price
 function displayPrice(val: string | number | bigint) {
@@ -105,7 +106,7 @@ function computeTraitCounts(nfts: NFTGridItem[], categories: string[]) {
           const parts = value.split(' ');
           if (parts.length >= 2) {
             const subcategory = parts[0];
-            const color = parts.slice(1).join(' ');
+            const _color = parts.slice(1).join(' ');
             
             // Count the subcategory
             if (!counts[category][subcategory]) counts[category][subcategory] = 0;
@@ -235,7 +236,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
     try {
       // Use static price data from metadata - no RPC calls for display
-      const priceEth = nft.priceWei ? parseFloat(nft.priceWei.toString()) / 1e18 : 0;
+      const _priceEth = nft.priceWei ? parseFloat(nft.priceWei.toString()) / 1e18 : 0;
       const isForSale = nft.isForSale || false;
 
       if (!isForSale) {
@@ -595,7 +596,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <Link href={`/nft/${nft.tokenId}`} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                            <img src={nft.image} alt={nft.name} className="w-10 h-10 rounded object-contain" />
+                            <Image src={nft.image} alt={nft.name} width={40} height={40} className="rounded object-contain" />
                             <div>
                               <p className="text-xs sm:text-sm font-medium text-neutral-100 truncate">{nft.name}</p>
                               <p className="text-xs text-neutral-500 truncate">Token ID: {nft.tokenId}</p>
