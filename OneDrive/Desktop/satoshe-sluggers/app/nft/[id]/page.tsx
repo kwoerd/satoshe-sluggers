@@ -20,10 +20,8 @@ import { buyFromListing } from "thirdweb/extensions/marketplace";
 import { marketplace } from "../../../lib/contracts";
 import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
+import { chunkedDataService } from "@/lib/chunked-data-service";
 // import { track } from '@vercel/analytics';
-
-const METADATA_URL = "/data/token_pricing_mappings.json";
-const IPFS_URLS_URL = "/data/ipfs_urls.json";
 
 // Consistent color scheme based on the radial chart
 const COLORS = {
@@ -96,59 +94,18 @@ export default function NFTDetailPage() {
       setIsLoading(false);
     }, 10000); // 10 second timeout
 
-    // Load complete metadata, pricing data, and IPFS URLs
-    Promise.all([
-      fetch('/docs/complete_metadata.json').then(r => {
-        console.log("Complete metadata response:", r.status);
-        return r.json();
-      }),
-      fetch('/data/token_pricing_mappings.json').then(r => {
-        console.log("Pricing data response:", r.status);
-        return r.json();
-      }),
-      fetch('/data/ipfs_urls.json').then(r => {
-        console.log("IPFS data response:", r.status);
-        return r.json();
-      })
-    ])
-      .then(([completeMetadata, pricingData, ipfsData]) => {
-        console.log("All data loaded successfully");
-        console.log("Complete metadata length:", completeMetadata?.length);
-        console.log("Pricing data length:", pricingData?.length);
-        console.log("IPFS data length:", ipfsData?.length);
+    // Load NFT data using chunked data service
+    chunkedDataService.getNFTByTokenId(tokenId)
+      .then((nftData) => {
+        console.log("NFT data loaded:", nftData);
         
-        // Find the specific NFT data from complete metadata
-        const found = completeMetadata.find((item: any) =>
-          item.token_id?.toString() === tokenId
-        );
-
-        if (found) {
-          console.log("Found NFT data:", found);
+        if (nftData) {
+          setMetadata(nftData);
           
-          // Merge with pricing data
-          const pricingItem = pricingData.find((item: any) => 
-            item.token_id?.toString() === tokenId
-          );
-          
-          const mergedData = {
-            ...found,
-            price_eth: pricingItem?.price_eth || found.merged_data?.price_eth || 0,
-            listing_id: pricingItem?.listing_id || found.merged_data?.listing_id || 0
-          };
-          
-          console.log("Merged data:", mergedData);
-          setMetadata(mergedData);
-          
-          // Find corresponding IPFS URL
-          const ipfsItem = ipfsData.find((item: any) => 
-            item.TokenID?.toString() === tokenId
-          );
-          
-          console.log("IPFS item:", ipfsItem);
-          
-          if (ipfsItem && ipfsItem["Media URL"]) {
-            console.log("Setting image URL:", ipfsItem["Media URL"]);
-            setImageUrl(ipfsItem["Media URL"]);
+          // Set image URL from metadata
+          if (nftData.media_url) {
+            console.log("Setting image URL:", nftData.media_url);
+            setImageUrl(nftData.media_url);
           } else {
             console.log("Using fallback image");
             setImageUrl("/media/nfts/placeholder-nft.webp");
@@ -191,9 +148,9 @@ export default function NFTDetailPage() {
   }, [metadata]);
 
   // Get pricing data from metadata
-  const priceEth = metadata?.price_eth || 0;
-  const listingId = metadata?.listing_id || 0;
-  const isForSale = priceEth > 0;
+  const priceEth = metadata?.merged_data?.price_eth || 0;
+  const listingId = metadata?.merged_data?.listing_id || 0;
+  const isForSale = priceEth > 0 && listingId;
 
   // Handle favorite toggle
   const handleFavoriteToggle = () => {
