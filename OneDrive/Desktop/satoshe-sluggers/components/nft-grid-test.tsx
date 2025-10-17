@@ -53,7 +53,7 @@ type ViewMode = 'grid-large' | 'grid-medium' | 'grid-small' | 'compact';
 
 export default function NFTGridTest({
   searchTerm,
-  searchMode,
+  searchMode: _searchMode, // eslint-disable-line @typescript-eslint/no-unused-vars
   selectedFilters,
   onFilteredCountChange,
   onTraitCountsChange,
@@ -68,8 +68,8 @@ export default function NFTGridTest({
   const [isProcessingPurchase, setIsProcessingPurchase] = useState<Record<string, boolean>>({});
   
   const account = useActiveAccount();
-  const { sendTransaction } = useSendTransaction();
-  const { favorites, toggleFavorite, isFavorited } = useFavorites();
+  const { mutate: sendTransaction } = useSendTransaction();
+  const { toggleFavorite, isFavorited } = useFavorites();
 
   const itemsPerPage = 20;
 
@@ -355,10 +355,17 @@ export default function NFTGridTest({
                         </td>
                         <td className="p-4">
                           <button
-                            onClick={() => toggleFavorite(nft)}
+                            onClick={() => toggleFavorite({
+                              tokenId: nft.tokenId,
+                              name: nft.name,
+                              image: nft.image,
+                              rarity: nft.rarity,
+                              rank: nft.rank,
+                              rarityPercent: nft.rarityPercent
+                            })}
                             className="p-1 hover:bg-neutral-700 rounded transition-colors"
                           >
-                            <Heart className={`w-4 h-4 ${isFavorited(nft) ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400"}`} />
+                            <Heart className={`w-4 h-4 ${isFavorited(nft.tokenId) ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400"}`} />
                           </button>
                         </td>
                         <td className="p-4">
@@ -389,12 +396,17 @@ export default function NFTGridTest({
               {paginatedNFTs.map((nft) => (
                 <NFTCard
                   key={nft.id}
-                  nft={nft}
-                  viewMode={viewMode}
-                  onPurchase={handlePurchase}
+                  image={nft.image}
+                  name={nft.name}
+                  rank={nft.rank}
+                  rarity={nft.rarity}
+                  rarityPercent={nft.rarityPercent}
+                  price={nft.isForSale ? `${nft.price} ETH` : 'Not for sale'}
+                  tokenId={nft.tokenId}
+                  isForSale={nft.isForSale}
+                  onPurchase={() => handlePurchase(nft)}
                   isProcessing={isProcessingPurchase[nft.id] || false}
-                  onToggleFavorite={toggleFavorite}
-                  isFavorited={isFavorited(nft)}
+                  viewMode={viewMode}
                 />
               ))}
             </div>

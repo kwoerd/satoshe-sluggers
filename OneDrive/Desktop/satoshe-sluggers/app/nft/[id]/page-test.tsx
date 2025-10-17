@@ -8,7 +8,7 @@ import { marketplace } from "@/lib/contracts";
 import { getTestNFTByTokenId } from "@/lib/test-data-service";
 import { track } from '@vercel/analytics';
 import { triggerPurchaseConfetti } from "@/lib/confetti";
-import { ArrowLeft, ArrowRight, Heart, ExternalLink } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -50,8 +50,8 @@ export default function NFTDetailPageTest() {
   const [isProcessing, setIsProcessing] = useState(false);
   
   const account = useActiveAccount();
-  const { sendTransaction } = useSendTransaction();
-  const { favorites, toggleFavorite, isFavorited } = useFavorites();
+  const { mutate: sendTransaction } = useSendTransaction();
+  const { toggleFavorite, isFavorited } = useFavorites();
 
   // Load NFT data
   useEffect(() => {
@@ -171,14 +171,7 @@ export default function NFTDetailPageTest() {
     );
   }
 
-  const isFav = isFavorited({
-    id: nftData.token_id.toString(),
-    tokenId: nftData.token_id.toString(),
-    name: nftData.name,
-    image: nftData.image,
-    price: nftData.price_eth,
-    isForSale: nftData.price_eth > 0
-  });
+  const isFav = isFavorited(nftData.token_id.toString());
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
@@ -196,12 +189,12 @@ export default function NFTDetailPageTest() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => toggleFavorite({
-                id: nftData.token_id.toString(),
                 tokenId: nftData.token_id.toString(),
                 name: nftData.name,
                 image: nftData.image,
-                price: nftData.price_eth,
-                isForSale: nftData.price_eth > 0
+                rarity: nftData.rarity_tier,
+                rank: nftData.rank,
+                rarityPercent: nftData.rarity_percent
               })}
               className="p-2 hover:bg-neutral-800 rounded-full transition-colors"
             >

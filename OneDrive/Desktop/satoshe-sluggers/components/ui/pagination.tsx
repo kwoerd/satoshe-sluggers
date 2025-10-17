@@ -66,8 +66,8 @@ interface NFTPaginationProps {
 export default function NFTPagination({
   currentPage = 1,
   totalPages = 5,
-  totalItems: _totalItems = 50,
-  itemsPerPage: _itemsPerPage = 12,
+  totalItems: _totalItems = 50, // eslint-disable-line @typescript-eslint/no-unused-vars
+  itemsPerPage: _itemsPerPage = 12, // eslint-disable-line @typescript-eslint/no-unused-vars
   onPageChange,
 }: NFTPaginationProps) {
   // Generate page numbers to display

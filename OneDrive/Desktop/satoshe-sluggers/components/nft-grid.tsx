@@ -106,7 +106,7 @@ function computeTraitCounts(nfts: NFTGridItem[], categories: string[]) {
           const parts = value.split(' ');
           if (parts.length >= 2) {
             const subcategory = parts[0];
-            const _color = parts.slice(1).join(' ');
+            // const _color = parts.slice(1).join(' '); // eslint-disable-line @typescript-eslint/no-unused-vars
             
             // Count the subcategory
             if (!counts[category][subcategory]) counts[category][subcategory] = 0;
@@ -236,7 +236,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
     try {
       // Use static price data from metadata - no RPC calls for display
-      const _priceEth = nft.priceWei ? parseFloat(nft.priceWei.toString()) / 1e18 : 0;
+      // const _priceEth = nft.priceWei ? parseFloat(nft.priceWei.toString()) / 1e18 : 0; // eslint-disable-line @typescript-eslint/no-unused-vars
       const isForSale = nft.isForSale || false;
 
       if (!isForSale) {
