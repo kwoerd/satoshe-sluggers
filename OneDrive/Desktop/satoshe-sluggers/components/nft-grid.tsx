@@ -43,7 +43,7 @@ function displayPrice(val: string | number | bigint) {
   return "--";
 }
 
-const METADATA_URL = "/docs/combined_metadata.json";
+const METADATA_URL = "/data/complete_metadata.json";
 const TEST_METADATA_URL = "/test-nfts";
 
 type NFTGridItem = {

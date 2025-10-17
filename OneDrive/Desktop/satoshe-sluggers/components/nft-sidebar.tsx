@@ -881,7 +881,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           twoColumns={true}
           icon={<Image src="/icons/nft-sidebar-categories/eyewear-blue.svg" alt="Eyewear" width={18} height={18} className="text-cyan-400" />}
           options={[
-            // Values match the cleaned combined_metadata.json (no "Eyewear" prefix)
+            // Values match the cleaned complete_metadata.json (no "Eyewear" prefix)
             "Eyeglasses",
             "Confetti Shades",
             "Diamond Shades",

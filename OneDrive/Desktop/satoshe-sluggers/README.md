@@ -32,7 +32,7 @@ pnpm install
 ## 🎨 Features
 
 - **Direct Listings Only**: Simple buy/sell functionality (no auctions)
-- **Local Metadata**: Fast filtering and sorting using `combined_metadata.json`
+- **Local Metadata**: Fast filtering and sorting using `complete_metadata.json`
 - **Thirdweb Insight**: Optimized RPC calls for blockchain data
 - **Favorites**: Save NFTs to local favorites (wallet-specific)
 - **Provenance Page**: Complete cryptographic proof of collection authenticity
