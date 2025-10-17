@@ -598,7 +598,7 @@ export default function NFTSidebar({ searchTerm, searchMode, selectedFilters, on
             <h4 className="text-xs font-sans text-neutral-300 mb-2">Marketplace</h4>
             <div className="flex gap-2">
               <button
-                onClick={() => window.open(`https://basescan.org/address/${process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || '0xYourMarketplaceAddress'}`, '_blank')}
+                onClick={() => window.open('https://basescan.org/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
                 className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1"
                 style={{ color: "#fffbeb" }}
               >
@@ -606,7 +606,7 @@ export default function NFTSidebar({ searchTerm, searchMode, selectedFilters, on
                 <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
               </button>
               <button
-                onClick={() => window.open(`https://base.blockscout.com/address/${process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || '0xYourMarketplaceAddress'}`, '_blank')}
+                onClick={() => window.open('https://base.blockscout.com/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
                 className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1"
                 style={{ color: "#fffbeb" }}
               >
@@ -620,7 +620,7 @@ export default function NFTSidebar({ searchTerm, searchMode, selectedFilters, on
             <h4 className="text-xs font-sans text-neutral-300 mb-2">NFT Contract</h4>
             <div className="flex gap-2">
               <button
-                onClick={() => window.open(`https://basescan.org/address/${process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || '0xYourNFTCollectionAddress'}`, '_blank')}
+                onClick={() => window.open('https://basescan.org/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
                 className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1"
                 style={{ color: "#fffbeb" }}
               >
@@ -628,7 +628,7 @@ export default function NFTSidebar({ searchTerm, searchMode, selectedFilters, on
                 <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
               </button>
               <button
-                onClick={() => window.open(`https://base.blockscout.com/address/${process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || '0xYourNFTCollectionAddress'}`, '_blank')}
+                onClick={() => window.open('https://base.blockscout.com/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
                 className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1"
                 style={{ color: "#fffbeb" }}
               >
