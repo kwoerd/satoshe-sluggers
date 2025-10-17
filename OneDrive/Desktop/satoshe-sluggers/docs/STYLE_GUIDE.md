@@ -1,3 +1,4 @@
+<!-- docs/STYLE_GUIDE.md -->
 # 🎨 Satoshe Sluggers Style Guide
 
 **Design System for Consistent, Minimal, Sharp UI**

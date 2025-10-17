@@ -1,3 +1,4 @@
+// app/my-nfts/page.tsx
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -11,8 +12,6 @@ import { useActiveAccount } from "thirdweb/react"
 import { client } from "@/lib/thirdweb"
 import { useFavorites } from "@/hooks/useFavorites"
 import { Heart, Package } from "lucide-react"
-import { nftCollection } from "@/lib/contracts"
-import { getNFTs } from "thirdweb/extensions/erc721"
 
 // Types for NFT data
 interface NFT {
@@ -52,11 +51,11 @@ function MyNFTsContent() {
       setIsLoading(true);
       try {
         // Use static metadata - no RPC calls for display
-        const response = await fetch('/data/combined_metadata.json');
+        const response = await fetch('/data/complete_metadata.json');
         const allMetadata = await response.json();
         
         // For demo purposes, show first 10 NFTs as "owned"
-        const demoOwnedNFTs = allMetadata.slice(0, 10).map((meta: any) => ({
+        const demoOwnedNFTs = allMetadata.slice(0, 10).map((meta: { token_id?: number; name?: string; media_url?: string; rarity_tier?: string }) => ({
           id: meta.token_id?.toString() || "0",
           tokenId: meta.token_id?.toString() || "0",
           name: meta.name || `Satoshe Slugger #${meta.token_id}`,
@@ -111,7 +110,7 @@ function MyNFTsContent() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-background text-foreground flex flex-col">
+      <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col">
         <Navigation />
         <div className="flex-grow flex justify-center items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -122,7 +121,7 @@ function MyNFTsContent() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col pt-24 sm:pt-28">
+    <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow">
@@ -164,7 +163,7 @@ function MyNFTsContent() {
               }
             </p>
             {(activeTab === "owned" || activeTab === "favorites") && (
-              <Button onClick={() => router.push("/nfts")} className="bg-[#ff0099] hover:bg-[hsl(0,0%,4%)] text-offwhite">
+              <Button onClick={() => router.push("/nfts")} className="bg-blue-500 hover:bg-blue-600 text-offwhite px-3 py-1.5 text-xs font-medium rounded" style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}>
                 Browse NFTs
               </Button>
             )}
@@ -203,7 +202,8 @@ function MyNFTsContent() {
                   {activeTab === "favorites" && (
                     <Button
                       onClick={() => router.push(`/nft/${nft.id}`)}
-                      className="w-full bg-[#ff0099] hover:bg-[#ff0099]/80 text-offwhite text-sm py-2"
+                      className="w-full bg-blue-500 hover:bg-blue-600 text-offwhite text-xs font-medium py-1.5 rounded"
+                      style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
                     >
                       View on Marketplace
                     </Button>
@@ -213,13 +213,14 @@ function MyNFTsContent() {
                     <div className="space-y-2">
                       <Button
                         onClick={() => router.push(`/nft/${nft.id}`)}
-                        className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white text-sm py-2"
+                        className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-[#FFFBEB] text-sm py-2"
                       >
                         View Details
                       </Button>
                       <Button
                         onClick={() => handleListForSale(nft.id)}
-                        className="w-full bg-[#ff0099] hover:bg-[#ff0099]/80 text-offwhite text-sm py-2"
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-offwhite text-xs font-medium py-1.5 rounded"
+                        style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
                       >
                         List for Sale
                       </Button>

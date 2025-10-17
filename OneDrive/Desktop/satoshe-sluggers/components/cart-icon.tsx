@@ -1,3 +1,4 @@
+// components/cart-icon.tsx
 "use client";
 
 import { ShoppingCart } from "lucide-react";
@@ -18,9 +19,9 @@ export default function CartIcon({ onClick }: CartIconProps) {
       onClick={onClick}
       className="relative p-2 hover:bg-neutral-800 rounded-sm transition-colors"
     >
-      <ShoppingCart className="w-5 h-5 text-neutral-400 hover:text-white" />
+      <ShoppingCart className="w-5 h-5 text-neutral-400 hover:text-[#FFFBEB]" />
       {itemCount > 0 && (
-        <span className="absolute -top-1 -right-1 bg-[#ff0099] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+        <span className="absolute -top-1 -right-1 bg-[#ff0099] text-[#FFFBEB] text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
           {itemCount > 99 ? '99+' : itemCount}
         </span>
       )}

@@ -1,3 +1,4 @@
+// components/ui/sheet.tsx
 "use client"
 
 import * as React from "react"
@@ -108,7 +109,7 @@ function SheetTitle({
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
-      className={cn("text-foreground font-semibold", className)}
+      className={cn("text-[#FFFBEB] font-semibold", className)}
       {...props}
     />
   )

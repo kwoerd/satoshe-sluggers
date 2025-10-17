@@ -1,4 +1,5 @@
 // lib/thirdweb.ts - Thirdweb v5 SDK Configuration
+// lib/thirdweb.ts
 import { createThirdwebClient } from "thirdweb";
 
 // Initialize Thirdweb client with your client ID

@@ -1,6 +1,8 @@
+// components/cart-modal.tsx
+// components/cart-modal.tsx
 "use client";
 
-import { useState } from "react";
+// Removed unused useState import
 import { X, Trash2, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
@@ -21,7 +23,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
     clearCart 
   } = useCart();
   
-  const { purchaseAll, isProcessing, isPending, isConfirming, receipt } = useBatchedPurchase();
+  const { purchaseAll, isProcessing, isPending, isConfirming } = useBatchedPurchase();
 
   const handlePurchaseAll = async () => {
     if (items.length === 0) return;
@@ -51,7 +53,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
         <div className="flex items-center justify-between p-6 border-b border-neutral-700">
           <div className="flex items-center gap-3">
             <ShoppingBag className="w-6 h-6 text-[#ff0099]" />
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-[#FFFBEB]">
               Cart ({itemCount} items)
             </h2>
           </div>
@@ -59,7 +61,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="text-neutral-400 hover:text-white"
+            className="text-neutral-400 hover:text-[#FFFBEB]"
           >
             <X className="w-5 h-5" />
           </Button>
@@ -90,7 +92,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
                     className="rounded object-cover"
                   />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-white truncate">
+                    <h3 className="font-medium text-[#FFFBEB] truncate">
                       {item.name}
                     </h3>
                     <p className="text-sm text-neutral-400">
@@ -118,7 +120,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
         {items.length > 0 && (
           <div className="border-t border-neutral-700 p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="text-lg font-semibold text-white">
+              <div className="text-lg font-semibold text-[#FFFBEB]">
                 Total: {totalPrice.toFixed(6)} ETH
               </div>
               <Button
@@ -134,7 +136,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
               <Button
                 onClick={handlePurchaseAll}
                 disabled={isProcessing}
-                className="w-full bg-[#ff0099] hover:bg-[#e6008a] text-white py-3 text-lg font-medium disabled:opacity-50"
+                className="w-full bg-[#ff0099] hover:bg-[#e6008a] text-[#FFFBEB] py-3 text-lg font-medium disabled:opacity-50"
               >
                 {isProcessing ? (
                   <div className="flex items-center gap-2">

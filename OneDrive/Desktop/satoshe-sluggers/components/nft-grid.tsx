@@ -1,3 +1,5 @@
+// components/nft-grid.tsx
+// components/nft-grid.tsx
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -9,15 +11,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Pagination from "@/components/ui/pagination";
-import { useActiveAccount, useSendTransaction } from "thirdweb/react";
-import { getListing, buyFromListing } from "thirdweb/extensions/marketplace";
-import { marketplace } from "@/lib/contracts";
+import { BuyDirectListingButton } from "thirdweb/react";
+import { client } from "@/lib/thirdweb";
+import { base } from "thirdweb/chains";
 import NFTCard from "./nft-card";
 import { track } from '@vercel/analytics';
-import { triggerPurchaseConfetti } from "@/lib/confetti";
 import { LayoutGrid, Rows3, Grid3x3, Heart, Square } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useFavorites } from "@/hooks/useFavorites";
 import Link from "next/link";
+import Image from "next/image";
+import { chunkedDataService, ChunkedMetadataItem } from "@/lib/chunked-data-service";
 
 // Utility to display price
 function displayPrice(val: string | number | bigint) {
@@ -44,13 +48,15 @@ function displayPrice(val: string | number | bigint) {
   return "--";
 }
 
-const METADATA_URL = "/docs/combined_metadata.json";
+const TEST_METADATA_URL = "/test-nfts";
 
 type NFTGridItem = {
   id: string;
   tokenId: string;
+  listingId?: string | number;
   name: string;
   image: string;
+  priceEth: number; // Static price from metadata
   priceWei: string | number | bigint;
   rank: number | string;
   rarity: string;
@@ -105,7 +111,7 @@ function computeTraitCounts(nfts: NFTGridItem[], categories: string[]) {
           const parts = value.split(' ');
           if (parts.length >= 2) {
             const subcategory = parts[0];
-            const color = parts.slice(1).join(' ');
+            // const _color = parts.slice(1).join(' '); // eslint-disable-line @typescript-eslint/no-unused-vars
             
             // Count the subcategory
             if (!counts[category][subcategory]) counts[category][subcategory] = 0;
@@ -134,29 +140,75 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [sortBy, setSortBy] = useState("default");
+  const [columnSort, setColumnSort] = useState<{ field: string; direction: 'asc' | 'desc' } | null>(null);
   const [nfts, setNfts] = useState<NFTGridItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isProcessingPurchase, setIsProcessingPurchase] = useState<{
-    [id: string]: boolean;
-  }>({});
   const [allMetadata, setAllMetadata] = useState<NFTMetadata[]>([]);
   const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
   
 
-  const account = useActiveAccount();
-  const { mutate: sendTransaction } = useSendTransaction();
   
   // Favorites functionality
   const { isFavorited, toggleFavorite } = useFavorites();
+
+  // Column sort handler
+  const handleColumnSort = (field: string) => {
+    if (columnSort?.field === field) {
+      // Toggle direction if same field
+      setColumnSort({
+        field,
+        direction: columnSort.direction === 'asc' ? 'desc' : 'asc'
+      });
+    } else {
+      // New field, start with ascending
+      setColumnSort({ field, direction: 'asc' });
+    }
+    // Reset dropdown sort when using column sort
+    setSortBy("default");
+  };
 
   // Load metadata
   useEffect(() => {
     const loadMetadata = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(METADATA_URL);
-        const metadataArray = await response.json();
-        setAllMetadata(metadataArray || []);
+        
+        // Load main collection using chunked data service
+        const mainMetadata = await chunkedDataService.loadAllMetadata();
+        
+        // Load test NFTs
+        const testMetadata = [];
+        
+        // Load all 10 test NFTs
+        for (let i = 0; i < 10; i++) {
+          try {
+            const testFileResponse = await fetch(`${TEST_METADATA_URL}/test-nft-metadata-${i}.json`);
+            const testFileData = await testFileResponse.json();
+            
+            // Add missing fields for compatibility with main collection
+            const enhancedTestData = {
+              ...testFileData,
+              price_eth: 0.001, // Default test price
+              listing_id: i + 7777, // Test listing IDs starting from 7777
+              token_id: i + 7777, // Adjust token_id to be after main collection
+              card_number: i + 7778, // Adjust card_number
+              image: `/test-nfts/placeholder-nft-${i}.webp`, // Correct image path
+            };
+            
+            testMetadata.push(enhancedTestData);
+          } catch (error) {
+            console.warn(`Failed to load test NFT ${i}:`, error);
+          }
+        }
+        
+        // Combine main collection with test NFTs
+        const combinedMetadata = [...(mainMetadata || []), ...testMetadata];
+        console.log('[NFTGrid] Loaded metadata:', {
+          mainCollection: mainMetadata?.length || 0,
+          testNFTs: testMetadata.length,
+          total: combinedMetadata.length
+        });
+        setAllMetadata(combinedMetadata);
 
       } catch (error) {
         console.error('[NFTGrid] Error loading metadata:', error);
@@ -190,18 +242,21 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               const name = meta.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`;
               const rank = (meta.rank as number | string) ?? "—";
               const rarityPercent = (meta.rarity_percent as number | string) ?? "--";
-              const rarity = (meta.rarity_tier as string) ?? "Unknown";
+              const rarity = ((meta.rarity_tier as string) ?? "Unknown").replace(" (Ultra-Legendary)", "");
               
               // Use static price data from metadata - no RPC calls for display
-              const priceEth = meta.price_eth || 0;
-              const isForSale = priceEth > 0;
+              const priceEth = (meta.merged_data as any)?.price_eth || 0;
+              const listingId = (meta.merged_data as any)?.listing_id;
+              const isForSale = priceEth > 0 && listingId;
               const priceWei = isForSale ? (priceEth * 1e18).toString() : "0";
 
               return {
                 id: tokenId,
                 tokenId,
+                listingId: listingId || meta.token_id,
                 name,
                 image: imageUrl,
+                priceEth: priceEth, // Static price for display
                 priceWei: priceWei,
                 isForSale: isForSale,
                 rank,
@@ -224,65 +279,16 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     }
   }, [allMetadata]);
 
-  // Handle purchase
-  const handlePurchase = async (nft: NFTGridItem) => {
-    if (!account?.address) {
-      alert("Please connect your wallet first");
-      return;
-    }
-
-    setIsProcessingPurchase((prev) => ({ ...prev, [nft.id]: true }));
-
-    try {
-      // Check if there's a listing for this token
-      const listing = await getListing({
-        contract: marketplace,
-        listingId: BigInt(nft.tokenId),
-      });
-
-      if (!listing || Number(listing.status) !== 1) {
-        alert("No active listing found for this NFT");
-        setIsProcessingPurchase((prev) => ({ ...prev, [nft.id]: false }));
-        return;
-      }
-
-      const tx = buyFromListing({
-        contract: marketplace,
-        listingId: listing.id,
-        quantity: 1n,
-        recipient: account.address,
-      });
-
-      await new Promise((resolve, reject) => {
-        sendTransaction(tx, {
-          onSuccess: () => {
-            track('NFT Purchase Success', { tokenId: nft.tokenId });
-            // Trigger confetti celebration
-            triggerPurchaseConfetti();
-            alert("NFT purchased successfully! 🎉");
-            
-            // Update NFT status to sold - keep the NFT visible but mark as sold
-            setNfts(prevNfts => 
-              prevNfts.map(n => 
-                n.id === nft.id 
-                  ? { ...n, isForSale: false, priceWei: "0" } 
-                  : n
-              )
-            );
-            
-            resolve(true);
-          },
-          onError: reject,
-        });
-      });
-
-    } catch (error) {
-      console.error("Error buying NFT:", error);
-      track('NFT Purchase Failed', { tokenId: nft.tokenId });
-      alert("Failed to buy NFT. Please try again.");
-    } finally {
-      setIsProcessingPurchase((prev) => ({ ...prev, [nft.id]: false }));
-    }
+  // Handle purchase success callback
+  const handlePurchaseSuccess = (nft: NFTGridItem) => {
+    // Update NFT status to sold
+    setNfts(prevNfts => 
+      prevNfts.map(n => 
+        n.id === nft.id 
+          ? { ...n, isForSale: false, priceWei: "0" } 
+          : n
+      )
+    );
   };
 
   // Filter NFTs
@@ -379,6 +385,28 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   // Sort filtered NFTs
   const sortedNFTs = useMemo(() => {
     return [...filteredNFTs].sort((a, b) => {
+      // Column sort takes precedence
+      if (columnSort) {
+        const { field, direction } = columnSort;
+        const multiplier = direction === 'asc' ? 1 : -1;
+        
+        switch (field) {
+          case 'nft':
+            return multiplier * (a.name.localeCompare(b.name));
+          case 'rank':
+            return multiplier * (Number(a.rank) - Number(b.rank));
+          case 'rarity':
+            return multiplier * (Number(a.rarityPercent) - Number(b.rarityPercent));
+          case 'tier':
+            return multiplier * (a.rarity.localeCompare(b.rarity));
+          case 'price':
+            return multiplier * (Number(a.priceWei) - Number(b.priceWei));
+          default:
+            return 0;
+        }
+      }
+      
+      // Fallback to dropdown sort
       switch (sortBy) {
         case "rank-asc":
           return Number(a.rank) - Number(b.rank);
@@ -396,7 +424,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           return 0;
       }
     });
-  }, [filteredNFTs, sortBy]);
+  }, [filteredNFTs, sortBy, columnSort]);
 
 
   // Pagination
@@ -463,86 +491,123 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
   return (
     <div className="w-full max-w-full">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pl-2">
-        <div>
-          <h2 className="text-lg font-medium">NFT Collection</h2>
-          {filteredNFTs.length > 0 && (
-            <>
-              <div className="text-sm font-medium text-[#ff0099] mt-1">
-                {filteredNFTs.length} Live • 0 Sold
-              </div>
-              <div className="text-xs text-neutral-500 mt-1">
-                Showing {startIndex + 1}-{Math.min(endIndex, filteredNFTs.length)} of {filteredNFTs.length} NFTs
-              </div>
-            </>
-          )}
-        </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-neutral-500">Sort by:</span>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[180px] bg-neutral-900 border-neutral-700 rounded-sm text-neutral-100 text-sm font-normal">
-                <SelectValue placeholder="Default" />
-              </SelectTrigger>
-              <SelectContent className="bg-neutral-950/95 backdrop-blur-md border-neutral-700 rounded-sm">
-                <SelectItem value="default">Default</SelectItem>
-                <SelectItem value="rank-asc">Rank: Low to High</SelectItem>
-                <SelectItem value="rank-desc">Rank: High to Low</SelectItem>
-                <SelectItem value="rarity-asc">Rarity: Low to High</SelectItem>
-                <SelectItem value="rarity-desc">Rarity: High to Low</SelectItem>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
+      <div className="flex flex-col gap-2 mb-4 pl-2">
+        {/* Header section: Title, stats, and controls all together */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          {/* Left side: Title and stats */}
+          <div>
+            <h2 className="text-lg font-medium">NFT Collection</h2>
+            {filteredNFTs.length > 0 && (
+              <>
+                <div className="text-sm font-medium text-[#ff0099] mt-1">
+                  {filteredNFTs.length} Live • 0 Sold
+                </div>
+                <div className="text-xs text-neutral-500 mt-1">
+                  Showing {startIndex + 1}-{Math.min(endIndex, filteredNFTs.length)} of {filteredNFTs.length} NFTs
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-neutral-500">Show:</span>
-            <Select value={itemsPerPage.toString()} onValueChange={(val) => setItemsPerPage(Number(val))}>
-              <SelectTrigger className="w-[120px] bg-neutral-900 border-neutral-700 rounded-sm text-neutral-100 text-sm font-normal">
-                <SelectValue placeholder="15 items" />
-              </SelectTrigger>
-              <SelectContent className="bg-neutral-950/95 backdrop-blur-md border-neutral-700 rounded-sm">
-                <SelectItem value="15">15 items</SelectItem>
-                <SelectItem value="25">25 items</SelectItem>
-                <SelectItem value="50">50 items</SelectItem>
-                <SelectItem value="100">100 items</SelectItem>
-                <SelectItem value="250">250 items</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Right side: View toggles and dropdowns */}
+          <div className="flex flex-col items-end gap-2">
+            {/* View Mode Toggles - Above dropdowns */}
+            <TooltipProvider>
+              <div className="flex items-center gap-1 border border-neutral-700 rounded-sm p-1 bg-neutral-900">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setViewMode('grid-large')}
+                      className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-large' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                    >
+                      <Square className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-neutral-800 text-[#FFFBEB] border-neutral-600">
+                    <p>Large Grid</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setViewMode('grid-medium')}
+                      className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-medium' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                    >
+                      <LayoutGrid className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-neutral-800 text-[#FFFBEB] border-neutral-600">
+                    <p>Medium Grid</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setViewMode('grid-small')}
+                      className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-small' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                    >
+                      <Grid3x3 className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-neutral-800 text-[#FFFBEB] border-neutral-600">
+                    <p>Small Grid</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setViewMode('compact')}
+                      className={`p-2 rounded-sm transition-colors ${viewMode === 'compact' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                    >
+                      <Rows3 className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-neutral-800 text-[#FFFBEB] border-neutral-600">
+                    <p>Compact Table</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
 
-          {/* View Mode Toggles */}
-          <div className="flex items-center gap-1 border border-neutral-700 rounded-sm p-1 bg-neutral-900">
-            <button
-              onClick={() => setViewMode('grid-large')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-large' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
-              title="Large Grid"
-            >
-              <Square className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('grid-medium')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-medium' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
-              title="Medium Grid"
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('grid-small')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-small' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
-              title="Small Grid"
-            >
-              <Grid3x3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('compact')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'compact' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
-              title="Compact Table"
-            >
-              <Rows3 className="w-4 h-4" />
-            </button>
+            {/* Dropdowns - Below view toggles */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-neutral-500">Sort by:</span>
+                <Select value={sortBy} onValueChange={(value) => {
+                  setSortBy(value);
+                  setColumnSort(null); // Clear column sort when using dropdown
+                }}>
+                  <SelectTrigger className="w-[180px] bg-neutral-900 border-neutral-700 rounded-sm text-[#FFFBEB] text-sm font-normal">
+                    <SelectValue placeholder="Default" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-950/95 backdrop-blur-md border-neutral-700 rounded-sm">
+                    <SelectItem value="default">Default</SelectItem>
+                    <SelectItem value="rank-asc">Rank: Low to High</SelectItem>
+                    <SelectItem value="rank-desc">Rank: High to Low</SelectItem>
+                    <SelectItem value="rarity-asc">Rarity: Low to High</SelectItem>
+                    <SelectItem value="rarity-desc">Rarity: High to Low</SelectItem>
+                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-neutral-500">Show:</span>
+                <Select value={itemsPerPage.toString()} onValueChange={(val) => setItemsPerPage(Number(val))}>
+                  <SelectTrigger className="w-[120px] bg-neutral-900 border-neutral-700 rounded-sm text-[#FFFBEB] text-sm font-normal">
+                    <SelectValue placeholder="15 items" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-950/95 backdrop-blur-md border-neutral-700 rounded-sm">
+                    <SelectItem value="15">15 items</SelectItem>
+                    <SelectItem value="25">25 items</SelectItem>
+                    <SelectItem value="50">50 items</SelectItem>
+                    <SelectItem value="100">100 items</SelectItem>
+                    <SelectItem value="250">250 items</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -552,9 +617,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           {/* Grid Views */}
           {(viewMode === 'grid-large' || viewMode === 'grid-medium' || viewMode === 'grid-small') && (
             <div className={`mt-4 mb-8 grid ${
-              viewMode === 'grid-large' ? 'gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' :
-              viewMode === 'grid-medium' ? 'gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7' :
-              'gap-1 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10'
+              viewMode === 'grid-large' ? 'gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' :
+              viewMode === 'grid-medium' ? 'gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' :
+              'gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'
             }`}>
               {paginatedNFTs.map((nft) => (
                 <NFTCard
@@ -564,11 +629,11 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                   rank={nft.rank}
                   rarity={nft.rarity}
                   rarityPercent={nft.rarityPercent}
-                  price={displayPrice(nft.priceWei)}
+                  priceEth={nft.priceEth}
                   tokenId={nft.tokenId}
+                  listingId={nft.listingId || nft.tokenId}
                   isForSale={nft.isForSale}
-                  onPurchase={() => handlePurchase(nft)}
-                  isProcessing={isProcessingPurchase[nft.id] || false}
+                  onPurchase={() => handlePurchaseSuccess(nft)}
                   viewMode={viewMode}
                 />
               ))}
@@ -582,13 +647,73 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               <table className="w-full">
                 <thead className="bg-neutral-800/50 border-b border-neutral-700">
                   <tr>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">NFT</th>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Rank</th>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Rarity</th>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Tier</th>
-                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Price</th>
-                    <th className="text-center px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Favorite</th>
-                    <th className="text-right px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Actions</th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB] hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('nft')}
+                    >
+                      <div className="flex items-center gap-1">
+                        NFT
+                        {columnSort?.field === 'nft' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="text-left px-6 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB] hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('rank')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Rank
+                        {columnSort?.field === 'rank' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB] hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('rarity')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Rarity
+                        {columnSort?.field === 'rarity' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB] hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('tier')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Tier
+                        {columnSort?.field === 'tier' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB] hover:text-neutral-200 cursor-pointer select-none"
+                      onClick={() => handleColumnSort('price')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Price
+                        {columnSort?.field === 'price' && (
+                          <span className="text-[#ff0099]">
+                            {columnSort.direction === 'asc' ? '↑' : '↓'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                    <th className="text-center px-4 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB]">Favorite</th>
+                    <th className="text-right px-4 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB]">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -597,18 +722,18 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <Link href={`/nft/${nft.tokenId}`} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                            <img src={nft.image} alt={nft.name} className="w-10 h-10 rounded object-contain" />
+                            <Image src={nft.image} alt={nft.name} width={40} height={40} className="rounded object-contain" />
                             <div>
-                              <p className="text-xs sm:text-sm font-medium text-neutral-100 truncate">{nft.name}</p>
+                              <p className="text-xs font-normal text-[#FFFBEB] truncate">{nft.name}</p>
                               <p className="text-xs text-neutral-500 truncate">Token ID: {nft.tokenId}</p>
                             </div>
                           </Link>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rank} / 7777</td>
-                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rarityPercent}%</td>
-                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rarity}</td>
-                      <td className="px-4 py-3 text-xs sm:text-sm font-medium text-blue-500 truncate">{displayPrice(nft.priceWei)} ETH</td>
+                      <td className="px-6 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rank} / 7777</td>
+                      <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarityPercent}%</td>
+                      <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarity}</td>
+                      <td className="px-4 py-3 text-xs font-normal text-blue-500 whitespace-nowrap">{nft.priceEth} ETH</td>
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={(e) => {
@@ -632,17 +757,44 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                         <div className="flex items-center gap-2 justify-end">
                             <Link
                               href={`/nft/${nft.tokenId}`}
-                              className="px-2 sm:px-3 py-1.5 bg-transparent border border-neutral-600 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-all rounded-sm text-xs sm:text-sm font-medium"
+                              className="px-2 sm:px-3 py-1.5 bg-transparent border border-neutral-600 text-neutral-300 hover:bg-neutral-700 hover:text-[#FFFBEB] transition-all rounded-sm text-xs sm:text-sm font-medium"
                             >
                               View
                             </Link>
-                            <button
-                              onClick={() => handlePurchase(nft)}
-                              disabled={isProcessingPurchase[nft.id] || !nft.isForSale}
-                              className="px-2 sm:px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 transition-all rounded-sm text-xs sm:text-sm font-medium disabled:opacity-50"
-                            >
-                              {isProcessingPurchase[nft.id] ? "..." : "Buy"}
-                            </button>
+                            {nft.isForSale && nft.listingId ? (
+                              <BuyDirectListingButton
+                                contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
+                                client={client}
+                                chain={base}
+                                listingId={BigInt(nft.listingId)}
+                                quantity={1n}
+                                onTransactionSent={() => {
+                                  track('NFT Purchase Attempted', { tokenId: nft.tokenId });
+                                }}
+                                onTransactionConfirmed={() => {
+                                  track('NFT Purchase Success', { tokenId: nft.tokenId });
+                                  handlePurchaseSuccess(nft);
+                                }}
+                                onError={(error) => {
+                                  console.error('Purchase failed:', error);
+                                  track('NFT Purchase Failed', { tokenId: nft.tokenId });
+                                }}
+                                className="!px-3 !py-1.5 !bg-blue-500 !text-[#FFFBEB] hover:!bg-blue-600 !transition-all !text-xs !font-medium !disabled:opacity-50 !h-auto !min-h-0 !rounded"
+                                style={{
+                                  padding: '6px 12px',
+                                  fontSize: '12px',
+                                  height: 'auto',
+                                  minHeight: 'unset',
+                                  borderRadius: '2px'
+                                }}
+                              >
+                                Buy
+                              </BuyDirectListingButton>
+                            ) : (
+                              <span className="px-1.5 py-1 text-xs text-neutral-400">
+                                {nft.isForSale ? "No Listing" : "Sold"}
+                              </span>
+                            )}
                         </div>
                       </td>
                     </tr>

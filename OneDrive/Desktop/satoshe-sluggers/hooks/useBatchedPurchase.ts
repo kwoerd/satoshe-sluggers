@@ -1,3 +1,5 @@
+// hooks/useBatchedPurchase.ts
+// hooks/useBatchedPurchase.ts
 "use client";
 
 import { useState } from "react";

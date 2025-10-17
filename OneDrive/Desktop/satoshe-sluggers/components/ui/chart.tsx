@@ -1,3 +1,4 @@
+// components/ui/chart.tsx
 "use client"
 
 import * as React from "react"
@@ -69,7 +70,7 @@ ChartContainer.displayName = "Chart"
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
-    ([_, config]) => config.theme || config.color
+    ([_unused, config]) => config.theme || config.color // eslint-disable-line @typescript-eslint/no-unused-vars
   )
 
   if (!colorConfig.length) {
@@ -237,7 +238,7 @@ const ChartTooltipContent = React.forwardRef<
                         </div>
                       </div>
                       {item.value && (
-                        <div className="font-mono font-medium tabular-nums text-foreground">
+                        <div className="font-mono font-medium tabular-nums text-[#FFFBEB]">
                           {item.value}
                         </div>
                       )}

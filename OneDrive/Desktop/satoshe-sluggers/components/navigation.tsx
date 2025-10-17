@@ -1,9 +1,10 @@
+// components/navigation.tsx
 "use client"
 
 import Link from "next/link"
 import Image from "next/image"
 import { MobileMenu } from "@/components/mobile-menu"
-import CustomAuthButton from "@/components/custom-auth-button"
+import SimpleConnectButton from "@/components/simple-connect-button"
 import { useActiveAccount } from "thirdweb/react"
 
 interface NavigationProps {
@@ -14,7 +15,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
   const account = useActiveAccount()
 
   return (
-    <header className="border-b border-neutral-700 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between bg-neutral-950/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
+    <header className="border-b border-neutral-700 px-8 sm:px-12 lg:px-16 xl:px-20 py-3 sm:py-4 flex items-center justify-between bg-neutral-950/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
       <div className="flex items-center">
         <a href="https://retinaldelights.io" target="_blank" rel="noopener noreferrer" className="flex items-center">
           <Image
@@ -30,7 +31,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/"
           className={`text-base font-medium relative group ${
-            activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           HOME
@@ -41,7 +42,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/about"
           className={`text-base font-medium relative group ${
-            activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           ABOUT
@@ -52,7 +53,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/nfts"
           className={`text-base font-medium relative group ${
-            activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           NFTS
@@ -63,7 +64,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/provenance"
           className={`text-base font-medium relative group ${
-            activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           PROVENANCE
@@ -74,7 +75,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         <Link
           href="/contact"
           className={`text-base font-medium relative group ${
-            activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-neutral-100"
+            activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
         >
           CONTACT
@@ -100,7 +101,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           </Link>
         )}
                 <div className="hidden lg:block">
-                  <CustomAuthButton />
+                  <SimpleConnectButton />
                 </div>
         <MobileMenu isWalletConnected={!!account} />
       </div>

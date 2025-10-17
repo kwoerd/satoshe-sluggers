@@ -1,3 +1,4 @@
+<!-- docs/AUTHENTICATION_SETUP.md -->
 # Custom Authentication with Turnstile Integration
 
 ## Overview

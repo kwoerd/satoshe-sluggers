@@ -1,8 +1,9 @@
+// components/scroll-buttons.tsx
 "use client"
 
 import { useState, useEffect } from "react"
 import { ArrowUp, ArrowDown } from "lucide-react"
-import Image from "next/image"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function ScrollButtons() {
   const [isAtTop, setIsAtTop] = useState(true)
@@ -48,40 +49,28 @@ export default function ScrollButtons() {
     requestAnimationFrame(animation)
   }
 
-  const handleCookieSettings = () => {
-    // TODO: Open cookie settings modal
-  }
-
   return (
-    <>
+    <TooltipProvider>
       {/* Scroll Up/Down Button - Bottom Right - Always Visible */}
-      <button
-        onClick={scrollToTopOrBottom}
-        className="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-[#ff0099] hover:bg-[#ff0099]/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
-        aria-label={isAtTop ? "Scroll to bottom" : "Scroll to top"}
-      >
-        {isAtTop ? (
-          <ArrowDown className="w-5 h-5 stroke-[2.5]" />
-        ) : (
-          <ArrowUp className="w-5 h-5 stroke-[2.5]" />
-        )}
-      </button>
-
-      {/* Cookie Settings Button - Bottom Left */}
-      <button
-        onClick={handleCookieSettings}
-        className="fixed bottom-6 left-6 z-50 w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center"
-        aria-label="Cookie settings"
-      >
-        <Image
-          src="/icons/cookies/cookies-icon-24px.png"
-          alt="Cookie settings"
-          width={24}
-          height={24}
-          className="w-6 h-6"
-        />
-      </button>
-    </>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={scrollToTopOrBottom}
+            className="fixed bottom-6 right-8 sm:right-12 lg:right-16 xl:right-20 z-50 w-10 h-10 rounded-full bg-[#ff0099] hover:bg-[#ff0099]/90 text-[#FFFBEB] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
+            aria-label={isAtTop ? "Scroll to bottom" : "Scroll to top"}
+          >
+            {isAtTop ? (
+              <ArrowDown className="w-5 h-5 stroke-[2.5]" />
+            ) : (
+              <ArrowUp className="w-5 h-5 stroke-[2.5]" />
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-neutral-800 text-[#FFFBEB] border-neutral-600">
+          <p>{isAtTop ? "Scroll to bottom" : "Scroll to top"}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }
 

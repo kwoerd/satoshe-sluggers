@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Heart, X } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -11,28 +12,18 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import AttributeRarityChart from "@/components/attribute-rarity-chart";
 import Footer from "@/components/footer";
 import Navigation from "@/components/navigation";
-import { MediaRenderer } from "thirdweb/react";
-import {
-  useReadContract,
-  useSendTransaction,
-  useActiveAccount,
-} from "thirdweb/react";
-import {
-  nftCollection,
-  marketplace,
-} from "@/lib/contracts";
-import { getListing, buyFromListing } from "thirdweb/extensions/marketplace";
-import { client } from "@/lib/thirdweb";
+import AttributeRarityChart from "@/components/attribute-rarity-chart";
+import { MediaRenderer, TransactionButton, useSendTransaction, useActiveAccount } from "thirdweb/react";
+import { buyFromListing } from "thirdweb/extensions/marketplace";
+import { marketplace } from "../../../lib/contracts";
+import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
-import { ownerOf } from "thirdweb/extensions/erc721";
-import { triggerPurchaseConfetti } from "@/lib/confetti";
+import { getNFTByTokenId } from "@/lib/data-service";
+// import { track } from '@vercel/analytics';
 
-const METADATA_URL = "/docs/combined_metadata.json";
-
-// Consistent color scheme
+// Consistent color scheme based on the radial chart
 const COLORS = {
   background: "#3B82F6", // blue
   skinTone: "#F59E0B", // yellow/orange
@@ -40,7 +31,9 @@ const COLORS = {
   hair: "#10B981", // green
   eyewear: "#06B6D4", // teal/cyan
   headwear: "#A855F7", // purple
+  // Keep the hot pink as requested
   accent: "#EC4899", // hot pink
+  // UI colors
   neutral: {
     100: "#F5F5F5",
     400: "#A3A3A3",
@@ -50,27 +43,6 @@ const COLORS = {
     900: "#171717",
   }
 };
-
-const DEFAULT_PRICE = 0.05; // ETH
-
-// Helper function to get IPFS URLs
-function getIPFSUrls(tokenId: string) {
-  return {
-    metadataUrl: `https://ipfs.io/ipfs/QmNjwSdgNhRSTfXu34kEwyLVvvMcFVuYKzsmB4zUsgsibQ/${tokenId}`,
-    mediaUrl: `https://ipfs.io/ipfs/QmPBBAsMUPtDLcw1PEunB779B8dsg9gxpdwHXrAkLnWwUD/${tokenId}.webp`
-  };
-}
-
-// Helper to format price
-function formatPrice(priceWei: string | number | bigint) {
-  if (!priceWei || priceWei === "0") return "0";
-  try {
-    const price = Number(priceWei) / 1e18;
-    return price.toString();
-  } catch {
-    return "0";
-  }
-}
 
 // Helper to get color for attribute
 function getColorForAttribute(attributeName: string) {
@@ -82,103 +54,106 @@ function getColorForAttribute(attributeName: string) {
     "Eyewear": COLORS.eyewear,
     "Headwear": COLORS.headwear,
   };
-  return colorMap[attributeName] || COLORS.neutral[400];
+  return colorMap[attributeName] || COLORS.background;
 }
 
 export default function NFTDetailPage() {
   const params = useParams<{ id: string }>();
   const tokenId = params.id;
-  const [metadata, setMetadata] = useState<{
-    name?: string;
-    description?: string;
-    price_eth?: number;
-    attributes?: Array<{ trait_type: string; value: string }>;
-    [key: string]: unknown;
-  } | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>("/placeholder-nft.webp");
+  const [metadata, setMetadata] = useState<any>(null);
+  const [imageUrl, setImageUrl] = useState<string>("/media/nfts/placeholder-nft.webp");
   const [isLoading, setIsLoading] = useState(true);
+  const [completeMetadata, setCompleteMetadata] = useState<any[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-
+  const [navigationTokens, setNavigationTokens] = useState<{prev: number | null, next: number | null}>({prev: null, next: null});
+  
   const account = useActiveAccount();
   const { isFavorited, toggleFavorite, isConnected } = useFavorites();
-  const { mutate: sendTransaction } = useSendTransaction();
+  const { mutate: sendBuy } = useSendTransaction();
 
-  // Static listing data - no RPC calls for display
-  const [listingData, setListingData] = useState<{
-    id: bigint;
-    tokenId: bigint;
-    price: bigint;
-    currencyContractAddress: string;
-    status: string;
-    [key: string]: unknown;
-  } | null>(null);
-  const [isLoadingListing, setIsLoadingListing] = useState(false);
-
+  // Calculate navigation tokens (previous and next)
   useEffect(() => {
-    console.log(`[NFT Detail] Loading data for token ID: ${tokenId}`);
-    setIsLoading(true);
-
-    fetch(METADATA_URL)
-      .then((r) => r.json())
-      .then((metaDataArr: Array<{ token_id?: number; [key: string]: unknown }>) => {
-        const found = metaDataArr.find((item) =>
-          item.token_id?.toString() === tokenId
-        );
-
-        if (found) {
-          setMetadata(found);
-          const ipfsUrls = getIPFSUrls(tokenId);
-          setImageUrl(ipfsUrls.mediaUrl);
-        } else {
-          setMetadata(null);
-          setImageUrl("/placeholder-nft.webp");
-        }
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error(`[NFT Detail] Error loading data:`, error);
-        setMetadata(null);
-        setIsLoading(false);
-      });
+    const currentTokenId = parseInt(tokenId);
+    const prevToken = currentTokenId > 0 ? currentTokenId - 1 : null;
+    const nextToken = currentTokenId < 7776 ? currentTokenId + 1 : null; // 7777 total NFTs (0-7776)
+    
+    setNavigationTokens({
+      prev: prevToken,
+      next: nextToken
+    });
   }, [tokenId]);
 
-  // Use static price data from metadata - no RPC calls for display
+  // Load NFT metadata
   useEffect(() => {
-    if (metadata?.price_eth) {
-      setListingData({
-        id: BigInt(tokenId),
-        tokenId: BigInt(tokenId),
-        price: BigInt(Math.floor(metadata.price_eth * 1e18)),
-        currencyContractAddress: "0x0000000000000000000000000000000000000000", // ETH
-        status: "1", // Active
+    setIsLoading(true);
+    console.log("Starting data load for token:", tokenId);
+
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log("Data loading timeout - forcing loading to false");
+      setIsLoading(false);
+    }, 10000); // 10 second timeout
+
+    // Load NFT data using data service
+    getNFTByTokenId(tokenId)
+      .then((nftData: any) => {
+        console.log("NFT data loaded:", nftData);
+        
+        if (nftData) {
+          setMetadata(nftData);
+          
+          // Set image URL from metadata
+          if (nftData.media_url) {
+            console.log("Setting image URL:", nftData.media_url);
+            setImageUrl(nftData.media_url);
+          } else {
+            console.log("Using fallback image");
+            setImageUrl("/media/nfts/placeholder-nft.webp");
+          }
+        } else {
+          console.log("No NFT found for tokenId:", tokenId);
+          setMetadata(null);
+          setImageUrl("/media/nfts/placeholder-nft.webp");
+        }
+        console.log("Setting isLoading to false");
+        clearTimeout(timeoutId);
+        setIsLoading(false);
+      })
+      .catch((error: any) => {
+        console.error(`[NFT Detail] Error loading data for token ${tokenId}:`, error);
+        setMetadata(null);
+        setImageUrl("/media/nfts/placeholder-nft.webp");
+        clearTimeout(timeoutId);
+        setIsLoading(false);
       });
-    } else {
-      setListingData(null);
-    }
-  }, [metadata, tokenId]);
+
+    // Cleanup timeout on unmount
+    return () => clearTimeout(timeoutId);
+  }, [tokenId]);
 
   const attributes = useMemo(() => {
-    if (metadata && Array.isArray(metadata.attributes)) {
-      return metadata.attributes.map((attr, index: number) => {
-        const displayPercentages = [10.84, 16.29, 14.58, 2.65, 81.75, 6.51];
-        return {
-          name: attr.trait_type || "Unknown",
-          value: attr.value || "—",
-          percentage: displayPercentages[index] || 0,
-          occurrence: 0,
-        };
-      });
+    // Use real attributes from complete metadata
+    if (metadata && metadata.attributes) {
+      const mappedAttributes = metadata.attributes.map((attr: any) => ({
+        name: attr.trait_type,
+        value: attr.value,
+        percentage: attr.rarity,
+        occurrence: attr.occurrence
+      }));
+      console.log("Mapped attributes:", mappedAttributes);
+      return mappedAttributes;
     }
+    console.log("No attributes found in metadata:", metadata);
     return [];
   }, [metadata]);
 
-  // Get price from metadata
-  const nftPrice = metadata?.price_eth || DEFAULT_PRICE;
-  const listingPrice = nftPrice.toString();
+  // Get pricing data from metadata
+  const priceEth = metadata?.merged_data?.price_eth || 0;
+  const listingId = metadata?.merged_data?.listing_id || 0;
+  const isForSale = priceEth > 0 && listingId;
   
-  // NFT is for sale if it has a price and a listing
-  const isForSale = nftPrice > 0;
+  // Check if this is a test NFT (token IDs 0-9)
+  const isTestNFT = parseInt(tokenId) >= 0 && parseInt(tokenId) <= 9;
 
   // Handle favorite toggle
   const handleFavoriteToggle = () => {
@@ -192,65 +167,34 @@ export default function NFTDetailPage() {
         tokenId: tokenId,
         name: metadata.name || `SATOSHE SLUGGER #${parseInt(tokenId) + 1}`,
         image: imageUrl,
-        rarity: (metadata.rarity_tier as string) || "Unknown",
-        rank: (metadata.rank as string) || "—",
-        rarityPercent: (metadata.rarity_percent as string) || "—",
+        rarity: metadata.rarity_tier || "Unknown",
+        rank: metadata.rank || "—",
+        rarityPercent: metadata.rarity_percent || "—",
       });
     }
   };
 
-  // Handle purchase
-  const handlePurchase = async () => {
+  // Transaction function for buying NFT
+  const createBuyTransaction = () => {
     if (!account?.address) {
-      alert("Please connect your wallet first");
-      return;
+      throw new Error("Please connect your wallet first");
     }
 
-    if (!isForSale) {
-      alert("This NFT is not for sale!");
-      return;
+    if (!isForSale || listingId === 0) {
+      throw new Error("This NFT is not available for purchase");
     }
 
-    setIsProcessing(true);
-    try {
-      const listing = listingData;
-      if (!listing) {
-        alert("No active listing found for this NFT");
-        setIsProcessing(false);
-        return;
-      }
-
-      const tx = buyFromListing({
-        contract: marketplace,
-        listingId: listing.id,
-        quantity: 1n,
-        recipient: account.address,
-      });
-
-      await new Promise((resolve, reject) => {
-        sendTransaction(tx, {
-          onSuccess: () => {
-            fetchListingData();
-            // Trigger confetti celebration on successful purchase
-            triggerPurchaseConfetti();
-            resolve(true);
-          },
-          onError: reject,
-        });
-      });
-
-      alert(`NFT purchased successfully for ${listingPrice} ETH! 🎉`);
-    } catch (error) {
-      console.error("Error purchasing NFT:", error);
-      alert("Failed to purchase NFT. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
+    return buyFromListing({
+      contract: marketplace,
+      listingId: BigInt(listingId),
+      quantity: 1n,
+      recipient: account.address,
+    });
   };
 
-  // Handle copy contract address
+  // Handle copy contract address to clipboard
   const handleCopyAddress = async () => {
-    const fullAddress = nftCollection.address;
+    const fullAddress = "0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc"; // NFT Contract address
     try {
       await navigator.clipboard.writeText(fullAddress);
       alert("Contract address copied to clipboard!");
@@ -260,14 +204,16 @@ export default function NFTDetailPage() {
     }
   };
 
-  const salesHistory: Array<{ date: string; price: string; buyer: string }> = [];
-
   if (isLoading) {
     return (
       <main className="min-h-screen bg-background text-foreground flex flex-col">
         <Navigation activePage="nfts" />
         <div className="flex-grow flex flex-col items-center justify-center pt-24 sm:pt-28">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderTopColor: COLORS.background, borderBottomColor: COLORS.background }}></div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-pink mx-auto mb-4"></div>
+            <p className="text-neutral-400">Loading NFT details...</p>
+            <p className="text-sm text-gray-500 mt-2">Token ID: {tokenId}</p>
+          </div>
         </div>
         <Footer />
       </main>
@@ -288,387 +234,392 @@ export default function NFTDetailPage() {
 
   const isFav = isFavorited(tokenId);
 
-  const handlePrevious = () => {
-    const prevId = parseInt(tokenId) - 1;
-    if (prevId >= 0) {
-      window.location.href = `/nft/${prevId}`;
-    }
-  };
-
-  const handleNext = () => {
-    const nextId = parseInt(tokenId) + 1;
-    if (nextId < 7777) {
-      window.location.href = `/nft/${nextId}`;
-    }
-  };
-
-  const hasPrevious = parseInt(tokenId) > 0;
-  const hasNext = parseInt(tokenId) < 7776;
-
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
       <Navigation activePage="nfts" />
-      
-      {/* Previous NFT Button */}
-      {hasPrevious && (
-        <button
-          onClick={handlePrevious}
-          className="fixed left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-800/90 backdrop-blur-md border border-neutral-700 hover:bg-[hsl(0,0%,4%)] hover:border-[#ff0099]/50 transition-all duration-200 flex items-center justify-center group"
-          aria-label="Previous NFT"
-        >
-          <svg 
-            className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-400 group-hover:text-[#ff0099] transition-colors" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
+      <div className="max-w-7xl mx-auto py-4 sm:py-6 flex-grow pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
+        <div className="flex items-center justify-between mb-8 sm:mb-10 px-2 sm:px-4">
+          <Link
+            href="/nfts"
+            className="inline-flex items-center text-neutral-400 hover:text-[#ff0099] text-sm transition-colors"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      )}
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to collection
+          </Link>
 
-      {/* Next NFT Button */}
-      {hasNext && (
-        <button
-          onClick={handleNext}
-          className="fixed right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-800/90 backdrop-blur-md border border-neutral-700 hover:bg-[hsl(0,0%,4%)] hover:border-[#ff0099]/50 transition-all duration-200 flex items-center justify-center group"
-          aria-label="Next NFT"
-        >
-          <svg 
-            className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-400 group-hover:text-[#ff0099] transition-colors" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      )}
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex-grow pt-24 sm:pt-28 relative">
-        <Link
-          href="/nfts"
-          className="inline-flex items-center text-neutral-400 hover:text-neutral-100 mb-4 sm:mb-6 text-sm"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to collection
-        </Link>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 xl:gap-8">
-          {/* Left Column */}
-          <div className="space-y-4">
-            {/* NFT Image */}
-            <div className="relative w-full" style={{ aspectRatio: "2700/3000" }}>
-              <MediaRenderer
-                client={client}
-                src={imageUrl}
-                alt={metadata?.name || `SATOSHE SLUGGER #${parseInt(tokenId) + 1}`}
-                width="100%"
-                height="100%"
-                className="w-full h-full object-contain rounded-lg"
-              />
-            </div>
-
-            {/* Token URI */}
-            <div className="bg-neutral-800 p-4 rounded-sm border border-neutral-700 group hover:bg-neutral-700/50 transition-all duration-200">
-              <a 
-                href={`https://ipfs.io/ipfs/QmNjwSdgNhRSTfXu34kEwyLVvvMcFVuYKzsmB4zUsgsibQ/${tokenId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between gap-3 cursor-pointer"
+          {/* Navigation Arrows */}
+          <div className="flex items-center gap-3">
+            {navigationTokens.prev !== null && (
+              <Link
+                href={`/nft/${navigationTokens.prev}`}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-[#ff0099] transition-colors border border-neutral-700 hover:border-[#ff0099]"
+                title={`Previous NFT #${navigationTokens.prev + 1}`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 group-hover:bg-emerald-500/30 flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover:scale-110">
-                    <svg className="w-5 h-5 text-emerald-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-normal text-emerald-500 group-hover:text-emerald-400 transition-colors">Token URI</p>
-                    <p className="text-xs text-neutral-400 group-hover:text-neutral-300 transition-colors">View metadata on IPFS</p>
-                  </div>
-                </div>
-                <svg className="w-4 h-4 text-neutral-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            </div>
-
-            {/* Media URI */}
-            <div className="bg-neutral-800 p-4 rounded-sm border border-neutral-700 group hover:bg-neutral-700/50 transition-all duration-200">
-              <a 
-                href={`https://ipfs.io/ipfs/QmPBBAsMUPtDLcw1PEunB779B8dsg9gxpdwHXrAkLnWwUD/${tokenId}.webp`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between gap-3 cursor-pointer"
+                <ChevronLeft className="h-5 w-5" />
+              </Link>
+            )}
+            
+            <span className="text-sm text-neutral-500 px-2">
+              {parseInt(tokenId) + 1} of 7777
+            </span>
+            
+            {navigationTokens.next !== null && (
+              <Link
+                href={`/nft/${navigationTokens.next}`}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-[#ff0099] transition-colors border border-neutral-700 hover:border-[#ff0099]"
+                title={`Next NFT #${navigationTokens.next + 1}`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/20 group-hover:bg-blue-500/30 flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover:scale-110">
-                    <svg className="w-5 h-5 text-blue-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-normal text-blue-500 group-hover:text-blue-400 transition-colors">Media URI</p>
-                    <p className="text-xs text-neutral-400 group-hover:text-neutral-300 transition-colors">View image on IPFS</p>
-                  </div>
-                </div>
-                <svg className="w-4 h-4 text-neutral-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            </div>
+                <ChevronRight className="h-5 w-5" />
+              </Link>
+            )}
+          </div>
+        </div>
 
-            {/* Attributes */}
-            <div className="bg-neutral-800 p-4 rounded-sm border border-neutral-700">
-              <h2 className="text-lg font-medium mb-3 sm:mb-4 text-neutral-100">Attributes</h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  {attributes.slice(0, 3).map((attr, index: number) => {
-                    const color = getColorForAttribute(attr.name);
-                    return (
-                      <div key={index} className="bg-neutral-800 p-3 rounded-sm border border-neutral-700">
-                        <div className="flex items-center gap-2 mb-1">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: color }}
-                          />
-                          <p className="text-sm font-medium uppercase tracking-wide" style={{ color: color }}>
-                            {attr.name}
-                          </p>
-                        </div>
-                        <p className="font-medium text-base text-neutral-100 leading-tight">{attr.value}</p>
-                        <div className="text-sm text-neutral-400 mt-1">
-                          <p className="leading-tight">{attr.percentage}% have this trait</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="space-y-3">
-                  {attributes.slice(3, 6).map((attr, index: number) => {
-                    const color = getColorForAttribute(attr.name);
-                    return (
-                      <div key={index + 3} className="bg-neutral-800 p-3 rounded-sm border border-neutral-700">
-                        <div className="flex items-center gap-2 mb-1">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: color }}
-                          />
-                          <p className="text-sm font-medium uppercase tracking-wide" style={{ color: color }}>
-                            {attr.name}
-                          </p>
-                        </div>
-                        <p className="font-medium text-base text-neutral-100 leading-tight">{attr.value}</p>
-                        <div className="text-sm text-neutral-400 mt-1">
-                          <p className="leading-tight">{attr.percentage}% have this trait</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 xl:gap-12">
+          {/* Left Column - Image */}
+          <div className="space-y-6 order-1 lg:order-1">
+            {/* NFT Image Card */}
+            <div className="relative" style={{ aspectRatio: "2700/3000" }}>
+              <div className="relative w-full h-full">
+                <MediaRenderer
+                  client={client}
+                  src={imageUrl}
+                  alt={metadata?.name || `SATOSHE SLUGGER #${parseInt(tokenId) + 1}`}
+                  width="100%"
+                  height="100%"
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
+
+            {/* IPFS Links - Hidden for test NFTs */}
+            {!isTestNFT && (
+              <div className="space-y-3">
+                <a
+                  href={metadata?.merged_data?.metadata_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-green-500 focus:outline-none"
+                  aria-label="View token metadata on IPFS"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: COLORS.hair + '20' }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ color: COLORS.hair }}
+                        aria-hidden="true"
+                      >
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10,9 9,9 8,9"></polyline>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: COLORS.hair }}>Token URI</p>
+                      <p className="text-xs text-neutral-400">View metadata on IPFS</p>
+                    </div>
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-neutral-400 group-hover:text-green-500 transition-colors"
+                    aria-hidden="true"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+
+                <a
+                  href={metadata?.merged_data?.media_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  aria-label="View NFT image on IPFS"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: COLORS.background + '20' }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ color: COLORS.background }}
+                        aria-hidden="true"
+                      >
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21,15 16,10 5,21"></polyline>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: COLORS.background }}>Media URI</p>
+                      <p className="text-xs text-neutral-400">View image on IPFS</p>
+                    </div>
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-neutral-400 group-hover:text-blue-500 transition-colors"
+                    aria-hidden="true"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+              </div>
+            )}
+
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-4">
-            {/* NFT Name, Heart Icon, and Buy Button */}
-            <div>
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-neutral-100 leading-tight">
-                  {metadata?.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`}
-                </h1>
-                <button
-                  onClick={handleFavoriteToggle}
-                  className={`p-2 rounded-full hover:bg-neutral-800 transition-colors ${
+          {/* Right Column - NFT Details */}
+          <div className="space-y-6 -mt-2 order-2 lg:order-2">
+            {/* NFT Name with Heart Icon */}
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight text-off-white">
+                {metadata?.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`}
+              </h1>
+              <button
+                onClick={handleFavoriteToggle}
+                className={`p-2 rounded-full hover:bg-neutral-800 transition-colors ${
+                  isFav
+                    ? "text-brand-pink fill-brand-pink"
+                    : "text-neutral-400 hover:text-brand-pink"
+                }`}
+                aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Heart
+                  className={`w-6 h-6 transition-colors cursor-pointer ${
                     isFav
                       ? "text-[#ff0099] fill-[#ff0099]"
                       : "text-neutral-400 hover:text-[#ff0099]"
                   }`}
-                  aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
-                >
-                  <Heart
-                    className={`w-6 h-6 transition-colors cursor-pointer ${
-                      isFav
-                        ? "text-[#ff0099] fill-[#ff0099]"
-                        : "text-neutral-400 hover:text-[#ff0099]"
-                    }`}
-                  />
-                </button>
-              </div>
-              
-              {/* Buy a Slugger */}
-              {isForSale ? (
-                <div className="p-4 rounded-sm bg-neutral-800/50">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]"></div>
-                      <span className="text-neutral-300 text-sm font-medium">Buy a Slugger</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-[#3B82F6]">{listingPrice}</div>
-                      <div className="text-sm text-neutral-400">ETH</div>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handlePurchase}
-                    disabled={isProcessing || !listingData}
-                    className="w-full h-12 bg-[#3B82F6] text-white hover:bg-[#2563EB] transition-all duration-200 font-semibold text-base rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isProcessing ? "Processing..." : listingData ? "BUY" : "Not Listed"}
-                  </Button>
-                </div>
-              ) : (
-                <div className="p-4 rounded-sm border border-neutral-600 bg-transparent">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#ff0099]"></div>
-                      <span className="text-neutral-300 text-sm font-medium">Status</span>
-                    </div>
-                    <span className="text-xl font-bold text-blue-500">SOLD!</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Details */}
-            <div className="bg-neutral-800 p-4 rounded-sm border border-neutral-700">
-              <h3 className="text-lg font-medium text-neutral-100 mb-4">Details</h3>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Description</p>
-                  <p className="text-neutral-100 font-light leading-tight">{metadata?.description || "Women's Baseball Card"}</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">NFT Number</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.card_number as number) ?? parseInt(tokenId) + 1}</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Token ID</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.token_id as number) ?? tokenId}</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Collection</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.collection as string) || "Retinal Delights - Collection 11"}</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Edition</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.edition as number) || "1"}</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Series</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.series as string) || "Round the Bases Series"}</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Rarity Tier</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.rarity_tier as string) ?? "Unknown"}</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Rarity Score</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.rarity_score as number) ?? "—"}</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Rank</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.rank as number) ?? "—"} of 7777</p>
-                </div>
-                <div>
-                  <p className="text-neutral-400 mb-1 leading-tight">Rarity Percentage</p>
-                  <p className="text-neutral-100 font-light leading-tight">{(metadata?.rarity_percent as number) ?? "—"}%</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Contract Details */}
-            <div className="bg-neutral-800 p-4 rounded-sm border border-neutral-700">
-              <h3 className="text-lg font-medium text-neutral-100 mb-4">Contract Details</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-neutral-400 text-sm leading-tight">Contract Address</span>
-                  <button
-                    onClick={handleCopyAddress}
-                    className="text-sm font-mono text-neutral-100 hover:text-[#ff0099] transition-colors cursor-pointer leading-tight"
-                  >
-                    {nftCollection.address.slice(0, 6)}...{nftCollection.address.slice(-4)}
-                  </button>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-neutral-400 text-sm leading-tight">Token ID</span>
-                  <span className="text-sm font-light text-neutral-100 leading-tight">{(metadata?.token_id as number) ?? tokenId}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-neutral-400 text-sm leading-tight">Token Standard</span>
-                  <span className="text-sm font-light text-neutral-100 leading-tight">ERC-721</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-neutral-400 text-sm leading-tight">Blockchain</span>
-                  <span className="text-sm font-light text-neutral-100 leading-tight">Base</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Artist & Platform */}
-            <div className="grid grid-cols-2 gap-4">
-              <a 
-                href="https://kristenwoerdeman.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-neutral-800 p-4 rounded-sm border border-neutral-700 group cursor-pointer"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-neutral-400 text-sm leading-tight">Artist</p>
-                  <svg className="w-4 h-4 text-neutral-400 group-hover:text-[#ff0099] transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </div>
-                <div className="flex items-center gap-2">
-                  <img 
-                    src="/brands/kristen-woerdeman/artist-logo-kristen-woerdeman-26px.png" 
-                    alt="Kristen Woerdeman" 
-                    className="w-[26px] h-[26px]"
-                  />
-                  <p className="text-neutral-100 font-normal group-hover:text-[#ff0099] transition-colors leading-tight">Kristen Woerdeman</p>
-                </div>
-              </a>
-              <a 
-                href="https://retinaldelights.io" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-neutral-800 p-4 rounded-sm border border-neutral-700 group cursor-pointer"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-neutral-400 text-sm leading-tight">Platform</p>
-                  <svg className="w-4 h-4 text-neutral-400 group-hover:text-[#ff0099] transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </div>
-                <div className="flex items-center gap-2">
-                  <img 
-                    src="/brands/retinal-delights/platform-logo-retinal-delights-26px.png" 
-                    alt="Retinal Delights" 
-                    className="w-[26px] h-[26px]"
-                  />
-                  <p className="text-neutral-100 font-normal group-hover:text-[#ff0099] transition-colors leading-tight">Retinal Delights</p>
-                </div>
-              </a>
-            </div>
-
-            {/* Attribute Rarity Distribution Chart */}
-            {attributes && attributes.length > 0 && (
-              <div>
-                <AttributeRarityChart
-                  attributes={attributes}
-                  overallRarity={(metadata?.rarity_percent as number) || "—"}
                 />
+              </button>
+            </div>
+
+            {/* Price Information - Direct Listing Style */}
+            {isForSale ? (
+              <div className="space-y-4">
+                {/* Buy Now Price */}
+                <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm mb-1" style={{ color: COLORS.background }}>Buy Now Price</p>
+                      <p className="text-lg sm:text-xl font-semibold" style={{ color: COLORS.background }}>
+                        {priceEth} ETH
+                      </p>
+                    </div>
+                    <TransactionButton
+                      transaction={createBuyTransaction}
+                      onTransactionConfirmed={() => {
+                        // track('NFT Buy Now Clicked', {
+                        //   tokenId,
+                        //   buyNowPrice: priceEth.toString(),
+                        //   rarity: metadata.rarity_tier,
+                        //   rank: String(metadata.rank),
+                        //   listingId: String(listingId),
+                        // });
+                        alert(`NFT purchased successfully for ${priceEth} ETH!`);
+                      }}
+                      onError={(error) => {
+                        console.error("Buy now failed:", error);
+                        alert(error.message || "Failed to buy NFT. Please try again.");
+                      }}
+                      className="w-32 px-6 h-10 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 hover:bg-blue-600 rounded"
+                      style={{
+                        color: "#fffbeb",
+                        backgroundColor: COLORS.background,
+                        borderColor: COLORS.background,
+                        borderRadius: "6px"
+                      }}
+                    >
+                      BUY NOW
+                    </TransactionButton>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+                <p className="text-neutral-500 text-center">This NFT is not currently for sale</p>
               </div>
             )}
+
+            {/* Additional Details */}
+            <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+              <h3 className="text-lg font-semibold mb-4 text-off-white">Details</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-neutral-400 mb-1">NFT Number</p>
+                  <p className="font-normal text-off-white">{metadata?.card_number ?? parseInt(tokenId) + 1}</p>
+                </div>
+                <div>
+                  <p className="text-neutral-400 mb-1">Token ID</p>
+                  <p className="font-normal text-off-white">{metadata?.token_id ?? tokenId}</p>
+                </div>
+                <div>
+                  <p className="text-neutral-400 mb-1">Collection</p>
+                  <p className="font-normal text-off-white">
+                    {metadata?.collection_number ?? "—"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-neutral-400 mb-1">Edition</p>
+                  <p className="font-normal text-off-white">{metadata?.edition ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-neutral-400 mb-1">Series</p>
+                  <p className="font-normal text-off-white">{metadata?.series ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-neutral-400 mb-1">Rarity Tier</p>
+                  <p className="font-normal text-off-white">{metadata?.rarity_tier ?? "Unknown"}</p>
+                </div>
+                <div>
+                  <p className="text-neutral-400 mb-1">Rarity Score</p>
+                  <p className="font-normal text-off-white">{metadata?.rarity_score ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-neutral-400 mb-1">Rank</p>
+                  <p className="font-normal text-off-white">{metadata?.rank ?? "—"} of 7777</p>
+                </div>
+                <div>
+                  <p className="text-neutral-400 mb-1">Rarity Percentage</p>
+                  <p className="font-normal text-off-white">{metadata?.rarity_percent ?? "—"}%</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Artist and Platform Cards - Moved from Left Column */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+                <p className="text-neutral-400 text-sm mb-2">Artist</p>
+                <div className="flex items-center">
+                  <Image
+                    src="/media/brands/kristen-woerdeman/artist-logo-kristen-woerdeman-26px-off-white.svg"
+                    alt="Kristen Woerdeman"
+                    width={26}
+                    height={26}
+                    className="w-6 h-6 mr-2"
+                    sizes="26px"
+                  />
+                  <a 
+                    href="https://kristenwertiman.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center text-sm text-off-white hover:text-[#FF0099] transition-colors group"
+                  >
+                    <span>{metadata?.artist || "Kristen Woerdeman"}</span>
+                    <svg className="w-4 h-4 ml-2 text-neutral-400 group-hover:text-[#FF0099] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+                <p className="text-neutral-400 text-sm mb-2">Platform</p>
+                <div className="flex items-center">
+                  <Image
+                    src="/media/brands/retinal-delights/platform-logo-retinal-delights-26px-off-white.svg"
+                    alt="Retinal Delights"
+                    width={26}
+                    height={26}
+                    className="w-6 h-6 mr-2"
+                    sizes="26px"
+                  />
+                  <a 
+                    href="https://retinaldelights.io" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center text-sm text-off-white hover:text-[#FF0099] transition-colors group"
+                  >
+                    <span>{metadata?.platform || "Retinal Delights"}</span>
+                    <svg className="w-4 h-4 ml-2 text-neutral-400 group-hover:text-[#FF0099] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Contract Details Section - Without Tabs */}
+            <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+              
+              <div className="space-y-2">
+                <div className="flex justify-between py-2 border-b border-neutral-700">
+                  <span className="text-neutral-400 text-sm">Contract Address</span>
+                  <button
+                    onClick={handleCopyAddress}
+                    className="text-sm hover:text-blue-400 transition-colors cursor-pointer text-off-white"
+                    title="Click to copy full address to clipboard"
+                  >
+                    0x....7c2Fc
+                  </button>
+                </div>
+                <div className="flex justify-between py-2 border-b border-neutral-700">
+                  <span className="text-neutral-400 text-sm">Token ID</span>
+                  <span className="text-sm text-off-white">{metadata?.token_id ?? tokenId}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-neutral-700">
+                  <span className="text-neutral-400 text-sm">Token Standard</span>
+                  <span className="text-sm text-off-white">ERC-721</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-neutral-400 text-sm">Blockchain</span>
+                  <span className="text-sm text-off-white">Base</span>
+                </div>
+              </div>
+            </div>
+
+
+
           </div>
         </div>
+
+        {/* Combined Attributes & Rarity Distribution - Spans both columns */}
+        <AttributeRarityChart 
+          attributes={attributes.map((attr: any) => ({
+            name: attr.name,
+            value: attr.value,
+            percentage: attr.percentage,
+            occurrence: attr.occurrence,
+            color: getColorForAttribute(attr.name)
+          }))}
+        />
       </div>
 
       <Footer />
     </main>
   );
 }
-

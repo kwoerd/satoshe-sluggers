@@ -1,3 +1,4 @@
+// tailwind.config.ts
 import type { Config } from "tailwindcss"
 
 const config: Config = {
@@ -68,6 +69,7 @@ const config: Config = {
         pink: {
           500: "#FF0099",
         },
+        "brand-pink": "#FF0099",
         blue: {
           500: "#2563EB",
           600: "#2563EB",
@@ -97,6 +99,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
+        inconsolata: ["var(--font-inconsolata)", "Inconsolata", "monospace"],
       },
       keyframes: {
         "accordion-down": {
