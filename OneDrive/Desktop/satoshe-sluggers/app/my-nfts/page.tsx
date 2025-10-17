@@ -1,119 +1,50 @@
-// app/my-nfts/page.tsx
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import Footer from "@/components/footer"
+import { useState, useEffect } from "react"
 import Navigation from "@/components/navigation"
-import { MediaRenderer } from "thirdweb/react"
+import Footer from "@/components/footer"
+import NFTCard from "@/components/nft-card"
 import { useActiveAccount } from "thirdweb/react"
-import { client } from "@/lib/thirdweb"
-import { useFavorites } from "@/hooks/useFavorites"
-import { Heart, Package } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Heart, ExternalLink } from "lucide-react"
 
-// Types for NFT data
-interface NFT {
-  id: string;
-  tokenId: string;
-  name: string;
-  image: string;
-  rarity?: string;
-  [key: string]: unknown;
-}
-
-function MyNFTsContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const tabParam = searchParams.get("tab")
-
-  const [activeTab, setActiveTab] = useState("owned")
-  const [isLoading, setIsLoading] = useState(true)
-  const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([])
-
+export default function MyNFTsPage() {
   const account = useActiveAccount()
-  const { favorites } = useFavorites()
+  const [userNFTs, setUserNFTs] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isProcessingBuy, setIsProcessingBuy] = useState<Record<string, boolean>>({})
+  const [activeTab, setActiveTab] = useState<"owned" | "favorites">("owned")
 
   useEffect(() => {
-    if (tabParam && (tabParam === "owned" || tabParam === "favorites")) {
-      setActiveTab(tabParam)
+    if (account) {
+      // In production, this would fetch the user's NFTs from the contract
+      // For now, we'll show a placeholder
+      setIsLoading(false)
     }
-  }, [tabParam])
+  }, [account])
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      if (!account?.address) {
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        // Use static metadata - no RPC calls for display
-        const response = await fetch('/data/complete_metadata.json');
-        const allMetadata = await response.json();
-        
-        // For demo purposes, show first 10 NFTs as "owned"
-        const demoOwnedNFTs = allMetadata.slice(0, 10).map((meta: { token_id?: number; name?: string; media_url?: string; rarity_tier?: string }) => ({
-          id: meta.token_id?.toString() || "0",
-          tokenId: meta.token_id?.toString() || "0",
-          name: meta.name || `Satoshe Slugger #${meta.token_id}`,
-          image: meta.media_url || `/nfts/${meta.token_id}.webp`,
-          rarity: meta.rarity_tier || "Common",
-        }));
-
-        setOwnedNFTs(demoOwnedNFTs);
-      } catch (error) {
-        console.error("Error loading user data:", error);
-        setOwnedNFTs([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadUserData();
-  }, [account?.address])
-
-  const handleListForSale = (nftId: string) => {
-    router.push(`/list-nft/${nftId}`)
+  const handleBuy = async (tokenId: string) => {
+    setIsProcessingBuy(prev => ({ ...prev, [tokenId]: true }))
+    
+    // Simulate processing time
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    setIsProcessingBuy(prev => ({ ...prev, [tokenId]: false }))
   }
 
-
-  // Get active NFTs based on tab
-  const getActiveNFTs = () => {
-    if (activeTab === "owned") {
-      return ownedNFTs.map((nft: NFT) => ({
-        id: nft.tokenId || nft.id,
-        name: nft.name || `Satoshe Slugger #${(parseInt(nft.tokenId || nft.id) + 1)}`,
-        image: nft.image || "/placeholder-nft.webp",
-        price: "0",
-        highestBid: "",
-        rarity: (nft.rarity as string) || "Common",
-        isListed: false,
-      }))
-    } else if (activeTab === "favorites") {
-      return favorites.map((fav) => ({
-        id: fav.tokenId,
-        name: fav.name,
-        image: fav.image,
-        price: "0",
-        highestBid: "",
-        rarity: fav.rarity || "Common",
-        isListed: false,
-      }))
-    } else {
-      return []
-    }
-  }
-
-  const activeNFTs = getActiveNFTs()
-
-  if (isLoading) {
+  if (!account) {
     return (
-      <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col">
-        <Navigation />
-        <div className="flex-grow flex justify-center items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <main className="min-h-screen bg-background text-foreground flex flex-col pt-24 sm:pt-28">
+        <Navigation activePage="my-nfts" />
+        <div className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-brand-pink mb-6">
+              MY NFTS
+            </h1>
+            <p className="text-xl text-neutral-400 mb-8">
+              Please connect your wallet to view your Satoshe Sluggers collection.
+            </p>
+          </div>
         </div>
         <Footer />
       </main>
@@ -121,134 +52,116 @@ function MyNFTsContent() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
-      <Navigation />
+    <main className="min-h-screen bg-background text-foreground flex flex-col">
+      <Navigation activePage="my-nfts" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold mb-1">My NFTs</h1>
-            <p className="text-neutral-400 text-sm">Manage your Satoshe Sluggers collection</p>
-          </div>
+      <div className="flex-1 pt-24 sm:pt-28">
+        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-6xl font-bold text-brand-pink mb-4">
+            MY NFTS
+          </h1>
+          <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
+            Your personal collection of Satoshe Sluggers NFTs.
+          </p>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6">
-          <div className="flex border-b border-neutral-700">
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-neutral-800 rounded-lg p-1 flex">
             <button
-              className={`py-2 px-4 flex items-center gap-2 ${activeTab === "owned" ? "border-b-2 border-[#ff0099] text-offwhite font-medium" : "text-neutral-400 hover:text-offwhite"}`}
               onClick={() => setActiveTab("owned")}
+              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === "owned"
+                  ? "bg-brand-pink text-white"
+                  : "text-neutral-400 hover:text-off-white"
+              }`}
             >
-              <Package className={`w-4 h-4 ${activeTab === "owned" ? "text-[#ff0099]" : ""}`} />
-              Owned ({ownedNFTs?.length || 0})
+              Owned
             </button>
             <button
-              className={`py-2 px-4 flex items-center gap-2 ${activeTab === "favorites" ? "border-b-2 border-[#ff0099] text-offwhite font-medium" : "text-neutral-400 hover:text-offwhite"}`}
               onClick={() => setActiveTab("favorites")}
+              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === "favorites"
+                  ? "bg-brand-pink text-white"
+                  : "text-neutral-400 hover:text-off-white"
+              }`}
             >
-              <Heart className={`w-4 h-4 ${activeTab === "favorites" ? "fill-[#ff0099] text-[#ff0099]" : ""}`} />
-              Favorites ({favorites.length})
+              Favorites
             </button>
           </div>
         </div>
 
-        {/* NFT Grid */}
-        {activeNFTs.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-neutral-400 mb-4">
-              {activeTab === "favorites"
-                ? "No favorite NFTs yet."
-                : "No NFTs found in this category."
-              }
-            </p>
-            {(activeTab === "owned" || activeTab === "favorites") && (
-              <Button onClick={() => router.push("/nfts")} className="bg-[#ff0099] hover:bg-[hsl(0,0%,4%)] text-offwhite">
-                Browse NFTs
-              </Button>
-            )}
+        {/* Content Area */}
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-pink mx-auto mb-4"></div>
+            <p className="text-neutral-400">Loading your NFTs...</p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeNFTs.map((nft) => (
-              <div key={nft.id} className="rounded-md overflow-hidden">
-                <div className="relative w-full" style={{ aspectRatio: "0.9/1" }}>
-                  <Badge
-                    className={`absolute top-3 right-3 z-10 text-xs ${
-                      nft.rarity === "uncommon"
-                        ? "bg-blue-500"
-                        : nft.rarity === "rare"
-                          ? "bg-purple-600"
-                          : "bg-neutral-500"
-                    }`}
-                  >
-                    {nft.rarity}
-                  </Badge>
-                  <div className="w-full h-full flex items-center justify-center">
-                    <MediaRenderer
-                      src={nft.image || "/placeholder-nft.webp"}
-                      alt={nft.name}
-                      width="250"
-                      height="278"
-                      className="max-w-full max-h-full object-contain"
-                      client={client}
-                    />
-                  </div>
+        ) : activeTab === "owned" ? (
+          userNFTs.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="mb-6">
+                <div className="w-24 h-24 mx-auto mb-4 bg-neutral-800 rounded-full flex items-center justify-center">
+                  <Heart className="w-8 h-8 text-neutral-500" />
                 </div>
-
-                <div className="p-4">
-                  <h3 className="font-medium text-base mb-3">{nft.name}</h3>
-                  
-                  {activeTab === "favorites" && (
-                    <Button
-                      onClick={() => router.push(`/nft/${nft.id}`)}
-                      className="w-full bg-[#ff0099] hover:bg-[#ff0099]/80 text-offwhite text-sm py-2"
-                    >
-                      View on Marketplace
-                    </Button>
-                  )}
-
-                  {activeTab === "owned" && (
-                    <div className="space-y-2">
-                      <Button
-                        onClick={() => router.push(`/nft/${nft.id}`)}
-                        className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-[#FFFBEB] text-sm py-2"
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        onClick={() => handleListForSale(nft.id)}
-                        className="w-full bg-[#ff0099] hover:bg-[#ff0099]/80 text-offwhite text-sm py-2"
-                      >
-                        List for Sale
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                <h2 className="text-2xl font-bold text-off-white mb-4">No NFTs Found</h2>
+                <p className="text-neutral-500 mb-8 max-w-md mx-auto">
+                  You don&apos;t own any Satoshe Sluggers yet. Visit the marketplace to buy your first one!
+                </p>
               </div>
-            ))}
+              <Button
+                onClick={() => window.location.href = "/nfts"}
+                className="bg-brand-pink hover:bg-brand-pink-hover text-white font-bold px-8 py-3"
+              >
+                Browse Marketplace
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {userNFTs.map((nft: any) => (
+                <NFTCard
+                  key={nft.tokenId}
+                  image={nft.image}
+                  name={nft.name}
+                  rank={nft.rank}
+                  rarity={nft.rarity}
+                  rarityPercent={nft.rarityPercent}
+                  price={nft.price}
+                  tokenId={nft.tokenId}
+                  listingId={nft.listingId}
+                  isForSale={nft.isForSale}
+                  isProcessingBuy={isProcessingBuy[nft.tokenId] || false}
+                  onBuy={() => handleBuy(nft.tokenId)}
+                />
+              ))}
+            </div>
+          )
+        ) : (
+          // Favorites tab content
+          <div className="text-center py-12">
+            <div className="mb-6">
+              <div className="w-24 h-24 mx-auto mb-4 bg-neutral-800 rounded-full flex items-center justify-center">
+                <Heart className="w-8 h-8 text-brand-pink" />
+              </div>
+              <h2 className="text-2xl font-bold text-off-white mb-4">No Favorites Yet</h2>
+              <p className="text-neutral-500 mb-8 max-w-md mx-auto">
+                Start favoriting NFTs you love to see them here!
+              </p>
+            </div>
+            <Button
+              onClick={() => window.location.href = "/nfts"}
+              className="bg-brand-pink hover:bg-brand-pink-hover text-white font-bold px-8 py-3"
+            >
+              Browse Collection
+            </Button>
           </div>
         )}
+        </div>
       </div>
 
       <Footer />
     </main>
   )
 }
-
-export default function MyNFTsPage() {
-  return (
-    <Suspense fallback={
-      <main className="flex min-h-screen flex-col bg-gradient-to-b from-background to-neutral-950">
-        <Navigation />
-        <div className="flex-grow flex items-center justify-center">
-          <div className="animate-pulse text-neutral-400">Loading...</div>
-        </div>
-        <Footer />
-      </main>
-    }>
-      <MyNFTsContent />
-    </Suspense>
-  )
-}
-

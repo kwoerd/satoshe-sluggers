@@ -667,16 +667,16 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
     >
         <div className="space-y-1 mb-4 p-3 border border-neutral-700 rounded">
           <div>
-            <div className="text-sm font-inconsolata text-neutral-300 mb-0">Blockchain: Base</div>        </div>
+            <div className="text-xs font-inconsolata text-off-white mb-0">Blockchain: Base</div>        </div>
           <div>
-            <div className="text-sm font-inconsolata text-neutral-300 mb-0">Chain ID: 8453</div>        </div>
+            <div className="text-xs font-inconsolata text-off-white mb-0">Chain ID: 8453</div>        </div>
           <div>
-            <div className="text-sm font-inconsolata text-neutral-300 mb-2">Token Standard: ERC-721</div>        </div>
+            <div className="text-xs font-inconsolata text-off-white mb-2">Token Standard: ERC-721</div>        </div>
 
         {/* Contract Links */}
         <div className="space-y-3 mt-3">
           <div>
-            <h4 className="text-sm font-inconsolata text-neutral-300 mb-2">Marketplace</h4>
+            <h4 className="text-xs font-inconsolata text-off-white mb-2">Marketplace</h4>
             <div className="flex gap-2">
               <button
                 onClick={() => window.open('https://basescan.org/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
@@ -696,7 +696,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           </div>
 
           <div>
-            <h4 className="text-sm font-inconsolata text-neutral-300 mb-2">NFT Contract</h4>
+            <h4 className="text-xs font-inconsolata text-off-white mb-2">NFT Contract</h4>
             <div className="flex gap-2">
               <button
                 onClick={() => window.open('https://basescan.org/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
@@ -729,8 +729,8 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
               onClick={() => setSearchMode("contains")}
               className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors ${
                 searchMode === "contains"
-                  ? "bg-brand-pink text-white"
-                  : "text-neutral-400 hover:text-white"
+                  ? "bg-[#ff0099] text-[#FFFBEB]"
+                  : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
             >
               Contains
@@ -739,8 +739,8 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
               onClick={() => setSearchMode("exact")}
               className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors ${
                 searchMode === "exact"
-                  ? "bg-brand-pink text-white"
-                  : "text-neutral-400 hover:text-white"
+                  ? "bg-[#ff0099] text-[#FFFBEB]"
+                  : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
             >
               Exact

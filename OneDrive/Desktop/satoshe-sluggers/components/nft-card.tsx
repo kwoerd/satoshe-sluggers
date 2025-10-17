@@ -185,39 +185,51 @@ export default function NFTCard({
           {/* Buy Section */}
           <div className="mt-3">
             {isForSale && listingId ? (
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-blue-500 font-medium">
-                  {priceEth} ETH
+              <div className="space-y-1">
+                <div className="text-xs text-[#FFFBEB]">Buy Now</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-blue-500 font-medium">
+                    {priceEth} ETH
+                  </div>
+                  <BuyDirectListingButton
+                    contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
+                    client={client}
+                    chain={base}
+                    listingId={BigInt(listingId)}
+                    quantity={1n}
+                    onTransactionSent={() => {
+                      track('NFT Purchase Attempted', { tokenId });
+                    }}
+                    onTransactionConfirmed={() => {
+                      track('NFT Purchase Success', { tokenId });
+                      if (onPurchase) onPurchase();
+                    }}
+                    onError={(error) => {
+                      console.error('Purchase failed:', error);
+                      track('NFT Purchase Failed', { tokenId });
+                    }}
+                    className="!px-2 !py-1 !bg-[#ff0099] !text-[#FFFBEB] !font-normal !rounded-sm hover:!bg-[#ff0099]/90 !transition-all !duration-200 !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !h-auto !min-h-0"
+                    style={{
+                      padding: '4px 8px',
+                      fontSize: '11px',
+                      height: 'auto',
+                      minHeight: 'unset'
+                    }}
+                  >
+                    BUY
+                  </BuyDirectListingButton>
                 </div>
-                <BuyDirectListingButton
-                  contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                  client={client}
-                  chain={base}
-                  listingId={BigInt(listingId)}
-                  quantity={1n}
-                  onTransactionSent={() => {
-                    track('NFT Purchase Attempted', { tokenId });
-                  }}
-                  onTransactionConfirmed={() => {
-                    track('NFT Purchase Success', { tokenId });
-                    if (onPurchase) onPurchase();
-                  }}
-                  onError={(error) => {
-                    console.error('Purchase failed:', error);
-                    track('NFT Purchase Failed', { tokenId });
-                  }}
-                  className="px-3 py-1.5 bg-[#ff0099] text-[#FFFBEB] font-normal rounded-sm hover:bg-[#ff0099]/90 transition-all duration-200 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  BUY
-                </BuyDirectListingButton>
               </div>
             ) : priceEth > 0 ? (
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-neutral-400 font-medium">
-                  SOLD
-                </div>
-                <div className="px-3 py-1.5 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
-                  SOLD
+              <div className="space-y-1">
+                <div className="text-xs text-[#FFFBEB]">Buy Now</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-neutral-400 font-medium">
+                    SOLD
+                  </div>
+                  <div className="px-2 py-1 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
+                    SOLD
+                  </div>
                 </div>
               </div>
             ) : null}
@@ -257,58 +269,26 @@ export default function NFTCard({
             </div>
           )}
           
-          {/* Heart Icon - Upper Right Corner */}
-          <div className="absolute top-3 right-3 z-30">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 hover:bg-transparent bg-black/20 rounded-full"
-              onClick={handleFavoriteClick}
-            >
-              <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-[#FFFBEB] hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
-            </Button>
-          </div>
         </div>
       </Link>
 
       {/* NFT Title Section - Medium grid design */}
       <div className="px-4 pt-4 pb-4 flex-1 flex flex-col">
-        <Link href={`/nft/${tokenId}`} className="block flex-1">
-          <h3 className="font-medium text-sm leading-tight text-[#FFFBEB] mb-4 line-clamp-2">
-            {name}
-          </h3>
-        </Link>
-        
-        {/* Buy Button for Medium Grid */}
-        {isForSale && listingId ? (
-          <div className="w-full mt-auto">
-            <BuyDirectListingButton
-              contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-              client={client}
-              chain={base}
-              listingId={BigInt(listingId)}
-              quantity={1n}
-              onTransactionSent={() => {
-                track('NFT Purchase Attempted', { tokenId });
-              }}
-              onTransactionConfirmed={() => {
-                track('NFT Purchase Success', { tokenId });
-                if (onPurchase) onPurchase();
-              }}
-              onError={(error) => {
-                console.error('Purchase failed:', error);
-                track('NFT Purchase Failed', { tokenId });
-              }}
-              className="px-4 py-2 bg-[#ff0099] text-[#FFFBEB] font-normal rounded-sm hover:bg-[#ff0099]/90 transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              BUY
-            </BuyDirectListingButton>
-          </div>
-        ) : priceEth > 0 ? (
-          <div className="px-4 py-2 bg-neutral-700 text-neutral-500 text-sm font-normal rounded-sm flex items-center justify-center mt-auto">
-            <span>SOLD</span>
-          </div>
-        ) : null}
+        <div className="flex items-start justify-between gap-2 flex-1">
+          <Link href={`/nft/${tokenId}`} className="block flex-1">
+            <h3 className="font-normal text-xs leading-tight text-[#FFFBEB] line-clamp-2">
+              {name}
+            </h3>
+          </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0"
+            onClick={handleFavoriteClick}
+          >
+            <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-[#FFFBEB] hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
+          </Button>
+        </div>
       </div>
 
     </div>

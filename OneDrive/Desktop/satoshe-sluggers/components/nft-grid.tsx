@@ -242,7 +242,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               const name = meta.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`;
               const rank = (meta.rank as number | string) ?? "—";
               const rarityPercent = (meta.rarity_percent as number | string) ?? "--";
-              const rarity = (meta.rarity_tier as string) ?? "Unknown";
+              const rarity = ((meta.rarity_tier as string) ?? "Unknown").replace(" (Ultra-Legendary)", "");
               
               // Use static price data from metadata - no RPC calls for display
               const priceEth = (meta.merged_data as any)?.price_eth || 0;
@@ -661,7 +661,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                       </div>
                     </th>
                     <th 
-                      className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB] hover:text-neutral-200 cursor-pointer select-none"
+                      className="text-left px-6 py-3 text-xs sm:text-sm font-medium text-[#FFFBEB] hover:text-neutral-200 cursor-pointer select-none"
                       onClick={() => handleColumnSort('rank')}
                     >
                       <div className="flex items-center gap-1">
@@ -724,16 +724,16 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                           <Link href={`/nft/${nft.tokenId}`} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
                             <Image src={nft.image} alt={nft.name} width={40} height={40} className="rounded object-contain" />
                             <div>
-                              <p className="text-xs sm:text-sm font-medium text-[#FFFBEB] truncate">{nft.name}</p>
+                              <p className="text-xs font-normal text-[#FFFBEB] truncate">{nft.name}</p>
                               <p className="text-xs text-neutral-500 truncate">Token ID: {nft.tokenId}</p>
                             </div>
                           </Link>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rank} / 7777</td>
-                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rarityPercent}%</td>
-                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rarity}</td>
-                      <td className="px-4 py-3 text-xs sm:text-sm font-medium text-blue-500 truncate">{nft.priceEth} ETH</td>
+                      <td className="px-6 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rank} / 7777</td>
+                      <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarityPercent}%</td>
+                      <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarity}</td>
+                      <td className="px-4 py-3 text-xs font-normal text-blue-500">{nft.priceEth} ETH</td>
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={(e) => {
@@ -779,12 +779,18 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                                   console.error('Purchase failed:', error);
                                   track('NFT Purchase Failed', { tokenId: nft.tokenId });
                                 }}
-                                className="px-2 sm:px-3 py-1.5 bg-[#FFFBEB] text-neutral-800 hover:bg-neutral-200 transition-all text-xs sm:text-sm font-medium disabled:opacity-50"
+                                className="!px-2 sm:!px-3 !py-1.5 !bg-[#ff0099] !text-[#FFFBEB] hover:!bg-[#ff0099]/90 !transition-all !text-xs sm:!text-sm !font-medium !disabled:opacity-50 !h-auto !min-h-0 !rounded-sm"
+                                style={{
+                                  padding: '6px 8px',
+                                  fontSize: '12px',
+                                  height: 'auto',
+                                  minHeight: 'unset'
+                                }}
                               >
                                 Buy
                               </BuyDirectListingButton>
                             ) : (
-                              <span className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-neutral-400">
+                              <span className="px-1.5 py-1 text-xs text-neutral-400">
                                 {nft.isForSale ? "No Listing" : "Sold"}
                               </span>
                             )}

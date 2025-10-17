@@ -183,6 +183,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 input[type="number"] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
@@ -203,7 +204,7 @@ input[type="number"] {
 /* Default spellcheck disabled for all inputs */
 input,
 textarea {
-  spellcheck: false;
+  /* spellcheck is an HTML attribute, not a CSS property */
 }
 
 /* Hide ThirdWeb branding in PayEmbed */
