@@ -104,13 +104,7 @@ export default function NFTDetailPage() {
   const { isFavorited, toggleFavorite, isConnected } = useFavorites();
   const { mutate: sendTransaction } = useSendTransaction();
 
-  // Get current owner of the NFT
-  const { data: currentOwner } = useReadContract(ownerOf, {
-    contract: nftCollection,
-    tokenId: BigInt(tokenId),
-  });
-
-  // Get listing data
+  // Static listing data - no RPC calls for display
   const [listingData, setListingData] = useState<{
     id: bigint;
     tokenId: bigint;
@@ -119,7 +113,7 @@ export default function NFTDetailPage() {
     status: string;
     [key: string]: unknown;
   } | null>(null);
-  const [isLoadingListing, setIsLoadingListing] = useState(true);
+  const [isLoadingListing, setIsLoadingListing] = useState(false);
 
   useEffect(() => {
     console.log(`[NFT Detail] Loading data for token ID: ${tokenId}`);
@@ -149,37 +143,20 @@ export default function NFTDetailPage() {
       });
   }, [tokenId]);
 
-  // Fetch listing data
-  const fetchListingData = async () => {
-    try {
-      setIsLoadingListing(true);
-      const listing = await getListing({
-        contract: marketplace,
-        listingId: BigInt(tokenId),
-      });
-
-      if (listing) {
-        setListingData({
-          id: listing.id,
-          tokenId: listing.tokenId,
-          price: listing.pricePerToken,
-          currencyContractAddress: listing.currencyContractAddress,
-          status: listing.status,
-        });
-      } else {
-        setListingData(null);
-      }
-    } catch (error) {
-      console.error(`[NFT Detail] Error fetching listing:`, error);
-      setListingData(null);
-    } finally {
-      setIsLoadingListing(false);
-    }
-  };
-
+  // Use static price data from metadata - no RPC calls for display
   useEffect(() => {
-    fetchListingData();
-  }, [tokenId]);
+    if (metadata?.price_eth) {
+      setListingData({
+        id: BigInt(tokenId),
+        tokenId: BigInt(tokenId),
+        price: BigInt(Math.floor(metadata.price_eth * 1e18)),
+        currencyContractAddress: "0x0000000000000000000000000000000000000000", // ETH
+        status: "1", // Active
+      });
+    } else {
+      setListingData(null);
+    }
+  }, [metadata, tokenId]);
 
   const attributes = useMemo(() => {
     if (metadata && Array.isArray(metadata.attributes)) {

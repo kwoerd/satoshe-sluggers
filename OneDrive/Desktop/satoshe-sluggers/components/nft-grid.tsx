@@ -192,28 +192,10 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               const rarityPercent = (meta.rarity_percent as number | string) ?? "--";
               const rarity = (meta.rarity_tier as string) ?? "Unknown";
               
-              // Check if there's an active listing for this NFT
-              let isForSale = false;
-              let priceWei = "0";
-              
-              try {
-                const listing = await getListing({
-                  contract: marketplace,
-                  listingId: BigInt(tokenId),
-                });
-                
-                if (listing && Number(listing.status) === 1) { // 1 = active listing
-                  isForSale = true;
-                  priceWei = listing.pricePerToken.toString();
-                }
-              } catch (error) {
-                // Fallback to metadata price if no listing found
-                const priceEth = meta.price_eth || 0;
-                if (priceEth > 0) {
-                  isForSale = true;
-                  priceWei = (priceEth * 1e18).toString();
-                }
-              }
+              // Use static price data from metadata - no RPC calls for display
+              const priceEth = meta.price_eth || 0;
+              const isForSale = priceEth > 0;
+              const priceWei = isForSale ? (priceEth * 1e18).toString() : "0";
 
               return {
                 id: tokenId,

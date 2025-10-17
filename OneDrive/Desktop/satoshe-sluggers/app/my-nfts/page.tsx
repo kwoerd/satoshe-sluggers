@@ -51,29 +51,20 @@ function MyNFTsContent() {
 
       setIsLoading(true);
       try {
-        // Fetch owned NFTs from the collection contract
-        const ownedNFTsData = await getNFTs({
-          contract: nftCollection,
-          start: 0,
-          count: 100, // Get first 100 NFTs
-        });
-
-        // Filter NFTs owned by the current user
-        const userOwnedNFTs = ownedNFTsData.filter(() => {
-          // This is a simplified check - in production you'd want to verify ownership properly
-          return true; // For now, show all NFTs as owned
-        });
-
-        // Transform the data to match our interface
-        const transformedNFTs = userOwnedNFTs.map((nft) => ({
-          id: nft.id.toString(),
-          tokenId: nft.id.toString(),
-          name: nft.metadata.name || `Satoshe Slugger #${nft.id}`,
-          image: nft.metadata.image || "/placeholder-nft.webp",
-          rarity: (nft.metadata.attributes as Array<{trait_type: string; value: string}>)?.find((attr) => attr.trait_type === "Rarity")?.value || "Common",
+        // Use static metadata - no RPC calls for display
+        const response = await fetch('/data/combined_metadata.json');
+        const allMetadata = await response.json();
+        
+        // For demo purposes, show first 10 NFTs as "owned"
+        const demoOwnedNFTs = allMetadata.slice(0, 10).map((meta: any) => ({
+          id: meta.token_id?.toString() || "0",
+          tokenId: meta.token_id?.toString() || "0",
+          name: meta.name || `Satoshe Slugger #${meta.token_id}`,
+          image: meta.media_url || `/nfts/${meta.token_id}.webp`,
+          rarity: meta.rarity_tier || "Common",
         }));
 
-        setOwnedNFTs(transformedNFTs);
+        setOwnedNFTs(demoOwnedNFTs);
       } catch (error) {
         console.error("Error loading user data:", error);
         setOwnedNFTs([]);
