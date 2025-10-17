@@ -140,7 +140,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     [id: string]: boolean;
   }>({});
   const [allMetadata, setAllMetadata] = useState<NFTMetadata[]>([]);
-  const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-medium');
+  const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
   
 
   const account = useActiveAccount();
@@ -465,7 +465,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           <h2 className="text-lg font-medium">NFT Collection</h2>
           <div className="text-sm font-medium text-pink-500 mt-1">Loading...</div>
         </div>
-        <div className="mt-8 mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-6 gap-y-8">
+        <div className="mt-8 mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
           {Array.from({ length: 12 }).map((_, index) => (
             <div key={index} className="bg-neutral-800 rounded-lg p-4 animate-pulse">
               <div className="aspect-square bg-neutral-700 rounded-lg mb-3"></div>
@@ -570,9 +570,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           {/* Grid Views */}
           {(viewMode === 'grid-large' || viewMode === 'grid-medium' || viewMode === 'grid-small') && (
             <div className={`mt-4 mb-8 grid ${
-              viewMode === 'grid-large' ? 'gap-x-4 gap-y-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' :
-              viewMode === 'grid-medium' ? 'gap-x-4 gap-y-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' :
-              'gap-x-2 gap-y-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8'
+              viewMode === 'grid-large' ? 'gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' :
+              viewMode === 'grid-medium' ? 'gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7' :
+              'gap-1 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10'
             }`}>
               {paginatedNFTs.map((nft) => (
                 <NFTCard
@@ -600,12 +600,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               <table className="w-full">
                 <thead className="bg-neutral-800/50 border-b border-neutral-700">
                   <tr>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-neutral-400">NFT</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-neutral-400">Rank</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-neutral-400">Rarity</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-neutral-400">Tier</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-neutral-400">Price</th>
-                    <th className="text-right px-4 py-3 text-xs font-medium text-neutral-400">Actions</th>
+                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">NFT</th>
+                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Rank</th>
+                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Rarity</th>
+                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Tier</th>
+                    <th className="text-left px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Price</th>
+                    <th className="text-center px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Favorite</th>
+                    <th className="text-right px-4 py-3 text-xs sm:text-sm font-medium text-neutral-400">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -616,48 +617,50 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                           <Link href={`/nft/${nft.tokenId}`} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
                             <img src={nft.image} alt={nft.name} className="w-10 h-10 rounded object-contain" />
                             <div>
-                              <p className="text-sm font-medium text-neutral-100">{nft.name}</p>
-                              <p className="text-xs text-neutral-500">Token ID: {nft.tokenId}</p>
+                              <p className="text-xs sm:text-sm font-medium text-neutral-100 truncate">{nft.name}</p>
+                              <p className="text-xs text-neutral-500 truncate">Token ID: {nft.tokenId}</p>
                             </div>
                           </Link>
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toggleFavorite({
-                                tokenId: nft.tokenId,
-                                name: nft.name,
-                                image: nft.image,
-                                rarity: nft.rarity,
-                                rank: nft.rank,
-                                rarityPercent: nft.rarityPercent,
-                              });
-                            }}
-                            className="p-1 hover:bg-neutral-700 rounded transition-colors"
-                          >
-                            <Heart className={`w-4 h-4 ${isFavorited(nft.tokenId) ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-neutral-300"}`} />
-                          </button>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-neutral-300">{nft.rank} / 7777</td>
-                      <td className="px-4 py-3 text-sm text-neutral-300">{nft.rarityPercent}%</td>
-                      <td className="px-4 py-3 text-sm text-neutral-300">{nft.rarity}</td>
-                      <td className="px-4 py-3 text-sm font-medium text-blue-500">{displayPrice(nft.priceWei)} ETH</td>
+                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rank} / 7777</td>
+                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rarityPercent}%</td>
+                      <td className="px-4 py-3 text-xs sm:text-sm text-neutral-300 truncate">{nft.rarity}</td>
+                      <td className="px-4 py-3 text-xs sm:text-sm font-medium text-blue-500 truncate">{displayPrice(nft.priceWei)} ETH</td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite({
+                              tokenId: nft.tokenId,
+                              name: nft.name,
+                              image: nft.image,
+                              rarity: nft.rarity,
+                              rank: nft.rank,
+                              rarityPercent: nft.rarityPercent,
+                            });
+                          }}
+                          className="p-1 hover:bg-neutral-700 rounded transition-colors"
+                        >
+                          <Heart className={`w-4 h-4 ${isFavorited(nft.tokenId) ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-neutral-300"}`} />
+                        </button>
+                      </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center gap-2 justify-end">
-                          <Link 
-                            href={`/nft/${nft.tokenId}`}
-                            className="px-3 py-1.5 bg-transparent border border-neutral-600 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-all rounded-sm text-xs font-medium"
-                          >
-                            View
-                          </Link>
-                          <button
-                            onClick={() => handlePurchase(nft)}
-                            disabled={isProcessingPurchase[nft.id] || !nft.isForSale}
-                            className="px-3 py-1.5 bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all rounded-sm text-xs font-medium disabled:opacity-50"
-                          >
-                            {isProcessingPurchase[nft.id] ? "..." : "Buy"}
-                          </button>
+                            <Link
+                              href={`/nft/${nft.tokenId}`}
+                              className="px-2 sm:px-3 py-1.5 bg-transparent border border-neutral-600 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-all rounded-sm text-xs sm:text-sm font-medium"
+                            >
+                              View
+                            </Link>
+                            <button
+                              onClick={() => handlePurchase(nft)}
+                              disabled={isProcessingPurchase[nft.id] || !nft.isForSale}
+                              className="px-2 sm:px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 transition-all rounded-sm text-xs sm:text-sm font-medium disabled:opacity-50"
+                            >
+                              {isProcessingPurchase[nft.id] ? "..." : "Buy"}
+                            </button>
                         </div>
                       </td>
                     </tr>

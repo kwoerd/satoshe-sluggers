@@ -91,7 +91,7 @@ export default function NFTCard({
   // Small grid - just images, tightly packed
   if (viewMode === 'grid-small') {
     return (
-      <div className="overflow-visible w-full max-w-sm mx-auto rounded-lg flex flex-col h-full bg-neutral-900 group relative">
+      <div className="overflow-visible w-full rounded-lg flex flex-col h-full bg-neutral-900 group relative">
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-black/20 blur-sm"></div>
         
         {/* NFT Image Only */}
@@ -128,7 +128,7 @@ export default function NFTCard({
   // Large grid - full details (original design)
   if (viewMode === 'grid-large') {
     return (
-      <div className="overflow-visible w-full max-w-sm mx-auto rounded-lg flex flex-col h-full bg-neutral-900 group relative">
+      <div className="overflow-visible w-full rounded-lg flex flex-col h-full bg-neutral-900 group relative">
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-black/20 blur-sm"></div>
         
         {/* NFT Image */}
@@ -164,7 +164,7 @@ export default function NFTCard({
           {/* Title and Favorite */}
           <div className="flex items-start justify-between gap-2">
             <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
-              <h3 className="font-medium text-lg leading-tight text-neutral-100 line-clamp-1">
+              <h3 className="font-medium text-sm sm:text-base md:text-lg leading-tight text-neutral-100 truncate">
                 {name}
               </h3>
             </Link>
@@ -194,25 +194,25 @@ export default function NFTCard({
             </div>
           </div>
 
-          {/* Buy Section OR Status */}
+          {/* Buy Section */}
           <div className="mt-4">
             {isForSale ? (
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-9 bg-transparent border border-blue-500 rounded-sm px-3 flex items-center justify-between cursor-default">
-                  <span className="text-sm font-normal text-blue-500">{price}</span>
+                <div className="flex-1 h-9 bg-neutral-800/50 rounded-sm px-3 flex items-center justify-between">
+                  <span className="text-xs sm:text-sm font-normal text-blue-500 truncate">{price}</span>
                   <span className="text-xs text-neutral-400 font-normal">ETH</span>
                 </div>
                 <Button
                   onClick={handlePurchase}
                   disabled={isProcessing}
-                  className="h-9 px-6 bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-200 font-medium text-sm rounded-sm disabled:opacity-50"
+                  className="h-8 px-4 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-medium text-xs rounded-sm disabled:opacity-50"
                 >
                   {isProcessing ? "..." : "BUY"}
                 </Button>
               </div>
             ) : price !== "--" ? (
               <div className="w-full h-9 bg-neutral-700/50 border border-neutral-600 rounded-sm flex items-center justify-center">
-                <span className="text-sm font-medium text-blue-500">SOLD</span>
+                <span className="text-xs sm:text-sm font-medium text-blue-500">SOLD</span>
               </div>
             ) : null}
           </div>
@@ -258,8 +258,8 @@ export default function NFTCard({
       <div className="px-2 pt-2">
         <div className="flex items-center justify-between">
           <Link href={`/nft/${tokenId}`} className="block">
-            <h3 className="font-medium text-sm leading-tight text-neutral-100">
-              #{tokenId}
+            <h3 className="font-medium text-xs sm:text-sm leading-tight text-neutral-100 truncate">
+              {name}
             </h3>
           </Link>
           
@@ -282,28 +282,6 @@ export default function NFTCard({
         </div>
       </div>
 
-      {/* Buy Section - Medium grid design */}
-      <div className="px-2 pt-2 pb-4">
-        {isForSale ? (
-          <div className="flex items-center gap-2">
-            <div className="flex-1 h-8 bg-transparent border border-blue-500 rounded-sm px-3 flex items-center justify-between cursor-default">
-              <span className="text-sm font-normal text-blue-500">{price}</span>
-              <span className="text-xs text-neutral-400 font-normal">ETH</span>
-            </div>
-            <Button
-              onClick={handlePurchase}
-              disabled={isProcessing}
-              className="h-8 px-4 bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-200 font-medium text-sm rounded-sm disabled:opacity-50"
-            >
-              {isProcessing ? "..." : "BUY"}
-            </Button>
-          </div>
-        ) : price !== "--" ? (
-          <div className="w-full h-8 bg-neutral-700/50 border border-neutral-600 rounded-sm flex items-center justify-center">
-            <span className="text-sm font-medium text-blue-500">SOLD</span>
-          </div>
-        ) : null}
-      </div>
     </div>
   );
 }

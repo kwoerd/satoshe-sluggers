@@ -89,8 +89,8 @@
   border-radius: var(--radius);
 }
 
-/* Custom checkbox styling */
-input[type="checkbox"] {
+/* Custom checkbox styling - exclude sidebar checkboxes */
+input[type="checkbox"]:not(.sidebar-checkbox) {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 0.25rem;
@@ -103,7 +103,7 @@ input[type="checkbox"] {
   position: relative;
 }
 
-input[type="checkbox"]:checked {
+input[type="checkbox"]:not(.sidebar-checkbox):checked {
   /* Checkmark is handled by individual components with ::after pseudo-elements */
 }
 

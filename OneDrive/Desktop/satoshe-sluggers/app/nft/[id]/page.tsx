@@ -456,11 +456,11 @@ export default function NFTDetailPage() {
                             className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: color }}
                           />
-                          <p className="text-xs font-medium uppercase tracking-wide" style={{ color: color }}>
+                          <p className="text-sm font-medium uppercase tracking-wide" style={{ color: color }}>
                             {attr.name}
                           </p>
                         </div>
-                        <p className="font-semibold text-lg text-neutral-100 leading-tight">{attr.value}</p>
+                        <p className="font-medium text-base text-neutral-100 leading-tight">{attr.value}</p>
                         <div className="text-sm text-neutral-400 mt-1">
                           <p className="leading-tight">{attr.percentage}% have this trait</p>
                         </div>
@@ -479,11 +479,11 @@ export default function NFTDetailPage() {
                             className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: color }}
                           />
-                          <p className="text-xs font-medium uppercase tracking-wide" style={{ color: color }}>
+                          <p className="text-sm font-medium uppercase tracking-wide" style={{ color: color }}>
                             {attr.name}
                           </p>
                         </div>
-                        <p className="font-semibold text-lg text-neutral-100 leading-tight">{attr.value}</p>
+                        <p className="font-medium text-base text-neutral-100 leading-tight">{attr.value}</p>
                         <div className="text-sm text-neutral-400 mt-1">
                           <p className="leading-tight">{attr.percentage}% have this trait</p>
                         </div>
@@ -524,20 +524,23 @@ export default function NFTDetailPage() {
               
               {/* Buy a Slugger */}
               {isForSale ? (
-                <div className="p-4 rounded-sm border border-[#3B82F6] bg-transparent">
+                <div className="p-4 rounded-sm bg-neutral-800/50">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]"></div>
                       <span className="text-neutral-300 text-sm font-medium">Buy a Slugger</span>
                     </div>
-                    <span className="text-xl font-bold text-[#3B82F6]">{`${listingPrice} ETH`}</span>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-[#3B82F6]">{listingPrice}</div>
+                      <div className="text-sm text-neutral-400">ETH</div>
+                    </div>
                   </div>
                   <Button
                     onClick={handlePurchase}
                     disabled={isProcessing || !listingData}
-                    className="w-full h-12 bg-transparent border border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white transition-all duration-200 font-semibold text-base rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-12 bg-[#3B82F6] text-white hover:bg-[#2563EB] transition-all duration-200 font-semibold text-base rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isProcessing ? "Processing..." : listingData ? "BUY NOW" : "Not Listed"}
+                    {isProcessing ? "Processing..." : listingData ? "BUY" : "Not Listed"}
                   </Button>
                 </div>
               ) : (

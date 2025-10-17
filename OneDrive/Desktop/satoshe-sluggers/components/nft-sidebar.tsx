@@ -16,9 +16,9 @@ const track = (...args: unknown[]) => {
 // Helper function to shorten skin tone names for display
 const shortenSkinToneName = (name: string): string => {
   const shortNames: Record<string, string> = {
-    'Medium Dark': 'MED Dark',
-    'Medium Light': 'MED Light',
-    'Medium': 'MED',
+    'Medium Dark': 'MedDark',
+    'Medium Light': 'MedLight',
+    'Medium': 'Medium',
     'Dark': 'Dark',
     'Light': 'Light',
     'Darkest': 'Darkest',
@@ -81,9 +81,9 @@ function FilterCategory({ title, color, options, twoColumns = false, icon, selec
   const context = React.useContext(FilterContext) || defaultContextValue;
   const { registerResetFunction, registerCloseFunction } = context as FilterContextType;
 
-  // Keep category open if it has active selections
+  // Keep category open if it has active selections, but allow manual closing
   const hasActiveSelections = selected && selected.length > 0;
-  const shouldBeOpen = isOpen || hasActiveSelections;
+  const shouldBeOpen = isOpen;
 
   // Register reset function
   React.useEffect(() => {
@@ -143,13 +143,16 @@ function FilterCategory({ title, color, options, twoColumns = false, icon, selec
   return (
     <div className={`${shouldBeOpen ? 'pt-3 pb-3' : 'pt-1'}`}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('FilterCategory clicked:', title, 'Current state:', isOpen)
+          setIsOpen(!isOpen)
+        }}
         className={`w-full flex items-center justify-between text-neutral-100 py-2 focus:outline-none ${shouldBeOpen ? `border-b ${borderColorClasses[color]} pb-2` : ''}`}
         aria-expanded={shouldBeOpen}
       >
         <div className="flex items-center gap-2">
           {icon && <span className={`${colorClasses[color]}`}>{icon}</span>}
-          <h3 className={`font-normal text-base ${shouldBeOpen ? colorClasses[color] : 'text-neutral-100'}`}>{title}</h3>
+          <h3 className={`font-normal text-sm ${shouldBeOpen ? colorClasses[color] : 'text-neutral-100'}`}>{title}</h3>
       </div>
         {shouldBeOpen ? (
           <ChevronDown className={`h-5 w-5 ${colorClasses[color]}`} />
@@ -171,7 +174,7 @@ function FilterCategory({ title, color, options, twoColumns = false, icon, selec
                     id={optValue}
                     checked={selected?.includes(optValue) ?? false}
                     onChange={() => handleCheckboxChange(optValue)}
-                    className={`mr-2 appearance-none w-4 h-4 min-w-[16px] min-h-[16px] flex-shrink-0 rounded-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-${color}-400 focus:ring-offset-0 transition-colors relative ${bgColorClasses[color]} checked:after:content-['✓'] checked:after:text-white checked:after:text-[10px] checked:after:font-light checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center`}
+                    className={`sidebar-checkbox mr-2 appearance-none w-4 h-4 min-w-[16px] min-h-[16px] flex-shrink-0 rounded-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-${color}-400 focus:ring-offset-0 transition-colors relative ${bgColorClasses[color]} checked:after:content-['✓'] checked:after:text-white checked:after:text-[10px] checked:after:font-light checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center`}
                   />
                   <label
                     htmlFor={optValue}
@@ -293,13 +296,16 @@ function RarityTiersCategory({ title, color, icon, selected = [], onChange, trai
   return (
     <div className={`${isOpen ? 'pt-3 pb-3' : 'pt-1'}`}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('Category clicked:', title, 'Current state:', isOpen)
+          setIsOpen(!isOpen)
+        }}
         className={`w-full flex items-center justify-between text-neutral-100 py-2 focus:outline-none ${isOpen ? `border-b border-orange-500 pb-2` : ''}`}
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-2">
           {icon && <span className={`${colorClasses[color]}`}>{icon}</span>}
-          <h3 className={`font-normal text-base ${isOpen ? colorClasses[color] : 'text-neutral-100'}`}>{title}</h3>
+          <h3 className={`font-normal text-sm ${isOpen ? colorClasses[color] : 'text-neutral-100'}`}>{title}</h3>
       </div>
         {isOpen ? (
           <ChevronDown className={`h-5 w-5 ${colorClasses[color]}`} />
@@ -336,11 +342,11 @@ function RarityTiersCategory({ title, color, icon, selected = [], onChange, trai
                     id={option.value}
                     checked={selected?.includes(option.value) ?? false}
                     onChange={() => handleCheckboxChange(option.value)}
-                    className={`mr-2 appearance-none w-4 h-4 rounded-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-${color}-400 focus:ring-offset-0 transition-colors cursor-pointer relative ${bgColorClasses[color]} checked:after:content-['✓'] checked:after:text-white checked:after:text-[10px] checked:after:font-light checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center`}
+                    className={`sidebar-checkbox mr-2 appearance-none w-4 h-4 rounded-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-${color}-400 focus:ring-offset-0 transition-colors cursor-pointer relative ${bgColorClasses[color]} checked:after:content-['✓'] checked:after:text-white checked:after:text-[10px] checked:after:font-light checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center`}
                   />
                   <label
                     htmlFor={option.value}
-                    className="text-xs text-neutral-300 cursor-pointer flex-1 py-1 leading-tight w-full"
+                    className="text-xs font-normal text-neutral-300 cursor-pointer flex-1 py-1 leading-tight w-full"
                   >
                     <div className="grid grid-cols-2 gap-x-4 items-center">
                       <span className="text-left whitespace-nowrap">{option.display.replace('\n', ' ')}</span>
@@ -370,9 +376,9 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
   const context = React.useContext(FilterContext) || defaultContextValue;
   const { registerResetFunction, registerCloseFunction } = context as FilterContextType;
 
-  // Keep category open if it has active selections
+  // Keep category open if it has active selections, but allow manual closing
   const hasActiveSelections = selected && Object.values(selected).some(arr => arr && arr.length > 0);
-  const shouldBeOpen = isOpen || hasActiveSelections;
+  const shouldBeOpen = isOpen;
 
   React.useEffect(() => {
     registerResetFunction(() => {
@@ -448,13 +454,16 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
   return (
     <div className={`${shouldBeOpen ? 'pt-3 pb-3' : 'pt-1'}`}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('FilterCategory clicked:', title, 'Current state:', isOpen)
+          setIsOpen(!isOpen)
+        }}
         className={`w-full flex items-center justify-between text-neutral-100 py-2 focus:outline-none ${shouldBeOpen ? `border-b ${borderColorClasses[color]} pb-2` : ''}`}
         aria-expanded={shouldBeOpen}
       >
         <div className="flex items-center gap-2">
           {icon && <span className={`${colorClasses[color]}`}>{icon}</span>}
-          <h3 className={`font-normal text-base ${shouldBeOpen ? colorClasses[color] : 'text-neutral-100'}`}>{title}</h3>
+          <h3 className={`font-normal text-sm ${shouldBeOpen ? colorClasses[color] : 'text-neutral-100'}`}>{title}</h3>
         </div>
         {shouldBeOpen ? (
           <ChevronDown className={`h-5 w-5 ${colorClasses[color]}`} />
@@ -481,7 +490,7 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
                     id={`subcat-${subcategory.name}`}
                     checked={isChecked}
                     onChange={() => handleSubcategoryCheckbox(subcategory.name)}
-                    className={`mr-2 appearance-none w-4 h-4 min-w-[16px] min-h-[16px] flex-shrink-0 rounded-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-${color}-400 focus:ring-offset-0 transition-colors relative ${bgColorClasses[color]} checked:after:content-['✓'] checked:after:text-white checked:after:text-[10px] checked:after:font-light checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center`}
+                    className={`sidebar-checkbox mr-2 appearance-none w-4 h-4 min-w-[16px] min-h-[16px] flex-shrink-0 rounded-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-${color}-400 focus:ring-offset-0 transition-colors relative ${bgColorClasses[color]} checked:after:content-['✓'] checked:after:text-white checked:after:text-[10px] checked:after:font-light checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center`}
                     onClick={(e: React.MouseEvent) => e.stopPropagation()}
                   />
                   <label
@@ -519,7 +528,7 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
                           id={`${subcategory.name}-${option}`}
                           checked={selected[subcategory.name]?.includes(option) ?? false}
                           onChange={() => handleColorCheckbox(subcategory.name, option)}
-                          className={`mr-2 appearance-none w-4 h-4 min-w-[16px] min-h-[16px] flex-shrink-0 rounded-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-${color}-400 focus:ring-offset-0 transition-colors relative ${bgColorClasses[color]} checked:after:content-['✓'] checked:after:text-white checked:after:text-[10px] checked:after:font-light checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center`}
+                          className={`sidebar-checkbox mr-2 appearance-none w-4 h-4 min-w-[16px] min-h-[16px] flex-shrink-0 rounded-sm border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-${color}-400 focus:ring-offset-0 transition-colors relative ${bgColorClasses[color]} checked:after:content-['✓'] checked:after:text-white checked:after:text-[10px] checked:after:font-light checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center`}
                         />
                         <label
                           htmlFor={`${subcategory.name}-${option}`}
@@ -590,12 +599,18 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
 
   // Function to clear all filters
   const clearAllFilters = () => {
+    console.log('Clearing all filters...')
     // Clear the search term
     setSearchTerm("")
+    // Reset search mode to default
+    setSearchMode("contains")
+    // Clear all selected filters first
+    setSelectedFilters({})
     // Call all registered reset functions
     resetFunctions.current.forEach((resetFn) => resetFn())
     // Close all dropdowns
     closeFunctions.current.forEach((closeFn) => closeFn())
+    console.log('All filters cleared')
   }
 
   // Function to close all dropdowns
@@ -613,10 +628,10 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
 
   return (
     <div
-      className="w-full max-w-[95vw] sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl bg-card rounded border border-neutral-700 shadow-sm max-h-[calc(100vh-120px)] flex flex-col"
+      className="w-full max-w-[95vw] sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl bg-card rounded border border-neutral-700 shadow-sm flex flex-col"
       suppressHydrationWarning={true}
     >
-      <div className="p-3 lg:p-4 pt-6 space-y-2 overflow-y-auto flex-1">
+      <div className="p-3 lg:p-4 pt-6 space-y-2 pb-8">
       <div className="space-y-1 mb-4 p-3 border border-neutral-700 rounded">
         <div>
           <div className="text-xs font-normal text-neutral-300 mb-0">Blockchain: Base</div>        </div>
@@ -672,7 +687,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
       <div className="border-b border-neutral-700 mb-4"></div>
 
       <div suppressHydrationWarning={true}>
-        <h3 className="font-normal mb-3 text-neutral-100 text-base">Search</h3>
+        <h3 className="font-normal mb-3 text-neutral-100 text-sm">Search</h3>
         
         {/* Contains/Exact Toggle */}
         <div className="flex gap-0 mb-3 rounded overflow-hidden border border-neutral-700">
@@ -749,13 +764,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
 
       {/* Clear All Filters Button */}
       <div>
-        <Button variant="outline" size="sm" onClick={() => {
-          track('Clear All Filters Clicked', {
-            filtersCleared: Object.keys(selectedFilters).length,
-            hasSearchTerm: searchTerm.length > 0
-          });
-          clearAllFilters();
-        }} className="text-sm font-normal flex items-center justify-center gap-2 h-9 w-full rounded border-neutral-600 bg-neutral-950/80 backdrop-blur-md hover:bg-neutral-900 hover:border-[#ff0099]/50 transition-all duration-200">
+        <Button variant="outline" size="sm" onClick={clearAllFilters} className="text-sm font-normal flex items-center justify-center gap-2 h-9 w-full rounded border-neutral-600 bg-neutral-950/80 backdrop-blur-md hover:bg-neutral-900 hover:border-[#ff0099]/50 transition-all duration-200">
           <X className="h-4 w-4" /> Clear All Filters
         </Button>
       </div>

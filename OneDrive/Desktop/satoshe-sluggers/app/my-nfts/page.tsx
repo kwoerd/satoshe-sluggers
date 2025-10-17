@@ -29,7 +29,7 @@ function MyNFTsContent() {
   const searchParams = useSearchParams()
   const tabParam = searchParams.get("tab")
 
-  const [activeTab, setActiveTab] = useState(tabParam || "owned")
+  const [activeTab, setActiveTab] = useState("owned")
   const [isLoading, setIsLoading] = useState(true)
   const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([])
 
@@ -37,7 +37,7 @@ function MyNFTsContent() {
   const { favorites } = useFavorites()
 
   useEffect(() => {
-    if (tabParam) {
+    if (tabParam && (tabParam === "owned" || tabParam === "favorites")) {
       setActiveTab(tabParam)
     }
   }, [tabParam])
