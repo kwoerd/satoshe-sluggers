@@ -152,7 +152,7 @@ export default function NFTCard({
           {/* Title and Favorite */}
           <div className="flex items-start justify-between gap-2">
             <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
-              <h3 className="font-medium text-xs leading-tight text-[#FFFBEB] truncate">
+              <h3 className="font-medium text-sm leading-tight text-[#FFFBEB] truncate">
                 {name}
               </h3>
             </Link>
@@ -185,10 +185,10 @@ export default function NFTCard({
           {/* Buy Section */}
           <div className="mt-3">
             {isForSale && listingId ? (
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 <div className="text-xs text-[#FFFBEB]">Buy Now</div>
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-blue-500 font-medium">
+                <div className="flex items-end justify-between">
+                  <div className="text-sm text-blue-500 font-medium">
                     {priceEth} ETH
                   </div>
                   <BuyDirectListingButton
@@ -208,12 +208,15 @@ export default function NFTCard({
                       console.error('Purchase failed:', error);
                       track('NFT Purchase Failed', { tokenId });
                     }}
-                    className="!px-2 sm:!px-3 !py-1.5 !bg-[#ff0099] !text-[#FFFBEB] !font-medium !rounded-sm hover:!bg-[#ff0099]/90 !transition-all !text-xs sm:!text-sm !disabled:opacity-50 !disabled:cursor-not-allowed !h-auto !min-h-0"
+                    className="!px-3 !py-1.5 !bg-blue-500 !text-[#FFFBEB] !font-normal !rounded hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
                     style={{
-                      padding: '6px 8px',
+                      padding: '6px 12px',
                       fontSize: '12px',
                       height: 'auto',
-                      minHeight: 'unset'
+                      minHeight: 'unset',
+                      width: 'auto',
+                      minWidth: 'unset',
+                      borderRadius: '2px'
                     }}
                   >
                     BUY
@@ -221,15 +224,12 @@ export default function NFTCard({
                 </div>
               </div>
             ) : priceEth > 0 ? (
-              <div className="space-y-1">
-                <div className="text-xs text-[#FFFBEB]">Buy Now</div>
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-neutral-400 font-medium">
-                    SOLD
-                  </div>
-                  <div className="px-2 py-1 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
-                    SOLD
-                  </div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-neutral-400 font-medium">
+                  SOLD
+                </div>
+                <div className="px-2 py-1 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
+                  SOLD
                 </div>
               </div>
             ) : null}
@@ -272,9 +272,10 @@ export default function NFTCard({
         </div>
       </Link>
 
-      {/* NFT Title Section - Medium grid design */}
-      <div className="px-4 pt-4 pb-4 flex-1 flex flex-col">
-        <div className="flex items-center justify-between gap-2 w-full">
+      {/* NFT Details Section - Medium grid design */}
+      <div className="px-3 pt-2 pb-3 flex-1 flex flex-col">
+        {/* Title and Favorite */}
+        <div className="flex items-center justify-between gap-2 mb-2">
           <Link href={`/nft/${tokenId}`} className="block flex-1 min-w-0">
             <h3 className="font-normal text-xs leading-tight text-[#FFFBEB] line-clamp-2 truncate">
               {name}
@@ -289,6 +290,57 @@ export default function NFTCard({
             <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-[#FFFBEB] hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
           </Button>
         </div>
+
+        {/* Buy Section - Minimal */}
+        {isForSale && listingId ? (
+          <div className="space-y-1">
+            <div className="text-xs text-[#FFFBEB]">Buy Now</div>
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-blue-500 font-medium">
+                {priceEth} ETH
+              </div>
+              <BuyDirectListingButton
+                contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
+                client={client}
+                chain={base}
+                listingId={BigInt(listingId)}
+                quantity={1n}
+                onTransactionSent={() => {
+                  track('NFT Purchase Attempted', { tokenId });
+                }}
+                onTransactionConfirmed={() => {
+                  track('NFT Purchase Success', { tokenId });
+                  if (onPurchase) onPurchase();
+                }}
+                onError={(error) => {
+                  console.error('Purchase failed:', error);
+                  track('NFT Purchase Failed', { tokenId });
+                }}
+                className="!px-2 !py-1 !bg-blue-500 !text-[#FFFBEB] !font-normal !rounded hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  height: 'auto',
+                  minHeight: 'unset',
+                  width: 'auto',
+                  minWidth: 'unset',
+                  borderRadius: '2px'
+                }}
+              >
+                BUY
+              </BuyDirectListingButton>
+            </div>
+          </div>
+        ) : priceEth > 0 ? (
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-neutral-400 font-medium">
+              SOLD
+            </div>
+            <div className="px-2 py-1 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
+              SOLD
+            </div>
+          </div>
+        ) : null}
       </div>
 
     </div>

@@ -733,7 +733,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                       <td className="px-6 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rank} / 7777</td>
                       <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarityPercent}%</td>
                       <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarity}</td>
-                      <td className="px-4 py-3 text-xs font-normal text-blue-500">{nft.priceEth} ETH</td>
+                      <td className="px-4 py-3 text-xs font-normal text-blue-500 whitespace-nowrap">{nft.priceEth} ETH</td>
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={(e) => {
@@ -779,12 +779,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                                   console.error('Purchase failed:', error);
                                   track('NFT Purchase Failed', { tokenId: nft.tokenId });
                                 }}
-                                className="!px-2 sm:!px-3 !py-1.5 !bg-[#ff0099] !text-[#FFFBEB] hover:!bg-[#ff0099]/90 !transition-all !text-xs sm:!text-sm !font-medium !disabled:opacity-50 !h-auto !min-h-0 !rounded-sm"
+                                className="!px-3 !py-1.5 !bg-blue-500 !text-[#FFFBEB] hover:!bg-blue-600 !transition-all !text-xs !font-medium !disabled:opacity-50 !h-auto !min-h-0 !rounded"
                                 style={{
-                                  padding: '6px 8px',
+                                  padding: '6px 12px',
                                   fontSize: '12px',
                                   height: 'auto',
-                                  minHeight: 'unset'
+                                  minHeight: 'unset',
+                                  borderRadius: '2px'
                                 }}
                               >
                                 Buy

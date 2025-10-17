@@ -20,7 +20,7 @@ import { buyFromListing } from "thirdweb/extensions/marketplace";
 import { marketplace } from "../../../lib/contracts";
 import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
-import { chunkedDataService } from "@/lib/chunked-data-service";
+import { getNFTByTokenId } from "@/lib/data-service";
 // import { track } from '@vercel/analytics';
 
 // Consistent color scheme based on the radial chart
@@ -94,9 +94,9 @@ export default function NFTDetailPage() {
       setIsLoading(false);
     }, 10000); // 10 second timeout
 
-    // Load NFT data using chunked data service
-    chunkedDataService.getNFTByTokenId(tokenId)
-      .then((nftData) => {
+    // Load NFT data using data service
+    getNFTByTokenId(tokenId)
+      .then((nftData: any) => {
         console.log("NFT data loaded:", nftData);
         
         if (nftData) {
@@ -119,7 +119,7 @@ export default function NFTDetailPage() {
         clearTimeout(timeoutId);
         setIsLoading(false);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error(`[NFT Detail] Error loading data for token ${tokenId}:`, error);
         setMetadata(null);
         setImageUrl("/media/nfts/placeholder-nft.webp");
@@ -151,6 +151,9 @@ export default function NFTDetailPage() {
   const priceEth = metadata?.merged_data?.price_eth || 0;
   const listingId = metadata?.merged_data?.listing_id || 0;
   const isForSale = priceEth > 0 && listingId;
+  
+  // Check if this is a test NFT (token IDs 0-9)
+  const isTestNFT = parseInt(tokenId) >= 0 && parseInt(tokenId) <= 9;
 
   // Handle favorite toggle
   const handleFavoriteToggle = () => {
@@ -289,112 +292,114 @@ export default function NFTDetailPage() {
               </div>
             </div>
 
-            {/* IPFS Links */}
-            <div className="space-y-3">
-              <a
-                href={metadata?.merged_data?.metadata_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                  className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-green-500 focus:outline-none"
-                aria-label="View token metadata on IPFS"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: COLORS.hair + '20' }}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      style={{ color: COLORS.hair }}
-                      aria-hidden="true"
-                    >
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14,2 14,8 20,8"></polyline>
-                      <line x1="16" y1="13" x2="8" y2="13"></line>
-                      <line x1="16" y1="17" x2="8" y2="17"></line>
-                      <polyline points="10,9 9,9 8,9"></polyline>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: COLORS.hair }}>Token URI</p>
-                    <p className="text-xs text-neutral-400">View metadata on IPFS</p>
-                  </div>
-                </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-neutral-400 group-hover:text-green-500 transition-colors"
-                  aria-hidden="true"
+            {/* IPFS Links - Hidden for test NFTs */}
+            {!isTestNFT && (
+              <div className="space-y-3">
+                <a
+                  href={metadata?.merged_data?.metadata_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-green-500 focus:outline-none"
+                  aria-label="View token metadata on IPFS"
                 >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-              </a>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: COLORS.hair + '20' }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ color: COLORS.hair }}
+                        aria-hidden="true"
+                      >
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10,9 9,9 8,9"></polyline>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: COLORS.hair }}>Token URI</p>
+                      <p className="text-xs text-neutral-400">View metadata on IPFS</p>
+                    </div>
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-neutral-400 group-hover:text-green-500 transition-colors"
+                    aria-hidden="true"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
 
-              <a
-                href={metadata?.merged_data?.media_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                  className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                aria-label="View NFT image on IPFS"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: COLORS.background + '20' }}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      style={{ color: COLORS.background }}
-                      aria-hidden="true"
-                    >
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                      <polyline points="21,15 16,10 5,21"></polyline>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: COLORS.background }}>Media URI</p>
-                    <p className="text-xs text-neutral-400">View image on IPFS</p>
-                  </div>
-                </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-neutral-400 group-hover:text-blue-500 transition-colors"
-                  aria-hidden="true"
+                <a
+                  href={metadata?.merged_data?.media_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  aria-label="View NFT image on IPFS"
                 >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-              </a>
-            </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: COLORS.background + '20' }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ color: COLORS.background }}
+                        aria-hidden="true"
+                      >
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21,15 16,10 5,21"></polyline>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: COLORS.background }}>Media URI</p>
+                      <p className="text-xs text-neutral-400">View image on IPFS</p>
+                    </div>
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-neutral-400 group-hover:text-blue-500 transition-colors"
+                    aria-hidden="true"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+              </div>
+            )}
 
           </div>
 

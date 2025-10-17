@@ -334,7 +334,9 @@ function RarityTiersCategory({ title, color, icon, selected = [], onChange, trai
                     <div className="flex items-center justify-between">
                       <span>{option.display.replace('\n', ' ')}</span>
                       {(() => {
-                        const count = traitCounts["rarity"]?.[option.value];
+                        // For Grand Slam, look for the processed value without "(Ultra-Legendary)"
+                        const lookupValue = option.value === "Grand Slam (Ultra-Legendary)" ? "Grand Slam" : option.value;
+                        const count = traitCounts["rarity"]?.[lookupValue];
                         return count ? (
                           <span className={`${colorClasses[color]} text-xs font-medium`}>
                             ({count})
@@ -665,29 +667,29 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
       className="w-full max-w-[95vw] sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl space-y-2 bg-card p-3 lg:p-4 pt-6 rounded border border-neutral-700 shadow-sm"
       suppressHydrationWarning={true}
     >
-        <div className="space-y-1 mb-4 p-3 border border-neutral-700 rounded">
-          <div>
-            <div className="text-xs font-inconsolata text-off-white mb-0">Blockchain: Base</div>        </div>
-          <div>
-            <div className="text-xs font-inconsolata text-off-white mb-0">Chain ID: 8453</div>        </div>
-          <div>
-            <div className="text-xs font-inconsolata text-off-white mb-2">Token Standard: ERC-721</div>        </div>
+      <div className="space-y-1 mb-4 p-3 border border-neutral-700 rounded">
+        <div>
+          <div className="text-[11px] font-inconsolata text-off-white mb-0">Blockchain: Base</div>        </div>
+        <div>
+          <div className="text-[11px] font-inconsolata text-off-white mb-0">Chain ID: 8453</div>        </div>
+        <div>
+          <div className="text-[11px] font-inconsolata text-off-white mb-2">Token Standard: ERC-721</div>        </div>
 
         {/* Contract Links */}
         <div className="space-y-3 mt-3">
           <div>
-            <h4 className="text-xs font-inconsolata text-off-white mb-2">Marketplace</h4>
+            <h4 className="text-[11px] font-inconsolata text-off-white mb-2">Marketplace</h4>
             <div className="flex gap-2">
               <button
                 onClick={() => window.open('https://basescan.org/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-xs font-inconsolata px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
               >
                 BaseScan
                 <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
               </button>
               <button
                 onClick={() => window.open('https://base.blockscout.com/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-xs font-inconsolata px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
               >
                 Blockscout
                 <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
@@ -696,18 +698,18 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           </div>
 
           <div>
-            <h4 className="text-xs font-inconsolata text-off-white mb-2">NFT Contract</h4>
+            <h4 className="text-[11px] font-inconsolata text-off-white mb-2">NFT Contract</h4>
             <div className="flex gap-2">
               <button
                 onClick={() => window.open('https://basescan.org/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-xs font-inconsolata px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
               >
                 BaseScan
                 <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
               </button>
               <button
                 onClick={() => window.open('https://base.blockscout.com/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-xs font-inconsolata px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
               >
                 Blockscout
                 <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
@@ -729,8 +731,8 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
               onClick={() => setSearchMode("contains")}
               className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors ${
                 searchMode === "contains"
-                  ? "bg-[#ff0099] text-[#FFFBEB]"
-                  : "text-neutral-400 hover:text-[#FFFBEB]"
+                  ? "bg-[#ff0099] text-white"
+                  : "text-neutral-400 hover:text-white"
               }`}
             >
               Contains
@@ -739,8 +741,8 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
               onClick={() => setSearchMode("exact")}
               className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors ${
                 searchMode === "exact"
-                  ? "bg-[#ff0099] text-[#FFFBEB]"
-                  : "text-neutral-400 hover:text-[#FFFBEB]"
+                  ? "bg-[#ff0099] text-white"
+                  : "text-neutral-400 hover:text-white"
               }`}
             >
               Exact
@@ -789,7 +791,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           title="Rarity Tiers"
           color="orange"
           icon={
-            <img
+            <Image
               src="/icons/nft-sidebar-categories/rarity-tier-orange.svg"
               alt="Rarity Tiers"
               width={18}
@@ -807,7 +809,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           color="blue"
           twoColumns={false}
           icon={
-            <img
+            <Image
               src="/icons/nft-sidebar-categories/background-blue.svg"
               alt="Background"
               width={18}
@@ -826,7 +828,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           color="amber"
           twoColumns={false}
           icon={
-            <img src="/icons/nft-sidebar-categories/skin-tone-yellow.svg" alt="Skin Tone" width={18} height={18} className="text-amber-400" />
+            <Image src="/icons/nft-sidebar-categories/skin-tone-yellow.svg" alt="Skin Tone" width={18} height={18} className="text-amber-400" sizes="18px" />
           }
           options={traitCounts["skinTone"] ? Object.keys(traitCounts["skinTone"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.skinTone.map(value => ({ value, display: value }))}
           selected={selectedFilters.skinTone || []}
@@ -838,7 +840,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           title="Shirt"
           color="red"
           twoColumns={false}
-          icon={<img src="/icons/nft-sidebar-categories/shirt-red.svg" alt="Shirt" width={18} height={18} className="text-red-400" />}
+          icon={<Image src="/icons/nft-sidebar-categories/shirt-red.svg" alt="Shirt" width={18} height={18} className="text-red-400" sizes="18px" />}
           options={traitCounts["shirt"] ? Object.keys(traitCounts["shirt"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.shirt.map(value => ({ value, display: value }))}
           selected={selectedFilters.shirt || []}
           onChange={arr => setSelectedFilters((f: any) => ({ ...f, shirt: arr }))}
@@ -849,11 +851,8 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           title="Hair"
           color="green"
           twoColumns={false}
-          icon={<img src="/icons/nft-sidebar-categories/hair-green.svg" alt="Hair" width={18} height={18} className="text-green-400" />}
-          subcategories={traitCounts["hair"] ? Object.keys(traitCounts["hair"]).map(hairType => ({
-            name: hairType,
-            options: Object.keys(traitCounts["hair"][hairType] || {})
-          })) : FALLBACK_OPTIONS.hair}
+          icon={<Image src="/icons/nft-sidebar-categories/hair-green.svg" alt="Hair" width={18} height={18} className="text-green-400" sizes="18px" />}
+          subcategories={FALLBACK_OPTIONS.hair}
           selected={selectedFilters.hair || {}}
           onChange={selected => setSelectedFilters((f: any) => ({ ...f, hair: selected }))}
           traitCounts={traitCounts}
@@ -863,7 +862,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           title="Eyewear"
           color="cyan"
           twoColumns={false}
-          icon={<img src="/icons/nft-sidebar-categories/eyewear-blue.svg" alt="Eyewear" width={18} height={18} className="text-cyan-400" />}
+          icon={<Image src="/icons/nft-sidebar-categories/eyewear-blue.svg" alt="Eyewear" width={18} height={18} className="text-cyan-400" sizes="18px" />}
           options={[
             // Values match the cleaned combined_metadata.json (no "Eyewear" prefix)
             "Eyeglasses",
@@ -883,12 +882,9 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           color="purple"
           twoColumns={false}
           icon={
-            <img src="/icons/nft-sidebar-categories/headwear-purple.svg" alt="Headwear" width={18} height={18} className="text-purple-400" />
+            <Image src="/icons/nft-sidebar-categories/headwear-purple.svg" alt="Headwear" width={18} height={18} className="text-purple-400" sizes="18px" />
           }
-          subcategories={traitCounts["headwear"] ? Object.keys(traitCounts["headwear"]).map(headwearType => ({
-            name: headwearType,
-            options: Object.keys(traitCounts["headwear"][headwearType] || {})
-          })) : FALLBACK_OPTIONS.headwear}
+          subcategories={FALLBACK_OPTIONS.headwear}
           selected={selectedFilters.headwear || {}}
           onChange={selected => setSelectedFilters((f: any) => ({ ...f, headwear: selected }))}
           traitCounts={traitCounts}

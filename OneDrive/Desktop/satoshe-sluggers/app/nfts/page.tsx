@@ -11,9 +11,7 @@ export default function NFTsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [searchMode, setSearchMode] = useState<"contains" | "exact">("contains")
   const [selectedFilters, setSelectedFilters] = useState({})
-  // Removed unused filteredCount and traitCounts state variables
-
-  // Removed unused callback functions
+  const [traitCounts, setTraitCounts] = useState<Record<string, Record<string, number>>>({})
 
   return (
     <main className="min-h-screen bg-background text-[#FFFBEB] pt-24 sm:pt-28">
@@ -42,6 +40,7 @@ export default function NFTsPage() {
               setSearchMode={setSearchMode}
               selectedFilters={selectedFilters}
               setSelectedFilters={setSelectedFilters}
+              traitCounts={traitCounts}
             />
           </div>
           <div className="flex-1 min-w-0">
@@ -50,7 +49,7 @@ export default function NFTsPage() {
               searchMode={searchMode}
               selectedFilters={selectedFilters}
               onFilteredCountChange={() => {}} // Empty callback since we don't use the count
-              onTraitCountsChange={() => {}} // Empty callback since we don't use the counts
+              onTraitCountsChange={setTraitCounts} // Pass trait counts to sidebar
             />
           </div>
         </div>
