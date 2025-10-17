@@ -6,7 +6,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import CustomAuthButton from "@/components/custom-auth-button"
+import SimpleConnectButton from "@/components/simple-connect-button"
 
 interface MobileMenuProps {
   isWalletConnected?: boolean
@@ -115,7 +115,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
 
         <div className="flex flex-col gap-2 py-2 items-center">
                   <div className="mb-6 flex items-center gap-3">
-                    <CustomAuthButton />
+                    <SimpleConnectButton />
                   </div>
           <nav className="flex flex-col space-y-1 items-center w-full animate-in fade-in slide-in-from-top-2 duration-500 delay-100">
             <Link

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { MobileMenu } from "@/components/mobile-menu"
-import CustomAuthButton from "@/components/custom-auth-button"
+import SimpleConnectButton from "@/components/simple-connect-button"
 import { useActiveAccount } from "thirdweb/react"
 
 interface NavigationProps {
@@ -100,7 +100,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           </Link>
         )}
                 <div className="hidden lg:block">
-                  <CustomAuthButton />
+                  <SimpleConnectButton />
                 </div>
         <MobileMenu isWalletConnected={!!account} />
       </div>
