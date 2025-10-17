@@ -464,7 +464,8 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     <div className="w-full max-w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pl-2">
         <div>
-          <h2 className="text-lg font-medium">NFT Collection</h2>
+          <h1 className="text-2xl font-bold text-white mb-1">SATOSHE SLUGGERS</h1>
+          <h2 className="text-lg font-medium text-neutral-300">NFT Collection</h2>
           {filteredNFTs.length > 0 && (
             <>
               <div className="text-sm font-medium text-[#ff0099] mt-1">

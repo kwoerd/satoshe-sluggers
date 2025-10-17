@@ -695,7 +695,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
             className={`flex-1 py-2 text-sm font-normal transition-colors cursor-pointer ${
               searchMode === "contains"
                 ? "bg-[#ff0099] text-white"
-                : "bg-transparent text-neutral-400 hover:text-neutral-200"
+                : "bg-neutral-900 text-neutral-400 hover:text-neutral-200"
             }`}
             onClick={() => {
               setSearchMode("contains");
@@ -708,7 +708,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
             className={`flex-1 py-2 text-sm font-normal transition-colors cursor-pointer ${
               searchMode === "exact"
                 ? "bg-[#ff0099] text-white"
-                : "bg-transparent text-neutral-400 hover:text-neutral-200"
+                : "bg-neutral-900 text-neutral-400 hover:text-neutral-200"
             }`}
             onClick={() => {
               setSearchMode("exact");
@@ -724,7 +724,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-500 z-10 pointer-events-none" />
           <Input
             placeholder="Search NFTs..."
-            className="pl-9 py-1.5 text-sm font-normal h-9 rounded-sm text-[#ff0099] placeholder:text-neutral-500 border border-neutral-700 bg-transparent focus:outline-none focus:ring-0 focus:border-neutral-500"
+            className="pl-9 py-1.5 text-sm font-normal h-9 rounded-sm text-[#ff0099] placeholder:text-neutral-500 border border-neutral-700 bg-neutral-900 focus:outline-none focus:ring-0 focus:border-neutral-500"
             value={searchTerm}
             spellCheck={false}
             autoComplete="off"
@@ -762,12 +762,6 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
 
       {/* Removed Sort By Price dropdown here */}
 
-      {/* Clear All Filters Button */}
-      <div>
-        <Button variant="outline" size="sm" onClick={clearAllFilters} className="text-sm font-normal flex items-center justify-center gap-2 h-9 w-full rounded border-neutral-600 bg-neutral-950/80 backdrop-blur-md hover:bg-neutral-900 hover:border-[#ff0099]/50 transition-all duration-200">
-          <X className="h-4 w-4" /> Clear All Filters
-        </Button>
-      </div>
 
       <FilterContext.Provider value={filterContextValue}>
         {/* Using the special RarityTiersCategory component */}

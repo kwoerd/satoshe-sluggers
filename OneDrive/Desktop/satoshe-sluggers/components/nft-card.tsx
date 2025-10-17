@@ -155,26 +155,28 @@ export default function NFTCard({
                 <div className="animate-pulse text-neutral-400 text-sm">Loading...</div>
               </div>
             )}
+            
+            {/* Heart Icon - Upper Right Corner */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-2 right-2 h-8 w-8 p-0 hover:bg-black/20 rounded-full z-30"
+              onClick={handleFavoriteClick}
+            >
+              <Heart className={`w-5 h-5 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-white/80 hover:text-white"}`} />
+            </Button>
           </div>
         </Link>
 
         {/* Details Section - Full details for large grid */}
         <div className="space-y-2 px-2 pb-4">
-          {/* Title and Favorite */}
+          {/* Title */}
           <div className="flex items-start justify-between gap-2">
             <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
               <h3 className="font-medium text-sm sm:text-base md:text-lg leading-tight text-neutral-100 truncate">
                 {name}
               </h3>
             </Link>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0"
-              onClick={handleFavoriteClick}
-            >
-              <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-neutral-300"}`} />
-            </Button>
           </div>
 
           {/* Stats */}
@@ -249,6 +251,16 @@ export default function NFTCard({
               <div className="animate-pulse text-neutral-400 text-sm">Loading...</div>
             </div>
           )}
+          
+          {/* Heart Icon - Upper Right Corner */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute top-2 right-2 h-6 w-6 p-0 hover:bg-black/20 rounded-full z-30"
+            onClick={handleFavoriteClick}
+          >
+            <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-white/80 hover:text-white"}`} />
+          </Button>
         </div>
       </Link>
 
@@ -256,27 +268,10 @@ export default function NFTCard({
       <div className="px-2 pt-2">
         <div className="flex items-center justify-between">
           <Link href={`/nft/${tokenId}`} className="block">
-            <h3 className="font-medium text-xs sm:text-sm leading-tight text-neutral-100 truncate">
+            <h3 className="font-medium text-xs leading-tight text-neutral-100 truncate">
               {name}
             </h3>
           </Link>
-          
-          <div className="flex items-center gap-1">
-            {/* Heart Icon */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-5 w-5 p-0 hover:bg-transparent"
-              onClick={handleFavoriteClick}
-            >
-              <Heart className={`w-3 h-3 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-neutral-300"}`} />
-            </Button>
-            
-            {/* Rarity Square */}
-            <div className="bg-transparent border border-teal-400 rounded-sm px-1.5 py-0.5 flex items-center justify-center">
-              <span className="text-xs text-teal-400 font-mono">{rank}</span>
-            </div>
-          </div>
         </div>
       </div>
 

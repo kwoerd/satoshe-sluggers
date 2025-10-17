@@ -6,6 +6,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import SimpleConnectButton from "@/components/simple-connect-button"
 
 interface MobileMenuProps {
@@ -59,31 +60,46 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
   }
 
   return (
-    <div className="lg:hidden flex items-center gap-4">
-      {walletConnected && (
-        <Link
-          href="/my-nfts"
-          className="flex items-center justify-center group"
-          aria-label="My NFTs"
-        >
-          <Image
-            src="/icons/profile-icons/pink-profile-icon-48.png"
-            alt="My NFTs"
-            width={24}
-            height={24}
-            className="w-6 h-6 group-hover:scale-110 transition-transform duration-200"
-          />
-        </Link>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="p-2 hover:bg-accent rounded-full transition-colors border border-neutral-700"
-        onClick={() => setOpen(!open)}
-      >
-        <Menu className="h-9 w-9" />
-        <span className="sr-only">Toggle menu</span>
-      </Button>
+    <TooltipProvider>
+      <div className="lg:hidden flex items-center gap-4">
+        {walletConnected && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/my-nfts"
+                className="flex items-center justify-center group"
+                aria-label="My NFTs"
+              >
+                <Image
+                  src="/icons/profile-icons/pink-profile-icon-48.png"
+                  alt="My NFTs"
+                  width={24}
+                  height={24}
+                  className="w-6 h-6 group-hover:scale-110 transition-transform duration-200"
+                />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>My NFTs</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="p-2 hover:bg-accent rounded-full transition-colors border border-neutral-700"
+              onClick={() => setOpen(!open)}
+            >
+              <Menu className="h-9 w-9" />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Menu</p>
+          </TooltipContent>
+        </Tooltip>
       
       {open && (
         <div 
@@ -183,6 +199,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   )
 }
