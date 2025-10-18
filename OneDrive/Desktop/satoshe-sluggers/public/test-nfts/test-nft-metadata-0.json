@@ -52,5 +52,9 @@
   "platform": "Retinal Delights",
   "compiler": "HashLips Art Engine",
   "copyright": "2025 \u00a9 Retinal Delights, Inc.",
-  "date": 1739243562369
+  "date": 1739243562369,
+  "merged_data": {
+    "price_eth": 0.00001,
+    "listing_id": 7812
+  }
 }

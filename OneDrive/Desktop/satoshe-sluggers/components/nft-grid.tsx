@@ -167,6 +167,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     setSortBy("default");
   };
 
+
   // Load metadata
   useEffect(() => {
     const loadMetadata = async () => {
@@ -236,8 +237,8 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             .map(async (meta: NFTMetadata & { token_id?: number; name?: string; price_eth?: number; media_url?: string; [key: string]: unknown }) => {
               const tokenId = meta.token_id?.toString() || "";
               
-              // Use the actual media_url from metadata, fallback to generated URL
-              const imageUrl = meta.media_url || `https://ipfs.io/ipfs/QmPBBAsMUPtDLcw1PEunB779B8dsg9gxpdwHXrAkLnWwUD/${tokenId}.webp`;
+              // Use placeholder images for test NFTs, actual media_url for main collection
+              const imageUrl = meta.media_url || `/test-nfts/placeholder-nft-${parseInt(tokenId)}.webp`;
 
               const name = meta.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`;
               const rank = (meta.rank as number | string) ?? "—";

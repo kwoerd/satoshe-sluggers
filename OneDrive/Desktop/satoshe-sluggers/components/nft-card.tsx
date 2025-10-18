@@ -188,7 +188,7 @@ export default function NFTCard({
               <div className="space-y-0.5">
                 <div className="text-xs text-[#FFFBEB]">Buy Now</div>
                 <div className="flex items-end justify-between">
-                  <div className="text-sm text-blue-500 font-medium">
+                  <div className="text-base text-blue-500 font-medium">
                     {priceEth} ETH
                   </div>
                   <BuyDirectListingButton
@@ -295,8 +295,8 @@ export default function NFTCard({
         {isForSale && listingId ? (
           <div className="space-y-1">
             <div className="text-xs text-[#FFFBEB]">Buy Now</div>
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-blue-500 font-medium">
+            <div className="flex items-end justify-between">
+              <div className="text-base text-blue-500 font-medium">
                 {priceEth} ETH
               </div>
               <BuyDirectListingButton
