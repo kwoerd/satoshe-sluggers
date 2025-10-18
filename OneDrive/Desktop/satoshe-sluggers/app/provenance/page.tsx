@@ -385,10 +385,10 @@ export default function ProvenancePage() {
                       Keccak-256 Hash
                     </th>
                     <th className="w-56 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
-                      IPFS
+                      IPFS Metadata CID
                     </th>
                     <th className="w-56 pl-2 pr-4 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
-                      IPFS Metadata CID
+                      IPFS Media CID
                     </th>
                   </tr>
                 </thead>
@@ -439,20 +439,6 @@ export default function ProvenancePage() {
                         <td className="w-56 px-2 py-4">
                           <div className="flex items-center gap-1">
                             <a
-                              href={record.media_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs hover:text-primary transition-colors font-mono break-all"
-                              style={{ fontWeight: '300' }}
-                            >
-                              {record.media_cid || "N/A"}
-                            </a>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-[#ff0099] transition-colors flex-shrink-0" />
-                          </div>
-                        </td>
-                        <td className="w-56 pl-2 pr-4 py-4">
-                          <div className="flex items-center gap-1">
-                            <a
                               href={record.metadata_url}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -460,6 +446,20 @@ export default function ProvenancePage() {
                               style={{ fontWeight: '300' }}
                             >
                               {record.metadata_cid || "N/A"}
+                            </a>
+                            <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-[#ff0099] transition-colors flex-shrink-0" />
+                          </div>
+                        </td>
+                        <td className="w-56 pl-2 pr-4 py-4">
+                          <div className="flex items-center gap-1">
+                            <a
+                              href={record.media_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs hover:text-primary transition-colors font-mono break-all"
+                              style={{ fontWeight: '300' }}
+                            >
+                              {record.media_cid || "N/A"}
                             </a>
                             <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-[#ff0099] transition-colors flex-shrink-0" />
                           </div>
