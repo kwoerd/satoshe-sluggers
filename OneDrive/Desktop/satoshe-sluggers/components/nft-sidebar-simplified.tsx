@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import { ChevronDown, ChevronRight, Search, X, ArrowDown, ArrowUp, ExternalLink, Copy, Check } from "lucide-react"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
@@ -50,7 +50,7 @@ function FilterSection({
   const [isOpen, setIsOpen] = useState(false)
   const [sortOrder, setSortOrder] = useState("commonToRare")
 
-  const colorClasses: Record<string, string> = {
+  const colorClasses = {
     purple: "text-purple-400",
     blue: "text-blue-500", 
     amber: "text-amber-500",
@@ -60,7 +60,7 @@ function FilterSection({
     orange: "text-orange-500",
   }
 
-  const borderClasses: Record<string, string> = {
+  const borderClasses = {
     purple: "border-purple-400",
     blue: "border-blue-500",
     amber: "border-amber-500", 
@@ -203,7 +203,7 @@ function SubcategorySection({
 }) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const colorClasses: Record<string, string> = {
+  const colorClasses = {
     purple: "text-purple-400",
     blue: "text-blue-500",
     amber: "text-amber-500",
@@ -213,7 +213,7 @@ function SubcategorySection({
     orange: "text-orange-500",
   }
 
-  const borderClasses: Record<string, string> = {
+  const borderClasses = {
     purple: "border-purple-400",
     blue: "border-blue-500",
     amber: "border-amber-500",
@@ -225,8 +225,7 @@ function SubcategorySection({
 
   const handleSubcategoryToggle = (subcategoryName: string) => {
     if (selected[subcategoryName]) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [subcategoryName]: removed, ...rest } = selected
+      const { [subcategoryName]: _, ...rest } = selected
       onChange(rest)
     } else {
       onChange({ ...selected, [subcategoryName]: [] })
@@ -462,7 +461,7 @@ export default function NFTSidebar({
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-inconsolata text-off-white">Marketplace</h4>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-inconsolata text-off-white/70">{truncateAddress(MARKETPLACE_ADDRESS)}</span>
+                <span className="text-xs font-inconsolata text-off-white/70">{truncateAddress(MARKETPLACE_ADDRESS)}</span>
                 <button
                   onClick={() => copyToClipboard(MARKETPLACE_ADDRESS)}
                   className="p-1 hover:bg-neutral-700 rounded transition-colors"
@@ -498,7 +497,7 @@ export default function NFTSidebar({
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-inconsolata text-off-white">NFT Contract</h4>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-inconsolata text-off-white/70">{truncateAddress(NFT_CONTRACT_ADDRESS)}</span>
+                <span className="text-xs font-inconsolata text-off-white/70">{truncateAddress(NFT_CONTRACT_ADDRESS)}</span>
                 <button
                   onClick={() => copyToClipboard(NFT_CONTRACT_ADDRESS)}
                   className="p-1 hover:bg-neutral-700 rounded transition-colors"

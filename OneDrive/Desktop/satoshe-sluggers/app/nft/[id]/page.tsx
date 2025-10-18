@@ -13,7 +13,7 @@ import { buyFromListing } from "thirdweb/extensions/marketplace";
 import { marketplace } from "../../../lib/contracts";
 import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
-import { getNFTByTokenId, CompleteNFTData } from "@/lib/data-service";
+import { getNFTByTokenId, NFTData } from "@/lib/simple-data-service";
 // import { track } from '@vercel/analytics';
 
 // Type definitions
@@ -61,7 +61,7 @@ function getColorForAttribute(attributeName: string) {
 export default function NFTDetailPage() {
   const params = useParams<{ id: string }>();
   const tokenId = params.id;
-  const [metadata, setMetadata] = useState<CompleteNFTData | null>(null);
+  const [metadata, setMetadata] = useState<NFTData | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("/media/nfts/placeholder-nft.webp");
   const [isLoading, setIsLoading] = useState(true);
   const [navigationTokens, setNavigationTokens] = useState<{prev: number | null, next: number | null}>({prev: null, next: null});
@@ -93,8 +93,8 @@ export default function NFTDetailPage() {
     }, 10000); // 10 second timeout
 
     // Load NFT data using data service
-    getNFTByTokenId(tokenId)
-      .then((nftData: CompleteNFTData | null) => {
+    getNFTByTokenId(parseInt(tokenId))
+        .then((nftData: NFTData | null) => {
         console.log("NFT data loaded:", nftData);
         
         if (nftData) {
