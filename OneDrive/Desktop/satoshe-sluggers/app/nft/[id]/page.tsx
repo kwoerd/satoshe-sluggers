@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Heart, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import Footer from "@/components/footer";
 import Navigation from "@/components/navigation";
 import AttributeRarityChart from "@/components/attribute-rarity-chart";
@@ -14,7 +14,8 @@ import { marketplace } from "../../../lib/contracts";
 import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
 import { getNFTByTokenId, NFTData } from "@/lib/simple-data-service";
-// import { track } from '@vercel/analytics';
+import { track } from '@vercel/analytics';
+import confetti from 'canvas-confetti';
 
 // Type definitions
 interface NFTAttribute {
@@ -22,6 +23,7 @@ interface NFTAttribute {
   value: string;
   occurrence?: number;
   rarity?: number;
+  percentage?: number;
 }
 
 // Consistent color scheme based on the radial chart
@@ -65,6 +67,10 @@ export default function NFTDetailPage() {
   const [imageUrl, setImageUrl] = useState<string>("/media/nfts/placeholder-nft.webp");
   const [isLoading, setIsLoading] = useState(true);
   const [navigationTokens, setNavigationTokens] = useState<{prev: number | null, next: number | null}>({prev: null, next: null});
+  const [isPurchased, setIsPurchased] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [transactionState, setTransactionState] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const [transactionError, setTransactionError] = useState<string | null>(null);
   
   const account = useActiveAccount();
   const { isFavorited, toggleFavorite, isConnected } = useFavorites();
@@ -72,59 +78,82 @@ export default function NFTDetailPage() {
   // Calculate navigation tokens (previous and next)
   useEffect(() => {
     const currentTokenId = parseInt(tokenId);
-    const prevToken = currentTokenId > 0 ? currentTokenId - 1 : null;
-    const nextToken = currentTokenId < 7776 ? currentTokenId + 1 : null; // 7777 total NFTs (0-7776)
+    const isTestNFT = currentTokenId >= 0 && currentTokenId <= 4; // Test NFTs 0-4
     
-    setNavigationTokens({
-      prev: prevToken,
-      next: nextToken
-    });
+    if (isTestNFT) {
+      // For test NFTs, only navigate within test range (0-4)
+      const prevToken = currentTokenId > 0 ? currentTokenId - 1 : null;
+      const nextToken = currentTokenId < 4 ? currentTokenId + 1 : null;
+      
+      setNavigationTokens({
+        prev: prevToken,
+        next: nextToken
+      });
+    } else {
+      // For main collection, navigate within main range (5-7776)
+      const prevToken = currentTokenId > 5 ? currentTokenId - 1 : null;
+      const nextToken = currentTokenId < 7776 ? currentTokenId + 1 : null;
+      
+      setNavigationTokens({
+        prev: prevToken,
+        next: nextToken
+      });
+    }
   }, [tokenId]);
 
   // Load NFT metadata
   useEffect(() => {
     setIsLoading(true);
-    console.log("Starting data load for token:", tokenId);
 
     // Set a timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      console.log("Data loading timeout - forcing loading to false");
       setIsLoading(false);
     }, 10000); // 10 second timeout
 
-    // Load NFT data using data service
-    getNFTByTokenId(parseInt(tokenId))
-        .then((nftData: NFTData | null) => {
-        console.log("NFT data loaded:", nftData);
-        
-        if (nftData) {
-          setMetadata(nftData);
+    const tokenIdNum = parseInt(tokenId);
+    const isTestNFT = tokenIdNum >= 0 && tokenIdNum <= 4; // Test NFTs 0-4
+
+    if (isTestNFT) {
+      // For test NFTs, redirect to main collection or show simple message
+      console.log("Test NFT detected, redirecting to main collection");
+      // Redirect to NFT #1 (first real NFT)
+      window.location.href = '/nft/1';
+      return;
+    } else {
+      // Load main collection NFT data using data service
+      getNFTByTokenId(tokenIdNum)
+          .then((nftData: NFTData | null) => {
+          console.log("NFT data loaded:", nftData);
           
-          // Set image URL from metadata
-          const mediaUrl = nftData.merged_data?.media_url;
-          if (mediaUrl) {
-            console.log("Setting image URL:", mediaUrl);
-            setImageUrl(mediaUrl);
+          if (nftData) {
+            setMetadata(nftData);
+            
+            // Set image URL from metadata
+            const mediaUrl = nftData.merged_data?.media_url;
+            if (mediaUrl) {
+              console.log("Setting image URL:", mediaUrl);
+              setImageUrl(mediaUrl);
+            } else {
+              console.log("Using fallback image");
+              setImageUrl("/nfts/placeholder-nft.webp");
+            }
           } else {
-            console.log("Using fallback image");
+            console.log("No NFT found for tokenId:", tokenId);
+            setMetadata(null);
             setImageUrl("/nfts/placeholder-nft.webp");
           }
-        } else {
-          console.log("No NFT found for tokenId:", tokenId);
+          console.log("Setting isLoading to false");
+          clearTimeout(timeoutId);
+          setIsLoading(false);
+        })
+        .catch((error: Error) => {
+          console.error(`[NFT Detail] Error loading data for token ${tokenId}:`, error);
           setMetadata(null);
           setImageUrl("/nfts/placeholder-nft.webp");
-        }
-        console.log("Setting isLoading to false");
-        clearTimeout(timeoutId);
-        setIsLoading(false);
-      })
-      .catch((error: Error) => {
-        console.error(`[NFT Detail] Error loading data for token ${tokenId}:`, error);
-        setMetadata(null);
-        setImageUrl("/nfts/placeholder-nft.webp");
-        clearTimeout(timeoutId);
-        setIsLoading(false);
-      });
+          clearTimeout(timeoutId);
+          setIsLoading(false);
+        });
+    }
 
     // Cleanup timeout on unmount
     return () => clearTimeout(timeoutId);
@@ -136,10 +165,11 @@ export default function NFTDetailPage() {
       const mappedAttributes = metadata.attributes.map((attr: NFTAttribute) => ({
         name: attr.trait_type,
         value: attr.value,
-        percentage: attr.rarity,
+        percentage: attr.percentage || attr.rarity || 0,
         occurrence: attr.occurrence
       }));
-      console.log("Mapped attributes:", mappedAttributes);
+      console.log("Mapped attributes for chart:", mappedAttributes);
+      console.log("Attributes length:", mappedAttributes.length);
       return mappedAttributes;
     }
     console.log("No attributes found in metadata:", metadata);
@@ -149,7 +179,76 @@ export default function NFTDetailPage() {
   // Get pricing data from metadata
   const priceEth = metadata?.merged_data?.price_eth || 0;
   const listingId = metadata?.merged_data?.listing_id || 0;
-  const isForSale = priceEth > 0;
+  const isForSale = priceEth > 0 && !isPurchased;
+
+  // Confetti celebration function
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#ff0099', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
+    });
+  };
+
+  // Handle transaction state changes
+  const handleTransactionPending = () => {
+    console.log("Transaction pending...");
+    setTransactionState('pending');
+    setTransactionError(null);
+  };
+
+  const handleTransactionSuccess = async (receipt: { transactionHash: string; blockNumber: bigint }) => {
+    console.log("Transaction confirmed on blockchain:", receipt);
+    setTransactionState('success');
+    setIsPurchased(true);
+    setShowSuccess(true);
+    triggerConfetti();
+    track('NFT Purchase Success', { 
+      tokenId: tokenId,
+      transactionHash: receipt.transactionHash,
+      blockNumber: Number(receipt.blockNumber)
+    });
+    
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 5000);
+  };
+
+  const handleTransactionError = (error: Error) => {
+    console.error("Transaction failed:", error);
+    setTransactionState('error');
+    
+    // Parse error message for user-friendly display
+    let errorMessage = "Transaction failed. Please try again.";
+    
+    if (error?.message) {
+      if (error.message.includes("user rejected")) {
+        errorMessage = "Transaction was cancelled by user.";
+      } else if (error.message.includes("insufficient funds")) {
+        errorMessage = "Insufficient funds for this transaction.";
+      } else if (error.message.includes("gas")) {
+        errorMessage = "Transaction failed due to gas issues. Please try again.";
+      } else if (error.message.includes("already sold")) {
+        errorMessage = "This NFT has already been sold.";
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
+    setTransactionError(errorMessage);
+    track('NFT Purchase Failed', { 
+      tokenId: tokenId,
+      error: errorMessage
+    });
+    
+    // Clear error after 10 seconds
+    setTimeout(() => {
+      setTransactionState('idle');
+      setTransactionError(null);
+    }, 10000);
+  };
   
 
   // Handle favorite toggle
@@ -246,7 +345,7 @@ export default function NFTDetailPage() {
             )}
             
             <span className="text-sm text-neutral-500 px-2">
-              {parseInt(tokenId) + 1} of 7777
+              {parseInt(tokenId) + 1} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}
             </span>
             
             {navigationTokens.next !== null && (
@@ -493,31 +592,93 @@ export default function NFTDetailPage() {
                     <p className="text-2xl font-bold text-blue-500">
                       {priceEth} ETH
                     </p>
+                    {transactionState === 'pending' && (
+                      <p className="text-xs text-yellow-400 mt-1">
+                        ⏳ Transaction pending... Please wait for confirmation.
+                      </p>
+                    )}
                   </div>
                   <TransactionButton
                     transaction={createBuyTransaction}
-                    onTransactionConfirmed={() => {
-                      alert(`NFT purchased successfully for ${priceEth} ETH!`);
-                    }}
-                    onError={(error) => {
-                      console.error("Buy now failed:", error);
-                      alert(error.message || "Failed to buy NFT. Please try again.");
-                    }}
-                    className="px-6 py-3 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 bg-blue-500 hover:bg-blue-700 text-white rounded-sm"
+                    onTransactionSent={handleTransactionPending}
+                    onTransactionConfirmed={handleTransactionSuccess}
+                    onError={handleTransactionError}
+                    className="px-6 py-3 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 bg-blue-500 hover:bg-blue-700 text-white rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
-                      backgroundColor: "#3B82F6",
+                      backgroundColor: transactionState === 'pending' ? "#6B7280" : "#3B82F6",
                       color: "white",
-                      borderColor: "#3B82F6",
+                      borderColor: transactionState === 'pending' ? "#6B7280" : "#3B82F6",
                       borderRadius: "2px"
                     }}
                   >
-                    BUY NOW
+                    {transactionState === 'pending' ? 'PROCESSING...' : 'BUY NOW'}
                   </TransactionButton>
+                </div>
+              </div>
+            ) : isPurchased ? (
+              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-green-500 mb-1">Sold At</p>
+                    <p className="text-2xl font-bold text-green-500">
+                      {priceEth} ETH
+                    </p>
+                  </div>
+                  <Link
+                    href={`https://opensea.io/assets/base/${process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS}/${tokenId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 bg-green-500 hover:bg-green-700 text-white rounded-sm flex items-center gap-2"
+                    style={{
+                      backgroundColor: "#10B981",
+                      color: "white",
+                      borderColor: "#10B981",
+                      borderRadius: "2px"
+                    }}
+                  >
+                    View My NFT
+                    <ExternalLink className="w-4 h-4" />
+                  </Link>
                 </div>
               </div>
             ) : (
               <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
                 <p className="text-blue-400 text-center">This NFT is not currently for sale</p>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {transactionState === 'error' && transactionError && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="bg-neutral-800 p-8 rounded-lg border border-red-500/50 text-center max-w-md mx-4">
+                  <div className="text-6xl mb-4">❌</div>
+                  <h3 className="text-2xl font-bold text-red-400 mb-2">Transaction Failed</h3>
+                  <p className="text-neutral-300 mb-4">
+                    {transactionError}
+                  </p>
+                  <p className="text-sm text-neutral-400">
+                    This message will disappear in a few seconds...
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Success Message */}
+            {showSuccess && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="bg-neutral-800 p-8 rounded-lg border border-neutral-700 text-center max-w-md mx-4">
+                  <div className="text-6xl mb-4">🎉</div>
+                  <h3 className="text-2xl font-bold text-green-400 mb-2">Purchase Successful!</h3>
+                  <p className="text-neutral-300 mb-4">
+                    You successfully purchased <strong>Satoshe Slugger #{parseInt(tokenId) + 1}</strong> for {priceEth} ETH!
+                  </p>
+                  <p className="text-sm text-neutral-400 mb-4">
+                    Transaction confirmed on the blockchain.
+                  </p>
+                  <p className="text-xs text-neutral-500">
+                    This message will disappear in a few seconds...
+                  </p>
+                </div>
               </div>
             )}
 
@@ -557,7 +718,7 @@ export default function NFTDetailPage() {
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Rank</p>
-                  <p className="font-normal text-off-white">{metadata?.rank ?? "—"} of 7777</p>
+                  <p className="font-normal text-off-white">{metadata?.rank ?? "—"} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Rarity Percentage</p>
@@ -612,7 +773,7 @@ export default function NFTDetailPage() {
                     </div>
                     <div className="text-sm font-semibold text-off-white mb-1">{attr.value}</div>
                     <div className="text-xs text-neutral-400">
-                      {attr.percentage}% • {attr.occurrence} of 7777
+                      {attr.percentage}% • {attr.occurrence} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}
                     </div>
                   </div>
                 ))}

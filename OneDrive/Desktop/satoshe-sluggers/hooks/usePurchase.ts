@@ -46,18 +46,18 @@ export function usePurchase() {
       // Send the transaction
       sendTransaction(transaction, {
         onSuccess: (hash) => {
-          console.log("Transaction sent:", hash);
+          
           handleSuccess();
         },
         onError: (error) => {
-          console.error("Transaction failed:", error);
+          
           setError(error.message || "Transaction failed");
           setIsProcessing(false);
         },
       });
 
     } catch (error) {
-      console.error("Purchase failed:", error);
+      
       setError(error instanceof Error ? error.message : "Purchase failed");
       setIsProcessing(false);
     }
@@ -72,7 +72,7 @@ export function usePurchase() {
     setIsProcessing(false);
     setError(null);
     
-    console.log("Purchase successful!");
+    
   };
 
   return {

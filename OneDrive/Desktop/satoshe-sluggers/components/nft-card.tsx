@@ -18,9 +18,8 @@ interface NFTCardProps {
   rarityPercent: string | number;
   priceEth: number; // Static price from metadata
   tokenId: string;
-  listingId: number | string; // Required for BuyDirectListingButton
+  cardNumber: number; // NFT card number (not token ID)
   isForSale: boolean;
-  onPurchase?: () => void;
   viewMode?: 'grid-large' | 'grid-medium' | 'grid-small' | 'compact';
 }
 
@@ -32,9 +31,8 @@ export default function NFTCard({
   rarityPercent,
   priceEth,
   tokenId,
-  listingId,
+  cardNumber,
   isForSale,
-  onPurchase,
   viewMode = 'grid-medium',
 }: NFTCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -144,11 +142,11 @@ export default function NFTCard({
         </Link>
 
         {/* Details Section - Full details for large grid */}
-        <div className="space-y-1.5 pl-4 pr-2 pb-4">
+        <div className="space-y-0.5 pl-4 pr-2 pb-2">
           {/* Title and Favorite */}
           <div className="flex items-start justify-between gap-2">
             <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
-              <h3 className="font-medium text-sm leading-tight text-[#FFFBEB]">
+              <h3 className="font-medium text-base leading-tight text-[#FFFBEB]">
                 {name}
               </h3>
             </Link>
@@ -179,10 +177,10 @@ export default function NFTCard({
           </div>
 
           {/* Buy Section */}
-          <div className="mt-0.5">
+          <div className="-mt-1">
             {isForSale ? (
-              <div className="space-y-0.5">
-                <div className="text-xs text-blue-500">Buy Now</div>
+              <div className="space-y-0">
+                <div className="text-xs text-blue-500 font-medium">Buy Now</div>
                 <div className="flex items-end justify-between">
                   <div className="text-base text-blue-500 font-semibold">
                     {priceEth} ETH
@@ -247,52 +245,39 @@ export default function NFTCard({
       </Link>
 
       {/* NFT Details Section - Medium grid design */}
-      <div className="pl-5 pr-3 pt-2 pb-3 flex-1 flex flex-col">
-        {/* Title and Favorite */}
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <Link href={`/nft/${tokenId}`} className="block flex-1 min-w-0">
-            <h3 className="font-normal text-xs leading-tight text-[#FFFBEB] line-clamp-2">
-              {name}
-            </h3>
-          </Link>
+      <div className="pl-4 pr-3 pt-0.5 pb-1.5 flex-1 flex flex-col">
+        {/* Pills and Favorite */}
+        <div className="flex items-center gap-2 mb-1">
+          {/* Green NFT Number Pill */}
+          <div className="px-2 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-green-400 text-xs font-medium">
+            NFT #{cardNumber}
+          </div>
+          
+          {/* Blue Buy Pill */}
+          {isForSale ? (
+            <Link
+              href={`/nft/${tokenId}`}
+              className="px-2 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
+            >
+              Buy
+            </Link>
+          ) : (
+            <div className="px-2 py-1 bg-neutral-500/10 border border-neutral-500/30 rounded-full text-neutral-400 text-xs font-medium">
+              Sold
+            </div>
+          )}
+          
+          {/* Heart Icon */}
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0"
+            className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0 ml-auto"
             onClick={handleFavoriteClick}
           >
             <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-[#FFFBEB] hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
           </Button>
         </div>
 
-        {/* Buy Section - Minimal */}
-        {isForSale ? (
-          <div className="space-y-0.5">
-            <div className="text-xs text-blue-500">Buy Now</div>
-            <div className="flex items-end justify-between">
-              <div className="text-base text-blue-500 font-semibold">
-                {priceEth} ETH
-              </div>
-                      <Link
-                        href={`/nft/${tokenId}`}
-                        className="px-3 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 disabled:cursor-not-allowed w-auto min-w-0 h-auto min-h-0"
-                        style={{
-                          padding: '6px 12px',
-                          fontSize: '12px',
-                          height: 'auto',
-                          minHeight: 'unset',
-                          width: 'auto',
-                          minWidth: 'unset',
-                          borderRadius: '2px',
-                          backgroundColor: '#3b82f6',
-                          color: 'white'
-                        }}
-                      >
-                        BUY
-                      </Link>
-            </div>
-          </div>
-        ) : null}
       </div>
 
     </div>

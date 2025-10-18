@@ -424,8 +424,8 @@ export default function NFTSidebar({
       await navigator.clipboard.writeText(address)
       setCopiedAddress(address)
       setTimeout(() => setCopiedAddress(null), 2000)
-    } catch (err) {
-      console.error('Failed to copy address:', err)
+    } catch {
+      // Silent fail - copy failed
     }
   }
 

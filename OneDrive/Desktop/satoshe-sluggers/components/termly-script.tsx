@@ -1,25 +1,13 @@
 // components/termly-script.tsx
 "use client"
 
-import { useEffect, useState } from "react"
-import dynamic from "next/dynamic"
-
-// Only load Termly on client side after hydration
-const TermlyComponent = dynamic(() => import('./termly-component'), {
-  ssr: false,
-  loading: () => null
-})
+import { useEffect } from "react"
 
 export default function TermlyScript() {
-  const [isClient, setIsClient] = useState(false)
-
   useEffect(() => {
-    setIsClient(true)
+    // Termly integration can be added here if needed
+    // For now, this component is a placeholder
   }, [])
 
-  if (!isClient) {
-    return null
-  }
-
-  return <TermlyComponent />
+  return null
 }

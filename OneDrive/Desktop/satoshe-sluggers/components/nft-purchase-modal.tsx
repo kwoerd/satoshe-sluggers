@@ -129,7 +129,7 @@ export default function NFTPurchaseModal({ isOpen, onClose, nft }: NFTPurchaseMo
               <div className="border-t border-neutral-700 pt-3">
                 <div className="flex items-baseline justify-between gap-4">
                   <div>
-                    <div className="text-base font-semibold text-neutral-400 mb-2">Buy Now</div>
+                    <div className="text-base font-semibold text-neutral-400 mb-1">Buy Now</div>
                     <div className="text-2xl font-bold text-blue-400">{nft.priceEth} ETH</div>
                   </div>
                   
@@ -146,8 +146,7 @@ export default function NFTPurchaseModal({ isOpen, onClose, nft }: NFTPurchaseMo
                       track('NFT Purchase Success', { tokenId: nft.tokenId });
                       onClose(); // Close modal on successful purchase
                     }}
-                    onError={(error) => {
-                      console.error('Purchase failed:', error);
+                    onError={() => {
                       track('NFT Purchase Failed', { tokenId: nft.tokenId });
                     }}
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-lg transition-colors"

@@ -61,9 +61,9 @@ export default function ProvenancePage() {
           fetch("/data/sha256_hashes.txt"),
         ])
         
-        // Load metadata using chunked data service
-        const { chunkedDataService } = await import("@/lib/chunked-data-service");
-        const metadataData = await chunkedDataService.loadAllMetadata();
+        // Load metadata using simple data service
+        const { loadAllNFTs } = await import("@/lib/simple-data-service");
+        const metadataData = await loadAllNFTs();
 
         const merkleText = await merkleRes.text()
         const hashesText = await hashesRes.text()
@@ -80,7 +80,7 @@ export default function ProvenancePage() {
           .map((sha256, index) => {
             const tokenNum = index
             // Find the corresponding metadata by token_id
-            const metadataItem = metadataData.find((item: any) => item.merged_data?.token_id === tokenNum)
+            const metadataItem = metadataData.find((item: { merged_data?: { token_id: number } }) => item.merged_data?.token_id === tokenNum)
             
             // Debug logging for first few records
             if (index < 3) {
@@ -107,8 +107,7 @@ export default function ProvenancePage() {
 
         setProvenanceRecords(records)
         setLoading(false)
-      } catch (error) {
-        console.error("[Provenance] Error loading data:", error)
+      } catch {
         setLoading(false)
       }
     }
@@ -268,7 +267,7 @@ export default function ProvenancePage() {
                     {copiedHash === 'contract' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
-                <div className="text-[10px] font-mono break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{CONTRACT_ADDRESS}</div>
+                <div className="text-[10px] font-inconsolata break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{CONTRACT_ADDRESS}</div>
               </div>
 
               <div className="bg-card border border-neutral-700 p-4 rounded">
@@ -282,7 +281,7 @@ export default function ProvenancePage() {
                     {copiedProof ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
-                <div className="text-[10px] font-mono break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{FINAL_PROOF_HASH}</div>
+                <div className="text-[10px] font-inconsolata break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{FINAL_PROOF_HASH}</div>
               </div>
 
               <div className="bg-card border border-neutral-700 p-4 rounded">
@@ -296,7 +295,7 @@ export default function ProvenancePage() {
                     {copiedMerkle ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
-                <div className="text-[10px] font-mono break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{MERKLE_ROOT}</div>
+                <div className="text-[10px] font-inconsolata break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{MERKLE_ROOT}</div>
               </div>
 
             </div>

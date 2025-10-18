@@ -559,55 +559,124 @@ import { designSystem, cn, getSectionHeader, getLabel, getValue } from '@/lib/de
 ---
 
 **Last Updated:** January 2025  
-**Version:** 2.0.0
+**Version:** 3.0.0
 
-## 🎨 **CURRENT DESIGN SYSTEM (Updated)**
+## 🎨 **COMPREHENSIVE DESIGN SYSTEM (v3.0)**
 
-### **Primary Color Palette**
-- **Brand Pink**: `#ff0099` (primary brand color)
-- **Off-White Text**: `#FFFBEB` (all white text)
-- **Success Green**: `#10B981` (buy buttons, success states)
-- **Info Blue**: `#3B82F6` (IPFS links, info elements)
-- **Emerald Green**: `#10B981` (sold status, success indicators)
-
-### **Neutral Grayscale (Current)**
+### **Typography Hierarchy**
 ```
-neutral-100     → #FFFBEB (off-white - primary text)
-neutral-300     → Light gray text
-neutral-400     → Mid gray (labels, categories, inactive)
-neutral-500     → Placeholder text
-neutral-700     → Borders (#404040)
-neutral-800     → Cards, containers (#262626)
-neutral-900     → Darker backgrounds (#171717)
-neutral-950     → Darkest backgrounds, inputs (#0a0a0a)
+Huge (3rem/48px)     → Hero titles, main banners
+H1 (2.5rem/40px)     → Page titles
+H2 (2rem/32px)       → Section headers
+H3 (1.5rem/24px)     → Subsection headers
+H4 (1.25rem/20px)    → Card titles
+H5 (1.125rem/18px)   → Small headers
+H6 (1rem/16px)       → Micro headers
+Paragraph (1rem/16px) → Body text
+Large (1.125rem/18px) → Large body text
+Default (0.875rem/14px) → Default text
+Small (0.75rem/12px) → Small text
+Extra Small (0.6875rem/11px) → Extra small
+Micro (0.625rem/10px) → Micro text
 ```
 
-### **Typography (Current)**
-- **Primary Font**: Inter (sans-serif)
-- **Mono Font**: JetBrains Mono (code, addresses)
-- **Secondary Mono**: Inconsolata (blockchain details)
+### **Font Families**
+- **Primary**: Inter (sans-serif) - All UI text, headings, body
+- **Secondary**: Inconsolata (monospace) - Values, addresses, blockchain data
+- **Mono**: JetBrains Mono (monospace) - Code, technical details
+
+### **Color System (Tokenized)**
+```
+Brand Colors:
+- Primary: #ff0099 (pink)
+- Primary Hover: #ff0099/90
+- Primary Light: #ff0099/20
+
+Semantic Colors:
+- Success: #10B981 (green) - Buy buttons, success
+- Info: #3B82F6 (blue) - Links, info elements
+- Warning: #F59E0B (amber) - Warnings
+- Error: #EF4444 (red) - Errors
+
+Neutral Grayscale:
+- White: #FFFFFF
+- Off-White: #FFFBEB (primary text)
+- Light Gray: #D1D5DB
+- Mid Gray: #9CA3AF (labels)
+- Placeholder: #6B7280
+- Border: #404040
+- Card: #262626
+- Background: #171717
+- Surface: #0A0A0A
+```
+
+### **Spacing System (Tokenized)**
+```
+Gaps:
+- Extra Extra Small: 0.25rem (4px)
+- Extra Small: 0.5rem (8px)
+- Small: 0.75rem (12px)
+- Medium: 1rem (16px)
+- Large: 1.5rem (24px)
+- Extra Large: 2rem (32px)
+- Extra Extra Large: 3rem (48px)
+
+Padding & Margins: Same scale as gaps
+```
 
 ### **Border Radius (Consistent)**
-- **Standard**: `rounded-sm` (2px) - used everywhere
-- **Circles**: `rounded-full` - only for circular elements
-- **NO**: `rounded`, `rounded-md`, `rounded-lg` - inconsistent
+- **Standard**: `rounded-sm` (2px) - Used everywhere
+- **Circles**: `rounded-full` - Only for circular elements
+- **NO**: `rounded`, `rounded-md`, `rounded-lg` - Inconsistent
 
-### **Button Styles (Current)**
-- **Buy Buttons**: Blue (`#3B82F6`) with white text
-- **Success Buttons**: Green (`#10B981`) with white text  
-- **Brand Buttons**: Pink (`#ff0099`) with white text
-- **All buttons**: `rounded-sm`, `font-normal`, no scaling on hover
+### **Component System**
+```
+Buttons:
+- Primary: Pink filled
+- Secondary: Pink outline
+- Success: Green filled
+- Info: Blue filled
+- Small variants of all above
+- Tags: Pill-shaped buttons
+- Ghost: Transparent with hover
 
-### **Card Styles (Current)**
-- **Background**: `bg-neutral-800` or `bg-neutral-900`
-- **Border**: `border border-neutral-700`
-- **Padding**: `p-4` (standard), `p-3` (smaller cards)
-- **Radius**: `rounded-sm` (2px)
+Cards:
+- Default: Standard card
+- Frosted Glass: Backdrop blur
+- Compact: Smaller padding
 
-### **Current Implementation Notes**
-- **Dark mode forced**: No light mode toggle
+Inputs:
+- Default: Standard input
+- Textarea: Multi-line input
+- All with consistent focus states
+```
+
+### **Design Token Usage**
+```tsx
+// Import design tokens
+import { typography, components, getValue, getLabel } from '@/lib/design-tokens';
+
+// Use typography
+<h1 className={typography.h1}>Page Title</h1>
+<p className={typography.paragraph}>Body text</p>
+<span className={typography.value}>Blockchain value</span>
+
+// Use components
+<button className={components.buttons.primary}>Primary Button</button>
+<div className={components.cards.default}>Card Content</div>
+
+// Use helper functions
+<span className={getValue('large')}>Large value</span>
+<span className={getLabel()}>Label text</span>
+```
+
+### **Implementation Notes**
+- **Consistent corner radius**: Only `rounded-sm` (2px) throughout
+- **Typography hierarchy**: Clear size and weight relationships
+- **Tokenized colors**: No hardcoded color values
+- **Consistent spacing**: Use design tokens for all gaps/padding
+- **Font usage**: Inter for UI, Inconsolata for values/data
+- **Component variants**: Standardized button and card styles
+- **Dark mode only**: No light mode toggle
 - **Frosted glass effects**: `backdrop-blur-md` for overlays
-- **Custom scrollbars**: Pink/off-white theme
-- **Selection color**: Pink (`#FF0099`) with off-white text
-- **Thirdweb branding**: Hidden via CSS
 

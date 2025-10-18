@@ -35,7 +35,11 @@ interface AttributeRarityProps {
 }
 
 export default function AttributeRarityChart({ attributes, overallRarity }: AttributeRarityProps) {
-  const getColorForAttribute = (attributeName: string) => {
+  
+  
+  
+  try {
+    const getColorForAttribute = (attributeName: string) => {
     const colorMap: { [key: string]: string } = {
       "Background": COLORS.background,
       "Skin Tone": COLORS.skinTone,
@@ -52,7 +56,20 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
     value: attr.value,
     percentage: attr.percentage,
     fill: getColorForAttribute(attr.name),
-  }))
+  }));
+
+  // If no attributes, show a message
+  if (!attributes || attributes.length === 0) {
+    return (
+      <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-4 rounded-sm">
+        <CardContent className="flex-1 pb-4">
+          <div className="flex items-center justify-center h-[200px] text-neutral-400">
+            No attributes available for rarity distribution
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const chartConfig = attributes.reduce((config, attr) => {
     const key = attr.name.toLowerCase().replace(/\s+/g, '')
@@ -70,7 +87,10 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
           config={chartConfig}
           className="mx-auto aspect-square max-h-[200px] relative"
         >
-          <PieChart>
+          <PieChart
+            width={200}
+            height={200}
+          >
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent
@@ -135,5 +155,17 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
       </CardContent>
     </Card>
   )
+  } catch (error) {
+    
+    return (
+      <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-4 rounded-sm">
+        <CardContent className="flex-1 pb-4">
+          <div className="flex items-center justify-center h-[200px] text-red-400">
+            Error loading rarity chart: {error instanceof Error ? error.message : 'Unknown error'}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 }
 

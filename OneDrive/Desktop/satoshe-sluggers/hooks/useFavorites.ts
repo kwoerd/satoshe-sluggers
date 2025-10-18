@@ -39,7 +39,7 @@ export function useFavorites() {
         setFavorites([]);
       }
     } catch (error) {
-      console.error('Error loading favorites:', error);
+      
       setFavorites([]);
     }
   }, [account?.address]);
@@ -53,7 +53,7 @@ export function useFavorites() {
       localStorage.setItem(storageKey, JSON.stringify(newFavorites));
       setFavorites(newFavorites);
     } catch (error) {
-      console.error('Error saving favorites:', error);
+      
     }
   };
 

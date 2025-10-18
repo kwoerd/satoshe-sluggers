@@ -56,7 +56,7 @@ export default function ScrollButtons() {
         <TooltipTrigger asChild>
           <button
             onClick={scrollToTopOrBottom}
-            className="fixed bottom-6 right-8 sm:right-12 lg:right-16 xl:right-20 z-50 w-10 h-10 rounded-full bg-[#ff0099] hover:bg-[#ff0099]/90 text-[#FFFBEB] shadow-lg hover:shadow-xl hover:ring-2 hover:ring-white/30 transition-all duration-300 flex items-center justify-center group"
+            className="fixed bottom-6 right-4 sm:right-6 lg:right-8 xl:right-12 z-50 w-10 h-10 rounded-full bg-[#ff0099] hover:bg-[#ff0099]/90 text-[#FFFBEB] shadow-lg hover:shadow-xl hover:ring-2 hover:ring-white/30 transition-all duration-300 flex items-center justify-center group"
             aria-label={isAtTop ? "Scroll to bottom" : "Scroll to top"}
           >
             {isAtTop ? (

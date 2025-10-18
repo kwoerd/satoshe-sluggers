@@ -65,7 +65,7 @@ export default function ContactPage() {
       setSubmitted(true)
 
     } catch (error) {
-      console.error('Error sending message:', error)
+      
       alert(error instanceof Error ? error.message : 'Failed to send message. Please try again.')
     } finally {
       setIsSubmitting(false)

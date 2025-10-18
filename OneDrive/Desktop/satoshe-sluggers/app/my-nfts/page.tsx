@@ -12,6 +12,7 @@ import { useActiveAccount } from "thirdweb/react"
 import { client } from "@/lib/thirdweb"
 import { useFavorites } from "@/hooks/useFavorites"
 import { Heart, Package } from "lucide-react"
+import MarketplaceSellModal from "@/components/marketplace-sell-modal"
 
 // Types for NFT data
 interface NFT {
@@ -31,9 +32,11 @@ function MyNFTsContent() {
   const [activeTab, setActiveTab] = useState("owned")
   const [isLoading, setIsLoading] = useState(true)
   const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([])
+  const [sellModalOpen, setSellModalOpen] = useState(false)
+  const [selectedNFT, setSelectedNFT] = useState<{ id: string; name: string; tokenId: string } | null>(null)
 
   const account = useActiveAccount()
-  const { favorites } = useFavorites()
+  const { favorites, removeFromFavorites } = useFavorites()
 
   useEffect(() => {
     if (tabParam && (tabParam === "owned" || tabParam === "favorites")) {
@@ -64,8 +67,7 @@ function MyNFTsContent() {
         }));
 
         setOwnedNFTs(demoOwnedNFTs);
-      } catch (error) {
-        console.error("Error loading user data:", error);
+      } catch {
         setOwnedNFTs([]);
       } finally {
         setIsLoading(false);
@@ -74,8 +76,18 @@ function MyNFTsContent() {
     loadUserData();
   }, [account?.address])
 
-  const handleListForSale = (nftId: string) => {
-    router.push(`/list-nft/${nftId}`)
+  const handleListForSale = (nft: { id: string; name: string; tokenId: string }) => {
+    setSelectedNFT(nft)
+    setSellModalOpen(true)
+  }
+
+  const handleUnfavorite = (tokenId: string) => {
+    removeFromFavorites(tokenId)
+  }
+
+  const handleCloseSellModal = () => {
+    setSellModalOpen(false)
+    setSelectedNFT(null)
   }
 
 
@@ -84,6 +96,7 @@ function MyNFTsContent() {
     if (activeTab === "owned") {
       return ownedNFTs.map((nft: NFT) => ({
         id: nft.tokenId || nft.id,
+        tokenId: nft.tokenId || nft.id,
         name: nft.name || `Satoshe Slugger #${(parseInt(nft.tokenId || nft.id) + 1)}`,
         image: nft.image || "/placeholder-nft.webp",
         price: "0",
@@ -94,6 +107,7 @@ function MyNFTsContent() {
     } else if (activeTab === "favorites") {
       return favorites.map((fav) => ({
         id: fav.tokenId,
+        tokenId: fav.tokenId,
         name: fav.name,
         image: fav.image,
         price: "0",
@@ -184,6 +198,18 @@ function MyNFTsContent() {
                   >
                     {nft.rarity}
                   </Badge>
+                  
+                  {/* Heart icon for favorites tab */}
+                  {activeTab === "favorites" && (
+                    <button
+                      onClick={() => handleUnfavorite(nft.id)}
+                      className="absolute top-3 left-3 z-20 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors group"
+                      aria-label="Remove from favorites"
+                    >
+                      <Heart className="w-4 h-4 fill-[#ff0099] text-[#ff0099] group-hover:scale-110 transition-transform" />
+                    </button>
+                  )}
+                  
                   <div className="w-full h-full flex items-center justify-center">
                     <MediaRenderer
                       src={nft.image || "/placeholder-nft.webp"}
@@ -219,7 +245,7 @@ function MyNFTsContent() {
                         View Details
                       </Button>
                       <Button
-                        onClick={() => handleListForSale(nft.id)}
+                        onClick={() => handleListForSale(nft)}
                         className="w-full bg-blue-500 hover:bg-blue-600 text-offwhite text-xs font-medium py-1.5 rounded-sm"
                         style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
                       >
@@ -233,6 +259,19 @@ function MyNFTsContent() {
           </div>
         )}
       </div>
+
+      {/* Marketplace Sell Modal */}
+      {selectedNFT && (
+        <MarketplaceSellModal
+          isOpen={sellModalOpen}
+          onClose={handleCloseSellModal}
+          nft={{
+            id: selectedNFT.id,
+            name: selectedNFT.name,
+            tokenId: selectedNFT.tokenId
+          }}
+        />
+      )}
 
       <Footer />
     </main>
