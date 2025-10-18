@@ -42,6 +42,7 @@ type NFTGridItem = {
   headwear?: string;
 };
 
+
 interface SelectedFilters {
   background?: string[];
   skinTone?: string[];
@@ -53,12 +54,25 @@ interface SelectedFilters {
 }
 
 interface NFTMetadata {
+  token_id?: number;
+  name?: string;
+  media_url?: string;
+  rarity_tier?: string;
+  rarity_percent?: number | string;
+  rank?: number | string;
   attributes?: Array<{ trait_type: string; value: string }>;
   merged_data?: {
     media_url?: string;
     metadata_url?: string;
+    token_id?: number;
     [key: string]: unknown;
   };
+  background?: string;
+  skinTone?: string;
+  shirt?: string;
+  eyewear?: string;
+  hair?: string;
+  headwear?: string;
   [key: string]: unknown;
 }
 
@@ -220,9 +234,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
       const processNFTs = async () => {
         const mappedNFTs: NFTGridItem[] = await Promise.all(
-          allMetadata
-            .filter((meta: any) => meta.token_id !== undefined)
-            .map(async (meta: any) => {
+          (allMetadata as NFTMetadata[])
+            .filter((meta: NFTMetadata) => meta.token_id !== undefined)
+            .map(async (meta: NFTMetadata) => {
               const tokenId = meta.token_id?.toString() || "";
               
               // Use actual media_url from metadata
