@@ -90,7 +90,7 @@ export default function NFTCard({
               alt={name}
               fill
               loading="lazy"
-              className={`object-contain p-2 hover:scale-[1.01] hover:rotate-[2deg] hover:-translate-y-0.5 transition-all duration-500 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
+              className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
               onLoad={() => {
                 setImgLoaded(true);
                 setImgLoading(false);
@@ -126,7 +126,7 @@ export default function NFTCard({
               alt={name}
               fill
               loading="lazy"
-              className={`object-contain p-2 hover:scale-[1.01] hover:rotate-[2deg] hover:-translate-y-0.5 transition-all duration-500 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
+              className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
               onLoad={() => {
                 setImgLoaded(true);
                 setImgLoading(false);
@@ -146,7 +146,7 @@ export default function NFTCard({
         </Link>
 
         {/* Details Section - Full details for large grid */}
-        <div className="space-y-1.5 px-2 pb-4">
+        <div className="space-y-1.5 pl-4 pr-2 pb-4">
           {/* Title and Favorite */}
           <div className="flex items-start justify-between gap-2">
             <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
@@ -165,7 +165,7 @@ export default function NFTCard({
           </div>
 
           {/* Stats */}
-          <div className="text-xs text-neutral-300 space-y-0.5">
+          <div className="text-xs text-neutral-300 space-y-0">
             <div className="flex justify-between">
               <span>Rank:</span>
               <span className="text-neutral-300">{rank} of 7777</span>
@@ -181,44 +181,46 @@ export default function NFTCard({
           </div>
 
           {/* Buy Section */}
-          <div className="mt-1">
+          <div className="mt-0.5">
             {isForSale && listingId ? (
               <div className="space-y-0.5">
-                <div className="text-xs text-[#FFFBEB]">Buy Now</div>
+                <div className="text-xs text-blue-500">Buy Now</div>
                 <div className="flex items-end justify-between">
-                  <div className="text-base text-blue-500 font-medium">
+                  <div className="text-base text-blue-500 font-semibold">
                     {priceEth} ETH
                   </div>
-                  <BuyDirectListingButton
-                    contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                    client={client}
-                    chain={base}
-                    listingId={BigInt(listingId)}
-                    quantity={1n}
-                    onTransactionSent={() => {
-                      track('NFT Purchase Attempted', { tokenId });
-                    }}
-                    onTransactionConfirmed={() => {
-                      track('NFT Purchase Success', { tokenId });
-                      if (onPurchase) onPurchase();
-                    }}
-                    onError={(error) => {
-                      console.error('Purchase failed:', error);
-                      track('NFT Purchase Failed', { tokenId });
-                    }}
-                    className="!px-3 !py-1.5 !bg-blue-500 !text-[#FFFBEB] !font-normal !rounded hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
-                    style={{
-                      padding: '6px 12px',
-                      fontSize: '12px',
-                      height: 'auto',
-                      minHeight: 'unset',
-                      width: 'auto',
-                      minWidth: 'unset',
-                      borderRadius: '2px'
-                    }}
-                  >
-                    BUY
-                  </BuyDirectListingButton>
+                          <BuyDirectListingButton
+                            contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
+                            client={client}
+                            chain={base}
+                            listingId={BigInt(listingId)}
+                            quantity={1n}
+                            onTransactionSent={() => {
+                              track('NFT Purchase Attempted', { tokenId });
+                            }}
+                            onTransactionConfirmed={() => {
+                              track('NFT Purchase Success', { tokenId });
+                              if (onPurchase) onPurchase();
+                            }}
+                            onError={(error) => {
+                              console.error('Purchase failed:', error);
+                              track('NFT Purchase Failed', { tokenId });
+                            }}
+                            className="!px-3 !py-1.5 !bg-blue-500 !text-white !font-normal !rounded-sm hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              height: 'auto',
+                              minHeight: 'unset',
+                              width: 'auto',
+                              minWidth: 'unset',
+                              borderRadius: '2px',
+                              backgroundColor: '#3b82f6',
+                              color: 'white'
+                            }}
+                          >
+                            BUY
+                          </BuyDirectListingButton>
                 </div>
               </div>
             ) : priceEth > 0 ? (
@@ -226,7 +228,7 @@ export default function NFTCard({
                 <div className="text-xs text-neutral-400 font-medium">
                   SOLD
                 </div>
-                <div className="px-2 py-1 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
+                <div className="px-2 py-1 bg-emerald-600 text-white text-xs font-normal rounded-sm">
                   SOLD
                 </div>
               </div>
@@ -250,7 +252,7 @@ export default function NFTCard({
             alt={name}
             fill
             loading="lazy"
-            className={`object-contain p-3 hover:scale-[1.01] hover:rotate-[2deg] hover:-translate-y-0.5 transition-all duration-500 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
+            className={`object-contain p-3 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
             onLoad={() => {
               setImgLoaded(true);
               setImgLoading(false);
@@ -271,7 +273,7 @@ export default function NFTCard({
       </Link>
 
       {/* NFT Details Section - Medium grid design */}
-      <div className="px-3 pt-2 pb-3 flex-1 flex flex-col">
+      <div className="pl-5 pr-3 pt-2 pb-3 flex-1 flex flex-col">
         {/* Title and Favorite */}
         <div className="flex items-center justify-between gap-2 mb-2">
           <Link href={`/nft/${tokenId}`} className="block flex-1 min-w-0">
@@ -291,42 +293,44 @@ export default function NFTCard({
 
         {/* Buy Section - Minimal */}
         {isForSale && listingId ? (
-          <div className="space-y-1">
-            <div className="text-xs text-[#FFFBEB]">Buy Now</div>
+          <div className="space-y-0.5">
+            <div className="text-xs text-blue-500">Buy Now</div>
             <div className="flex items-end justify-between">
-              <div className="text-base text-blue-500 font-medium">
+              <div className="text-base text-blue-500 font-semibold">
                 {priceEth} ETH
               </div>
-              <BuyDirectListingButton
-                contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                client={client}
-                chain={base}
-                listingId={BigInt(listingId)}
-                quantity={1n}
-                onTransactionSent={() => {
-                  track('NFT Purchase Attempted', { tokenId });
-                }}
-                onTransactionConfirmed={() => {
-                  track('NFT Purchase Success', { tokenId });
-                  if (onPurchase) onPurchase();
-                }}
-                onError={(error) => {
-                  console.error('Purchase failed:', error);
-                  track('NFT Purchase Failed', { tokenId });
-                }}
-                className="!px-2 !py-1 !bg-blue-500 !text-[#FFFBEB] !font-normal !rounded hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '11px',
-                  height: 'auto',
-                  minHeight: 'unset',
-                  width: 'auto',
-                  minWidth: 'unset',
-                  borderRadius: '2px'
-                }}
-              >
-                BUY
-              </BuyDirectListingButton>
+                      <BuyDirectListingButton
+                        contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
+                        client={client}
+                        chain={base}
+                        listingId={BigInt(listingId)}
+                        quantity={1n}
+                        onTransactionSent={() => {
+                          track('NFT Purchase Attempted', { tokenId });
+                        }}
+                        onTransactionConfirmed={() => {
+                          track('NFT Purchase Success', { tokenId });
+                          if (onPurchase) onPurchase();
+                        }}
+                        onError={(error) => {
+                          console.error('Purchase failed:', error);
+                          track('NFT Purchase Failed', { tokenId });
+                        }}
+                        className="!px-3 !py-1.5 !bg-blue-500 !text-white !font-normal !rounded-sm hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: '12px',
+                          height: 'auto',
+                          minHeight: 'unset',
+                          width: 'auto',
+                          minWidth: 'unset',
+                          borderRadius: '2px',
+                          backgroundColor: '#3b82f6',
+                          color: 'white'
+                        }}
+                      >
+                        BUY
+                      </BuyDirectListingButton>
             </div>
           </div>
         ) : priceEth > 0 ? (
@@ -334,7 +338,7 @@ export default function NFTCard({
             <div className="text-xs text-neutral-400 font-medium">
               SOLD
             </div>
-            <div className="px-2 py-1 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
+            <div className="px-2 py-1 bg-emerald-600 text-white text-xs font-normal rounded-sm">
               SOLD
             </div>
           </div>

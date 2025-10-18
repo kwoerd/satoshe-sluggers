@@ -81,6 +81,11 @@ interface SelectedFilters {
 
 interface NFTMetadata {
   attributes?: Array<{ trait_type: string; value: string }>;
+  merged_data?: {
+    media_url?: string;
+    metadata_url?: string;
+    [key: string]: unknown;
+  };
   [key: string]: unknown;
 }
 
@@ -188,8 +193,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             // Add missing fields for compatibility with main collection
             const enhancedTestData = {
               ...testFileData,
-              price_eth: 0.001, // Default test price
-              listing_id: i + 7777, // Test listing IDs starting from 7777
+              // Use actual pricing data from test metadata files
+              price_eth: testFileData.merged_data?.price_eth || testFileData.price_eth || 0.001,
+              listing_id: testFileData.merged_data?.listing_id || testFileData.listing_id || (i + 7777),
               token_id: i + 7777, // Adjust token_id to be after main collection
               card_number: i + 7778, // Adjust card_number
               image: `/test-nfts/placeholder-nft-${i}.webp`, // Correct image path
@@ -237,15 +243,18 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               const tokenId = meta.token_id?.toString() || "";
               
               // Use test placeholder images for test NFTs (0-9), actual media_url for main collection
-              const isTestNFT = parseInt(tokenId) < 10;
-              const imageUrl = meta.media_url || (isTestNFT ? `/test-nfts/placeholder-nft-${parseInt(tokenId)}.webp` : `/nfts/placeholder-nft.webp`);
+              const isTestNFT = parseInt(tokenId) >= 0 && parseInt(tokenId) <= 9;
+              const mediaUrl = meta.merged_data?.media_url || meta.media_url;
+              const imageUrl = mediaUrl || (isTestNFT ? `/test-nfts/placeholder-nft-${parseInt(tokenId)}.webp` : `/nfts/placeholder-nft.webp`);
               
               // Debug logging
-              if (parseInt(tokenId) < 5) {
+              if (parseInt(tokenId) < 5 || parseInt(tokenId) >= 1000) {
                 console.log(`NFT ${tokenId}:`, { 
-                  hasMediaUrl: !!meta.media_url, 
+                  hasMediaUrl: !!mediaUrl, 
                   imageUrl, 
-                  isTestNFT 
+                  isTestNFT,
+                  mergedDataMediaUrl: meta.merged_data?.media_url,
+                  hasMergedData: !!meta.merged_data
                 });
               }
 
@@ -789,13 +798,15 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                                   console.error('Purchase failed:', error);
                                   track('NFT Purchase Failed', { tokenId: nft.tokenId });
                                 }}
-                                className="!px-3 !py-1.5 !bg-blue-500 !text-[#FFFBEB] hover:!bg-blue-600 !transition-all !text-xs !font-medium !disabled:opacity-50 !h-auto !min-h-0 !rounded"
+                                className="!px-3 !py-1.5 !bg-blue-500 !text-white !font-normal !rounded-sm hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !h-auto !min-h-0"
                                 style={{
                                   padding: '6px 12px',
                                   fontSize: '12px',
                                   height: 'auto',
                                   minHeight: 'unset',
-                                  borderRadius: '2px'
+                                  borderRadius: '2px',
+                                  backgroundColor: '#3b82f6',
+                                  color: 'white'
                                 }}
                               >
                                 Buy

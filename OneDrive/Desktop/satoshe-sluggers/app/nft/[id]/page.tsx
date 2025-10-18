@@ -430,35 +430,45 @@ export default function NFTDetailPage() {
               </button>
             </div>
 
-            {/* Price Information - Direct Listing Style */}
+            {/* Buy Now Section - Moved directly under name */}
             {isForSale ? (
               <div className="space-y-4">
+                {/* Place Your Bid */}
+                <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+                  <h3 className="text-lg font-semibold mb-3 text-off-white">Place Your Bid</h3>
+                  <div className="flex items-center gap-3 mb-2">
+                    <input
+                      type="text"
+                      value="0.00777 ETH"
+                      readOnly
+                      className="flex-1 bg-neutral-900 border border-neutral-600 rounded px-3 py-2 text-off-white"
+                    />
+                    <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                      Place Bid
+                    </button>
+                  </div>
+                  <p className="text-sm text-neutral-400">Minimum bid: 0.00777 ETH</p>
+                </div>
+
                 {/* Buy Now Price */}
                 <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+                  <h3 className="text-lg font-semibold mb-3 text-off-white">Buy Now Price</h3>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm mb-1" style={{ color: COLORS.background }}>Buy Now Price</p>
-                      <p className="text-lg sm:text-xl font-semibold" style={{ color: COLORS.background }}>
+                      <p className="text-2xl font-bold" style={{ color: COLORS.background }}>
                         {priceEth} ETH
                       </p>
                     </div>
                     <TransactionButton
                       transaction={createBuyTransaction}
                       onTransactionConfirmed={() => {
-                        // track('NFT Buy Now Clicked', {
-                        //   tokenId,
-                        //   buyNowPrice: priceEth.toString(),
-                        //   rarity: metadata.rarity_tier,
-                        //   rank: String(metadata.rank),
-                        //   listingId: String(listingId),
-                        // });
                         alert(`NFT purchased successfully for ${priceEth} ETH!`);
                       }}
                       onError={(error) => {
                         console.error("Buy now failed:", error);
                         alert(error.message || "Failed to buy NFT. Please try again.");
                       }}
-                      className="w-32 px-6 h-10 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 hover:bg-blue-600 rounded"
+                      className="px-6 py-3 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 hover:bg-blue-600 rounded"
                       style={{
                         color: "#fffbeb",
                         backgroundColor: COLORS.background,
@@ -603,122 +613,70 @@ export default function NFTDetailPage() {
               </div>
             </div>
 
-            {/* IPFS Links Section */}
-            <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
-              <h3 className="text-lg font-semibold mb-4 text-off-white">IPFS Links</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-neutral-700">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-3 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span className="text-sm text-off-white">View metadata on IPFS</span>
-                  </div>
-                  <a
-                    href={metadata?.merged_data?.metadata_url || `https://ipfs.io/ipfs/QmNMFNLD6U5xHcgzgBf6kBabwS54JyLTuPbtqcHp7wtUXR/${tokenId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-3 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span className="text-sm text-off-white">View image on IPFS</span>
-                  </div>
-                  <a
-                    href={metadata?.merged_data?.media_url || `https://ipfs.io/ipfs/QmVgSHzcYzUGSZHNTRTQYjSRG3rbMkGBnzpxfxkpRokiTW/${tokenId}.webp`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Description and Sales History Tabs */}
-            <div className="bg-neutral-800 rounded border border-neutral-700">
-              <Tabs defaultValue="description" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-neutral-900">
-                  <TabsTrigger value="description" className="data-[state=active]:bg-neutral-800">Description</TabsTrigger>
-                  <TabsTrigger value="sales" className="data-[state=active]:bg-neutral-800">Sales History</TabsTrigger>
-                </TabsList>
-                <TabsContent value="description" className="p-4">
-                  <div className="space-y-3">
-                    <h4 className="text-lg font-semibold text-off-white">{metadata?.description || "Women's Baseball Card"}</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-neutral-400">Contract Address</span>
-                        <span className="text-off-white font-mono">0xf167...1d9C</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-neutral-400">Token ID</span>
-                        <span className="text-off-white">{metadata?.token_id ?? tokenId}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-neutral-400">Token Standard</span>
-                        <span className="text-off-white">ERC-721</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-neutral-400">Blockchain</span>
-                        <span className="text-off-white">Base</span>
-                      </div>
-                    </div>
-                  </div>
-                </TabsContent>
-                <TabsContent value="sales" className="p-4">
-                  <div className="text-center text-neutral-400">
-                    <p>No sales history available</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-
           </div>
         </div>
 
-        {/* Individual Attributes Section */}
-        <div className="bg-neutral-800 p-6 rounded border border-neutral-700">
-          <h3 className="text-xl font-semibold mb-6 text-off-white">Attributes</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {attributes.map((attr: any, index: number) => (
-              <div key={index} className="bg-neutral-900 p-4 rounded border border-neutral-700">
-                <div className="flex items-center mb-2">
-                  <div 
-                    className="w-3 h-3 rounded-full mr-3" 
-                    style={{ backgroundColor: getColorForAttribute(attr.name) }}
-                  ></div>
-                  <span className="text-sm text-neutral-400">{attr.name}</span>
-                </div>
-                <div className="text-lg font-semibold text-off-white mb-1">{attr.value}</div>
-                <div className="text-sm text-neutral-400">
-                  {attr.percentage}% • {attr.occurrence} of 7777
-                </div>
-              </div>
-            ))}
+        {/* Women's Baseball Card Container - Moved up */}
+        <div className="bg-neutral-800 p-6 rounded border border-neutral-700 mb-6">
+          <h3 className="text-xl font-semibold mb-4 text-off-white">{metadata?.description || "Women's Baseball Card"}</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="flex justify-between">
+              <span className="text-neutral-400">Contract Address</span>
+              <span className="text-off-white font-mono">0xf167...1d9C</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-400">Token ID</span>
+              <span className="text-off-white">{metadata?.token_id ?? tokenId}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-400">Token Standard</span>
+              <span className="text-off-white">ERC-721</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-400">Blockchain</span>
+              <span className="text-off-white">Base</span>
+            </div>
           </div>
         </div>
 
-        {/* Combined Attributes & Rarity Distribution - Spans both columns */}
-        <AttributeRarityChart 
-          attributes={attributes.map((attr: any) => ({
-            name: attr.name,
-            value: attr.value,
-            percentage: attr.percentage,
-            occurrence: attr.occurrence,
-            color: getColorForAttribute(attr.name)
-          }))}
-        />
+        {/* Attributes and Rarity Distribution - Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Attributes Section - Left Column */}
+          <div className="bg-neutral-800 p-6 rounded border border-neutral-700">
+            <h3 className="text-xl font-semibold mb-6 text-off-white">Attributes</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {attributes.map((attr: any, index: number) => (
+                <div key={index} className="bg-neutral-900 p-4 rounded border border-neutral-700">
+                  <div className="flex items-center mb-2">
+                    <div 
+                      className="w-3 h-3 rounded-full mr-3" 
+                      style={{ backgroundColor: getColorForAttribute(attr.name) }}
+                    ></div>
+                    <span className="text-sm text-neutral-400">{attr.name}</span>
+                  </div>
+                  <div className="text-lg font-semibold text-off-white mb-1">{attr.value}</div>
+                  <div className="text-sm text-neutral-400">
+                    {attr.percentage}% • {attr.occurrence} of 7777
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Attribute Rarity Distribution - Right Column */}
+          <div className="bg-neutral-800 p-6 rounded border border-neutral-700">
+            <h3 className="text-xl font-semibold mb-6 text-off-white">Attribute Rarity Distribution</h3>
+            <AttributeRarityChart 
+              attributes={attributes.map((attr: any) => ({
+                name: attr.name,
+                value: attr.value,
+                percentage: attr.percentage,
+                occurrence: attr.occurrence,
+                color: getColorForAttribute(attr.name)
+              }))}
+            />
+          </div>
+        </div>
       </div>
 
       <Footer />

@@ -32,7 +32,7 @@ export default function NFTsPage() {
         </div>
 
         <div className="flex flex-col xl:flex-row gap-6 lg:gap-8" suppressHydrationWarning>
-          <div className="xl:sticky xl:top-[76px] xl:self-start z-10 w-full xl:w-80 2xl:w-96">
+          <div className="xl:sticky xl:top-[76px] xl:self-start z-10 w-full xl:w-72 2xl:w-80">
             <NFTSidebar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
