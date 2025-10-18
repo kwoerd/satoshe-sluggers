@@ -35,7 +35,7 @@ export default function HomePage() {
           type="image/webp"
         />
       </Head>
-      <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
+      <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
         <Navigation activePage="home" />
 
       <div className="flex-grow flex items-center justify-center">
@@ -50,12 +50,14 @@ export default function HomePage() {
             <a 
               href="/nfts" 
               className="px-8 py-3 bg-[#ff0099] text-white font-semibold rounded-sm hover:bg-[#ff0099]/90 transition-colors"
+              aria-label="View the complete NFT collection"
             >
               View Collection
             </a>
             <a 
               href="/about" 
               className="px-8 py-3 border border-[#ff0099] text-[#ff0099] font-semibold rounded-sm hover:bg-[#ff0099]/10 transition-colors"
+              aria-label="Learn more about Satoshe Sluggers"
             >
               Learn More
             </a>

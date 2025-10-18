@@ -155,6 +155,8 @@ export default function NFTCard({
               size="sm"
               className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0"
               onClick={handleFavoriteClick}
+              aria-label={isFav ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
+              aria-pressed={isFav}
             >
               <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
             </Button>
@@ -199,6 +201,7 @@ export default function NFTCard({
                               backgroundColor: '#3b82f6',
                               color: 'white'
                             }}
+                            aria-label={`Buy ${name} for ${priceEth} ETH`}
                           >
                             BUY
                           </Link>
@@ -258,6 +261,7 @@ export default function NFTCard({
             <Link
               href={`/nft/${tokenId}`}
               className="px-2 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
+              aria-label={`Buy ${name} for ${priceEth} ETH`}
             >
               Buy
             </Link>
@@ -273,6 +277,8 @@ export default function NFTCard({
             size="sm"
             className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0 ml-auto"
             onClick={handleFavoriteClick}
+            aria-label={isFav ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
+            aria-pressed={isFav}
           >
             <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-[#FFFBEB] hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
           </Button>
