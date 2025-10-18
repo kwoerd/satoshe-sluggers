@@ -692,7 +692,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-inconsolata text-off-white">Marketplace</h4>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-inconsolata text-off-white/70">{truncateAddress(MARKETPLACE_ADDRESS)}</span>
+                <span className="text-[10px] font-inconsolata text-off-white/70">{truncateAddress(MARKETPLACE_ADDRESS)}</span>
                 <button
                   onClick={() => copyToClipboard(MARKETPLACE_ADDRESS)}
                   className="p-1 hover:bg-neutral-700 rounded transition-colors"
@@ -728,7 +728,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-inconsolata text-off-white">NFT Contract</h4>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-inconsolata text-off-white/70">{truncateAddress(NFT_CONTRACT_ADDRESS)}</span>
+                <span className="text-[10px] font-inconsolata text-off-white/70">{truncateAddress(NFT_CONTRACT_ADDRESS)}</span>
                 <button
                   onClick={() => copyToClipboard(NFT_CONTRACT_ADDRESS)}
                   className="p-1 hover:bg-neutral-700 rounded transition-colors"

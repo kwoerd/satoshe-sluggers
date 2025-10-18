@@ -133,7 +133,13 @@ const Header80: React.FC = () => {
                 height={300}
                 className="w-full max-w-2xl mx-auto"
                 priority
+                loading="eager"
+                fetchPriority="high"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 60vw"
+                style={{
+                  willChange: 'transform',
+                  transform: 'translateZ(0)',
+                }}
               />
             </div>
             <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-bold text-[#FF0099]">

@@ -64,11 +64,11 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
   }, {} as ChartConfig)
 
   return (
-    <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-8 rounded-sm">
-      <CardContent className="flex-1 pb-6">
+    <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-4 rounded-sm">
+      <CardContent className="flex-1 pb-4">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[280px]"
+          className="mx-auto aspect-square max-h-[200px] relative"
         >
           <PieChart>
             <ChartTooltip
@@ -132,25 +132,6 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
           </PieChart>
         </ChartContainer>
 
-        {/* Legend */}
-        <div className="grid grid-cols-2 gap-2 mt-4 text-xs">
-          {chartData.map((item, index) => (
-            <div key={index} className="flex items-start gap-2">
-              <div
-                className="w-3 h-3 rounded-full flex-shrink-0 mt-0.5"
-                style={{ backgroundColor: item.fill }}
-              />
-              <div className="flex flex-col">
-                <span className="text-neutral-300 font-normal">
-                  {item.name}: {item.value}
-                </span>
-                <span className="text-neutral-400 text-xs">
-                  {item.percentage}%
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
       </CardContent>
     </Card>
   )

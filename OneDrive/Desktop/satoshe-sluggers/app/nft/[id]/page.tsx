@@ -149,7 +149,7 @@ export default function NFTDetailPage() {
   // Get pricing data from metadata
   const priceEth = metadata?.merged_data?.price_eth || 0;
   const listingId = metadata?.merged_data?.listing_id || 0;
-  const isForSale = priceEth > 0 && listingId;
+  const isForSale = priceEth > 0;
   
 
   // Handle favorite toggle
@@ -177,7 +177,7 @@ export default function NFTDetailPage() {
       throw new Error("Please connect your wallet first");
     }
 
-    if (!isForSale || listingId === 0) {
+    if (!isForSale) {
       throw new Error("This NFT is not available for purchase");
     }
 
@@ -224,7 +224,7 @@ export default function NFTDetailPage() {
     <main className="min-h-screen bg-background text-foreground flex flex-col">
       <Navigation activePage="nfts" />
       <div className="max-w-7xl mx-auto py-4 sm:py-6 flex-grow pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
-        <div className="flex items-center justify-between mb-8 sm:mb-10 px-2 sm:px-4">
+        <div className="flex items-center justify-between mb-8 sm:mb-10">
           <Link
             href="/nfts"
             className="inline-flex items-center text-neutral-400 hover:text-[#ff0099] text-sm transition-colors"
@@ -261,7 +261,7 @@ export default function NFTDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-12 px-8 sm:px-12 lg:px-16 xl:px-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
           {/* Left Column - Image */}
           <div className="space-y-6 order-1 lg:order-1">
             {/* NFT Image Card */}
@@ -459,7 +459,7 @@ export default function NFTDetailPage() {
           </div>
 
           {/* Right Column - NFT Details */}
-          <div className="space-y-6 -mt-2 order-2 lg:order-2 lg:col-span-2">
+          <div className="space-y-6 order-2 lg:order-2">
             {/* NFT Name with Heart Icon */}
             <div className="flex items-start justify-between gap-4">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight text-off-white">
@@ -517,7 +517,7 @@ export default function NFTDetailPage() {
               </div>
             ) : (
               <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
-                <p className="text-neutral-500 text-center">This NFT is not currently for sale</p>
+                <p className="text-blue-400 text-center">This NFT is not currently for sale</p>
               </div>
             )}
 

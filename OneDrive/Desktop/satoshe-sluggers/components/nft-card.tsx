@@ -8,9 +8,7 @@ import { useState } from "react";
 import { Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { track } from '@vercel/analytics';
-import { BuyDirectListingButton } from "thirdweb/react";
-import { client } from "@/lib/thirdweb";
-import { base } from "thirdweb/chains";
+// Removed BuyDirectListingButton imports - using regular buttons to avoid RPC calls
 
 interface NFTCardProps {
   image: string;
@@ -150,7 +148,7 @@ export default function NFTCard({
           {/* Title and Favorite */}
           <div className="flex items-start justify-between gap-2">
             <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
-              <h3 className="font-medium text-sm leading-tight text-[#FFFBEB] truncate">
+              <h3 className="font-medium text-sm leading-tight text-[#FFFBEB]">
                 {name}
               </h3>
             </Link>
@@ -189,24 +187,9 @@ export default function NFTCard({
                   <div className="text-base text-blue-500 font-semibold">
                     {priceEth} ETH
                   </div>
-                          <BuyDirectListingButton
-                            contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                            client={client}
-                            chain={base}
-                            listingId={BigInt(listingId)}
-                            quantity={1n}
-                            onTransactionSent={() => {
-                              track('NFT Purchase Attempted', { tokenId });
-                            }}
-                            onTransactionConfirmed={() => {
-                              track('NFT Purchase Success', { tokenId });
-                              if (onPurchase) onPurchase();
-                            }}
-                            onError={(error) => {
-                              console.error('Purchase failed:', error);
-                              track('NFT Purchase Failed', { tokenId });
-                            }}
-                            className="!px-3 !py-1.5 !bg-blue-500 !text-white !font-normal !rounded-sm hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
+                          <Link
+                            href={`/nft/${tokenId}`}
+                            className="px-3 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 disabled:cursor-not-allowed w-auto min-w-0 h-auto min-h-0"
                             style={{
                               padding: '6px 12px',
                               fontSize: '12px',
@@ -220,7 +203,7 @@ export default function NFTCard({
                             }}
                           >
                             BUY
-                          </BuyDirectListingButton>
+                          </Link>
                 </div>
               </div>
             ) : null}
@@ -268,7 +251,7 @@ export default function NFTCard({
         {/* Title and Favorite */}
         <div className="flex items-center justify-between gap-2 mb-2">
           <Link href={`/nft/${tokenId}`} className="block flex-1 min-w-0">
-            <h3 className="font-normal text-xs leading-tight text-[#FFFBEB] line-clamp-2 truncate">
+            <h3 className="font-normal text-xs leading-tight text-[#FFFBEB] line-clamp-2">
               {name}
             </h3>
           </Link>
@@ -290,24 +273,9 @@ export default function NFTCard({
               <div className="text-base text-blue-500 font-semibold">
                 {priceEth} ETH
               </div>
-                      <BuyDirectListingButton
-                        contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                        client={client}
-                        chain={base}
-                        listingId={BigInt(listingId)}
-                        quantity={1n}
-                        onTransactionSent={() => {
-                          track('NFT Purchase Attempted', { tokenId });
-                        }}
-                        onTransactionConfirmed={() => {
-                          track('NFT Purchase Success', { tokenId });
-                          if (onPurchase) onPurchase();
-                        }}
-                        onError={(error) => {
-                          console.error('Purchase failed:', error);
-                          track('NFT Purchase Failed', { tokenId });
-                        }}
-                        className="!px-3 !py-1.5 !bg-blue-500 !text-white !font-normal !rounded-sm hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
+                      <Link
+                        href={`/nft/${tokenId}`}
+                        className="px-3 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 disabled:cursor-not-allowed w-auto min-w-0 h-auto min-h-0"
                         style={{
                           padding: '6px 12px',
                           fontSize: '12px',
@@ -321,7 +289,7 @@ export default function NFTCard({
                         }}
                       >
                         BUY
-                      </BuyDirectListingButton>
+                      </Link>
             </div>
           </div>
         ) : null}

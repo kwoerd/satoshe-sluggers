@@ -10,9 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Pagination from "@/components/ui/pagination";
-import { BuyDirectListingButton } from "thirdweb/react";
-import { client } from "@/lib/thirdweb";
-import { base } from "thirdweb/chains";
+// Removed BuyDirectListingButton imports - using regular buttons to avoid RPC calls
 import NFTCard from "./nft-card";
 import { track } from '@vercel/analytics';
 import { LayoutGrid, Rows3, Grid3x3, Heart, Square } from "lucide-react";
@@ -62,7 +60,7 @@ interface NFTMetadata {
     metadata_url?: string;
     [key: string]: unknown;
   };
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
 interface NFTGridProps {
@@ -177,30 +175,42 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         // Load main collection using chunked data service
         const mainMetadata = await chunkedDataService.loadAllMetadata();
         
-        // Load test NFTs
+        // Load test NFTs - use placeholder data with test prices
         const testMetadata = [];
         
-        // Load all 10 test NFTs
+        // Create 10 test NFTs with placeholder data and test prices
         for (let i = 0; i < 10; i++) {
-          try {
-            const testFileResponse = await fetch(`${TEST_METADATA_URL}/test-nft-metadata-${i}.json`);
-            const testFileData = await testFileResponse.json();
-            
-            // Add missing fields for compatibility with main collection
-            const enhancedTestData = {
-              ...testFileData,
-              // Use actual pricing data from test metadata files
-              price_eth: testFileData.merged_data?.price_eth || testFileData.price_eth || 0.001,
-              listing_id: testFileData.merged_data?.listing_id || testFileData.listing_id || (i + 7777),
-              token_id: i, // Keep original token_id (0-9) for test NFTs
-              card_number: i + 1, // Keep original card_number (1-10)
-              image: `/test-nfts/placeholder-nft-${i}.webp`, // Correct image path
-            };
-            
-            testMetadata.push(enhancedTestData);
-          } catch (error) {
-            console.warn(`Failed to load test NFT ${i}:`, error);
-          }
+          testMetadata.push({
+            name: `TEST - Satoshe Slugger #${i + 1}`,
+            description: "Test NFT for functionality testing",
+            token_id: i,
+            card_number: i + 1,
+            collection_number: 11,
+            edition: 1,
+            series: "Test Series",
+            rarity_score: 0.5,
+            rank: 5000 + i,
+            rarity_percent: 50 + i,
+            rarity_tier: "Test",
+            attributes: [
+              { trait_type: "Background", value: "Test", occurrence: 1, rarity: 100 },
+              { trait_type: "Skin Tone", value: "Test", occurrence: 1, rarity: 100 },
+              { trait_type: "Shirt", value: "Test", occurrence: 1, rarity: 100 },
+              { trait_type: "Hair", value: "Test", occurrence: 1, rarity: 100 },
+              { trait_type: "Eyewear", value: "Test", occurrence: 1, rarity: 100 },
+              { trait_type: "Headwear", value: "Test", occurrence: 1, rarity: 100 }
+            ],
+            artist: "Test Artist",
+            platform: "Test Platform",
+            compiler: "Test",
+            copyright: "2025 Test",
+            date: Date.now(),
+            image: `/test-nfts/placeholder-nft-${i}.webp`,
+            merged_data: {
+              price_eth: 0.00001, // Very low test price
+              listing_id: 8000 + i // Test listing IDs
+            }
+          });
         }
         
         // Combine main collection with test NFTs
@@ -532,8 +542,10 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             <h2 className="text-lg font-medium">NFT Collection</h2>
             {filteredNFTs.length > 0 && (
               <>
-                <div className="text-sm font-medium text-[#ff0099] mt-1">
-                  {filteredNFTs.length} Live • 0 Sold
+                <div className="text-sm font-medium mt-1">
+                  <span className="text-green-400">{filteredNFTs.length} Live</span>
+                  <span className="text-neutral-400"> • </span>
+                  <span className="text-blue-400">0 Sold</span>
                 </div>
                 <div className="text-xs text-neutral-500 mt-1">
                   Showing {startIndex + 1}-{Math.min(endIndex, filteredNFTs.length)} of {filteredNFTs.length} NFTs
@@ -795,24 +807,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                               View
                             </Link>
                             {nft.isForSale ? (
-                              <BuyDirectListingButton
-                                contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                                client={client}
-                                chain={base}
-                                listingId={BigInt(nft.listingId || nft.tokenId)}
-                                quantity={1n}
-                                onTransactionSent={() => {
-                                  track('NFT Purchase Attempted', { tokenId: nft.tokenId });
-                                }}
-                                onTransactionConfirmed={() => {
-                                  track('NFT Purchase Success', { tokenId: nft.tokenId });
-                                  handlePurchaseSuccess(nft);
-                                }}
-                                onError={(error) => {
-                                  console.error('Purchase failed:', error);
-                                  track('NFT Purchase Failed', { tokenId: nft.tokenId });
-                                }}
-                                className="!px-3 !py-1.5 !bg-blue-500 !text-white !font-normal !rounded-sm hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !h-auto !min-h-0"
+                              <Link
+                                href={`/nft/${nft.tokenId}`}
+                                className="px-3 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 h-auto min-h-0"
                                 style={{
                                   padding: '6px 12px',
                                   fontSize: '12px',
@@ -824,9 +821,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                                 }}
                               >
                                 Buy
-                              </BuyDirectListingButton>
+                              </Link>
                             ) : (
-                              <span className="px-1.5 py-1 text-xs text-neutral-400">
+                              <span className="px-1.5 py-1 text-xs text-blue-400">
                                 Sold
                               </span>
                             )}
