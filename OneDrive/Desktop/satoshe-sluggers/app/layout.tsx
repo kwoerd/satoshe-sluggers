@@ -27,12 +27,19 @@ const inconsolata = Inconsolata({
 })
 
 export const metadata: Metadata = {
-  title: "Satoshe Sluggers - Digital Sluggers, Real-World Change",
-  description: "Satoshe Sluggers is a unique NFT collection of 7,777 digital sluggers on Base blockchain. Each NFT represents a commitment to real-world change and social impact.",
-  keywords: ["NFT", "Satoshe Sluggers", "Base", "blockchain", "digital art", "social impact", "cryptocurrency", "web3"],
+  title: "Satoshe Sluggers - Women's Baseball NFT Collection | Digital Sluggers, Real-World Change",
+  description: "Satoshe Sluggers is a unique women's baseball NFT collection of 7,777 digital sluggers on Base blockchain. Supporting women's sports, the Dow Sports Association, and structural systems for real-world change through Retinal Delights platform.",
+  keywords: [
+    "NFT", "Satoshe Sluggers", "women's baseball", "women's sports", "baseball NFT", 
+    "digital art", "Base blockchain", "cryptocurrency", "web3", "social impact",
+    "Dow Sports Association", "Retinal Delights", "structural systems", "women athletes",
+    "baseball collection", "NFT marketplace", "digital collectibles", "sports NFT",
+    "home run", "grand slam", "base hit", "triple", "double", "ground ball",
+    "line drive", "pinch hit", "walk-off", "over-the-fence", "stand-up double"
+  ],
   authors: [{ name: "Satoshe Sluggers Team" }],
-  creator: "Satoshe Sluggers",
-  publisher: "Satoshe Sluggers",
+  creator: "Retinal Delights",
+  publisher: "Retinal Delights",
   formatDetection: {
     email: false,
     address: false,
@@ -43,16 +50,16 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Satoshe Sluggers - Digital Sluggers, Real-World Change",
-    description: "A unique NFT collection of 7,777 digital sluggers on Base blockchain, representing commitment to real-world change and social impact.",
+    title: "Satoshe Sluggers - Women's Baseball NFT Collection | Digital Sluggers, Real-World Change",
+    description: "A unique women's baseball NFT collection of 7,777 digital sluggers on Base blockchain. Supporting women's sports, the Dow Sports Association, and structural systems for real-world change through Retinal Delights platform.",
     url: 'https://satoshesluggers.com',
-    siteName: 'Satoshe Sluggers',
+    siteName: 'Satoshe Sluggers by Retinal Delights',
     images: [
       {
         url: '/brands/satoshe-sluggers/satoshe-sluggers-home-white.svg',
         width: 1200,
         height: 630,
-        alt: 'Satoshe Sluggers - Digital Sluggers, Real-World Change',
+        alt: 'Satoshe Sluggers - Women\'s Baseball NFT Collection supporting women\'s sports and structural systems',
       },
     ],
     locale: 'en_US',
@@ -60,8 +67,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Satoshe Sluggers - Digital Sluggers, Real-World Change",
-    description: "A unique NFT collection of 7,777 digital sluggers on Base blockchain, representing commitment to real-world change and social impact.",
+    title: "Satoshe Sluggers - Women's Baseball NFT Collection | Digital Sluggers, Real-World Change",
+    description: "A unique women's baseball NFT collection of 7,777 digital sluggers on Base blockchain. Supporting women's sports, the Dow Sports Association, and structural systems for real-world change.",
     images: ['/brands/satoshe-sluggers/satoshe-sluggers-home-white.svg'],
   },
   robots: {
@@ -92,6 +99,58 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CreativeWork",
+              "name": "Satoshe Sluggers NFT Collection",
+              "description": "A unique women's baseball NFT collection of 7,777 digital sluggers on Base blockchain, supporting women's sports, the Dow Sports Association, and structural systems for real-world change.",
+              "creator": {
+                "@type": "Organization",
+                "name": "Retinal Delights",
+                "url": "https://retinaldelights.io"
+              },
+              "publisher": {
+                "@type": "Organization", 
+                "name": "Retinal Delights",
+                "url": "https://retinaldelights.io"
+              },
+              "genre": ["NFT", "Digital Art", "Women's Sports", "Baseball", "Blockchain"],
+              "keywords": [
+                "women's baseball", "women's sports", "baseball NFT", "digital collectibles",
+                "Dow Sports Association", "structural systems", "Retinal Delights",
+                "home run", "grand slam", "base hit", "triple", "double", "ground ball"
+              ],
+              "about": [
+                {
+                  "@type": "Thing",
+                  "name": "Women's Baseball",
+                  "description": "Supporting women's participation in baseball and sports"
+                },
+                {
+                  "@type": "Thing", 
+                  "name": "Dow Sports Association",
+                  "description": "Organization supporting women's sports development"
+                },
+                {
+                  "@type": "Thing",
+                  "name": "Structural Systems", 
+                  "description": "Systems and infrastructure for real-world change"
+                }
+              ],
+              "offers": {
+                "@type": "Offer",
+                "priceCurrency": "ETH",
+                "availability": "https://schema.org/InStock",
+                "description": "NFT collection with baseball-themed rarity tiers"
+              }
+            })
+          }}
+        />
       </head>
       <body className="font-sans" suppressHydrationWarning>
         {/* Skip Navigation Links */}

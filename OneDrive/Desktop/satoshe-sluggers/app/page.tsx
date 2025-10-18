@@ -43,8 +43,11 @@ export default function HomePage() {
           <h1 className="text-4xl md:text-6xl font-bold text-[#FFFBEB] mb-4">
             SATOSHE SLUGGERS
           </h1>
-          <p className="text-lg md:text-xl text-neutral-400 mb-8">
-            Digital Sluggers, Real-World Change.
+          <p className="text-lg md:text-xl text-neutral-400 mb-4">
+            Women&apos;s Baseball NFT Collection
+          </p>
+          <p className="text-base md:text-lg text-neutral-500 mb-8">
+            Digital Sluggers, Real-World Change. Supporting women&apos;s sports, the Dow Sports Association, and structural systems.
           </p>
           <div className="flex justify-center gap-4">
             <a 
