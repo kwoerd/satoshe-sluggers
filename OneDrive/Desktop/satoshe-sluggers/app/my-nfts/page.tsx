@@ -213,13 +213,14 @@ function MyNFTsContent() {
                     <div className="space-y-2">
                       <Button
                         onClick={() => router.push(`/nft/${nft.id}`)}
-                        className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-[#FFFBEB] text-sm py-2"
+                        className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-[#FFFBEB] text-xs font-medium py-1.5 rounded-sm"
+                        style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
                       >
                         View Details
                       </Button>
                       <Button
                         onClick={() => handleListForSale(nft.id)}
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-offwhite text-xs font-medium py-1.5 rounded"
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-offwhite text-xs font-medium py-1.5 rounded-sm"
                         style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
                       >
                         List for Sale

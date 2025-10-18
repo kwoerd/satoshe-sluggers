@@ -149,9 +149,29 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [isLoading, setIsLoading] = useState(true);
   const [allMetadata, setAllMetadata] = useState<NFTMetadata[]>([]);
   const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
+  const [pricingMappings, setPricingMappings] = useState<Record<number, { price_eth: number; listing_id?: number }>>({});
   
+  // Load pricing mappings
+  useEffect(() => {
+    const loadPricingMappings = async () => {
+      try {
+        const response = await fetch('/data/token_pricing_mappings.json');
+        const pricingData = await response.json();
+        const mappings: Record<number, { price_eth: number; listing_id?: number }> = {};
+        pricingData.forEach((item: any) => {
+          mappings[item.token_id] = {
+            price_eth: item.price_eth,
+            listing_id: item.listing_id
+          };
+        });
+        setPricingMappings(mappings);
+      } catch (error) {
+        console.error('Failed to load pricing mappings:', error);
+      }
+    };
+    loadPricingMappings();
+  }, []);
 
-  
   // Favorites functionality
   const { isFavorited, toggleFavorite } = useFavorites();
 
@@ -224,7 +244,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     };
 
     loadMetadata();
-  }, []);
+  }, [pricingMappings]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -263,9 +283,26 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               const rarityPercent = (meta.rarity_percent as number | string) ?? "--";
               const rarity = ((meta.rarity_tier as string) ?? "Unknown").replace(" (Ultra-Legendary)", "");
               
-              // Use static price data from metadata - no RPC calls for display
-              const priceEth = (meta.merged_data as any)?.price_eth || 0;
-              const listingId = (meta.merged_data as any)?.listing_id;
+              // Use static price data from metadata or pricing mappings - no RPC calls for display
+              const tokenIdNum = parseInt(tokenId);
+              const isTestNFTForPricing = tokenIdNum < 10;
+              
+              let priceEth = 0;
+              let listingId = undefined;
+              
+              if (isTestNFTForPricing) {
+                // For test NFTs, use merged_data or fallback
+                priceEth = (meta.merged_data as any)?.price_eth || 0;
+                listingId = (meta.merged_data as any)?.listing_id;
+              } else {
+                // For main collection, use pricing mappings
+                const pricing = pricingMappings[tokenIdNum];
+                if (pricing) {
+                  priceEth = pricing.price_eth;
+                  listingId = pricing.listing_id;
+                }
+              }
+              
               const isForSale = priceEth > 0 && listingId;
               const priceWei = isForSale ? (priceEth * 1e18).toString() : "0";
 

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef } from "react"
-import { ChevronDown, ChevronRight, Search, X, ArrowDown, ArrowUp, ExternalLink } from "lucide-react"
+import { ChevronDown, ChevronRight, Search, X, ArrowDown, ArrowUp, ExternalLink, Copy, Check } from "lucide-react"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -627,6 +627,29 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
   // Array to store close functions
   const closeFunctions = useRef<(() => void)[]>([])
 
+  // Copy functionality state
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
+
+  // Contract addresses
+  const MARKETPLACE_ADDRESS = "0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
+  const NFT_CONTRACT_ADDRESS = "0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc"
+
+  // Copy to clipboard function
+  const copyToClipboard = async (address: string) => {
+    try {
+      await navigator.clipboard.writeText(address)
+      setCopiedAddress(address)
+      setTimeout(() => setCopiedAddress(null), 2000) // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy address:', err)
+    }
+  }
+
+  // Truncate address function
+  const truncateAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
+  }
+
   // Function to register reset functions
   const registerResetFunction = (resetFn: () => void) => {
     resetFunctions.current.push(resetFn)
@@ -678,7 +701,23 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
         {/* Contract Links */}
         <div className="space-y-3 mt-3">
           <div>
-            <h4 className="text-xs font-inconsolata text-off-white mb-2">Marketplace</h4>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-xs font-inconsolata text-off-white">Marketplace</h4>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-inconsolata text-off-white/70">{truncateAddress(MARKETPLACE_ADDRESS)}</span>
+                <button
+                  onClick={() => copyToClipboard(MARKETPLACE_ADDRESS)}
+                  className="p-1 hover:bg-neutral-700 rounded transition-colors"
+                  title="Copy address"
+                >
+                  {copiedAddress === MARKETPLACE_ADDRESS ? (
+                    <Check className="h-3 w-3 text-green-400" />
+                  ) : (
+                    <Copy className="h-3 w-3 text-off-white/70 hover:text-off-white" />
+                  )}
+                </button>
+              </div>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => window.open('https://basescan.org/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
@@ -698,7 +737,23 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           </div>
 
           <div>
-            <h4 className="text-xs font-inconsolata text-off-white mb-2">NFT Contract</h4>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-xs font-inconsolata text-off-white">NFT Contract</h4>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-inconsolata text-off-white/70">{truncateAddress(NFT_CONTRACT_ADDRESS)}</span>
+                <button
+                  onClick={() => copyToClipboard(NFT_CONTRACT_ADDRESS)}
+                  className="p-1 hover:bg-neutral-700 rounded transition-colors"
+                  title="Copy address"
+                >
+                  {copiedAddress === NFT_CONTRACT_ADDRESS ? (
+                    <Check className="h-3 w-3 text-green-400" />
+                  ) : (
+                    <Copy className="h-3 w-3 text-off-white/70 hover:text-off-white" />
+                  )}
+                </button>
+              </div>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => window.open('https://basescan.org/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
