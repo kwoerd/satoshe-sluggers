@@ -1,6 +1,4 @@
 // components/nft-card.tsx
-
-// components/nft-card.tsx
 "use client"
 
 import Link from "next/link";
@@ -148,7 +146,7 @@ export default function NFTCard({
         </Link>
 
         {/* Details Section - Full details for large grid */}
-        <div className="space-y-2 px-2 pb-4">
+        <div className="space-y-1.5 px-2 pb-4">
           {/* Title and Favorite */}
           <div className="flex items-start justify-between gap-2">
             <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
@@ -167,7 +165,7 @@ export default function NFTCard({
           </div>
 
           {/* Stats */}
-          <div className="text-xs text-neutral-300 space-y-1">
+          <div className="text-xs text-neutral-300 space-y-0.5">
             <div className="flex justify-between">
               <span>Rank:</span>
               <span className="text-neutral-300">{rank} of 7777</span>
@@ -183,7 +181,7 @@ export default function NFTCard({
           </div>
 
           {/* Buy Section */}
-          <div className="mt-3">
+          <div className="mt-1">
             {isForSale && listingId ? (
               <div className="space-y-0.5">
                 <div className="text-xs text-[#FFFBEB]">Buy Now</div>

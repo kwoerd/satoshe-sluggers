@@ -1,5 +1,4 @@
 // components/nft-grid.tsx
-// components/nft-grid.tsx
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -237,8 +236,18 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             .map(async (meta: NFTMetadata & { token_id?: number; name?: string; price_eth?: number; media_url?: string; [key: string]: unknown }) => {
               const tokenId = meta.token_id?.toString() || "";
               
-              // Use placeholder images for test NFTs, actual media_url for main collection
-              const imageUrl = meta.media_url || `/test-nfts/placeholder-nft-${parseInt(tokenId)}.webp`;
+              // Use test placeholder images for test NFTs (0-9), actual media_url for main collection
+              const isTestNFT = parseInt(tokenId) < 10;
+              const imageUrl = meta.media_url || (isTestNFT ? `/test-nfts/placeholder-nft-${parseInt(tokenId)}.webp` : `/nfts/placeholder-nft.webp`);
+              
+              // Debug logging
+              if (parseInt(tokenId) < 5) {
+                console.log(`NFT ${tokenId}:`, { 
+                  hasMediaUrl: !!meta.media_url, 
+                  imageUrl, 
+                  isTestNFT 
+                });
+              }
 
               const name = meta.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`;
               const rank = (meta.rank as number | string) ?? "—";
