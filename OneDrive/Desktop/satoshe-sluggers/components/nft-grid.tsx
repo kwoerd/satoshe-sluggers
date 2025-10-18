@@ -208,13 +208,14 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         
         // Load main collection using simple data service
         const mainMetadata = await loadAllNFTs();
+        console.log('Loaded metadata count:', mainMetadata.length);
         
         // Use only main collection metadata (test NFTs removed)
         const combinedMetadata = mainMetadata || [];
         setAllMetadata(combinedMetadata);
 
-      } catch {
-        // Silent fail - pricing will be empty
+      } catch (error) {
+        console.error('Error loading metadata:', error);
       } finally {
         setIsLoading(false);
       }
