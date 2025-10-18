@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client"
 
-// Header component removed - using inline hero section
+import Header80 from "@/components/header-80"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
 import Head from "next/head"
@@ -35,39 +35,9 @@ export default function HomePage() {
           type="image/webp"
         />
       </Head>
-      <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
+      <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB]">
         <Navigation activePage="home" />
-
-      <div className="flex-grow flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-[#FFFBEB] mb-4">
-            SATOSHE SLUGGERS
-          </h1>
-          <p className="text-lg md:text-xl text-neutral-400 mb-4">
-            Women&apos;s Baseball NFT Collection
-          </p>
-          <p className="text-base md:text-lg text-neutral-500 mb-8">
-            Digital Sluggers, Real-World Change. Supporting women&apos;s sports, the Dow Sports Association, and structural systems.
-          </p>
-          <div className="flex justify-center gap-4">
-            <a 
-              href="/nfts" 
-              className="px-8 py-3 bg-[#ff0099] text-white font-semibold rounded-sm hover:bg-[#ff0099]/90 transition-colors"
-              aria-label="View the complete NFT collection"
-            >
-              View Collection
-            </a>
-            <a 
-              href="/about" 
-              className="px-8 py-3 border border-[#ff0099] text-[#ff0099] font-semibold rounded-sm hover:bg-[#ff0099]/10 transition-colors"
-              aria-label="Learn more about Satoshe Sluggers"
-            >
-              Learn More
-            </a>
-          </div>
-        </div>
-      </div>
-
+        <Header80 />
         <Footer />
       </main>
     </>
