@@ -94,10 +94,10 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
           onClick={handleClose}
         >
           <div 
-            className={`w-[90%] max-w-md mx-auto mt-[76px] border border-neutral-700 rounded-b-lg pt-2 pb-12 px-6 sm:px-8 bg-neutral-950 overflow-y-auto transition-all duration-300 ease-out ${
+            className={`w-full fixed bottom-0 left-0 border-t border-neutral-700 rounded-t-lg pt-2 pb-12 px-6 sm:px-8 bg-neutral-950 overflow-y-auto transition-all duration-300 ease-out ${
               isClosing 
-                ? 'animate-out slide-out-to-top-2 ease-in' 
-                : 'animate-in slide-in-from-top-2 ease-out'
+                ? 'animate-out slide-out-to-bottom-2 ease-in' 
+                : 'animate-in slide-in-from-bottom-2 ease-out'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -106,10 +106,10 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10 p-0 hover:bg-transparent"
+                className="h-12 w-12 p-0 hover:bg-transparent"
                 onClick={handleClose}
               >
-                <X className="h-8 w-8 text-[#ff0099]" />
+                <X className="h-10 w-10 text-[#ff0099]" />
                 <span className="sr-only">Close menu</span>
               </Button>
             </div>

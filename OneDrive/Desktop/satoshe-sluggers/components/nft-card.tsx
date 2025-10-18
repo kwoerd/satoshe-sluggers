@@ -92,7 +92,7 @@ export default function NFTCard({
               alt={name}
               fill
               loading="lazy"
-              className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
+              className={`object-contain p-2 hover:scale-[1.01] hover:rotate-[2deg] hover:-translate-y-0.5 transition-all duration-500 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
               onLoad={() => {
                 setImgLoaded(true);
                 setImgLoading(false);
@@ -128,7 +128,7 @@ export default function NFTCard({
               alt={name}
               fill
               loading="lazy"
-              className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
+              className={`object-contain p-2 hover:scale-[1.01] hover:rotate-[2deg] hover:-translate-y-0.5 transition-all duration-500 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
               onLoad={() => {
                 setImgLoaded(true);
                 setImgLoading(false);
@@ -252,7 +252,7 @@ export default function NFTCard({
             alt={name}
             fill
             loading="lazy"
-            className={`object-contain p-3 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
+            className={`object-contain p-3 hover:scale-[1.01] hover:rotate-[2deg] hover:-translate-y-0.5 transition-all duration-500 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
             onLoad={() => {
               setImgLoaded(true);
               setImgLoading(false);
