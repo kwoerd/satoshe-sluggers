@@ -303,7 +303,7 @@ export default function ProvenancePage() {
             <div>
               <div className="bg-card border border-neutral-700 p-2 rounded max-w-full overflow-hidden">
                 <div
-                  className="font-mono text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap scrollbar-custom max-w-full"
+                  className="font-inconsolata text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap scrollbar-custom max-w-full"
                   style={{ fontWeight: '300', height: "200px" }}
                 >
                   {merkleTree || "Loading..."}
@@ -326,13 +326,13 @@ export default function ProvenancePage() {
                   
                   {/* Bottom row - Values */}
                   <div className="flex flex-col items-center text-center">
-                    <span className="font-mono text-[#ff0099]" style={{ fontWeight: '400' }}>7,777</span>
+                    <span className="font-inconsolata text-[#ff0099]" style={{ fontWeight: '400' }}>7,777</span>
                   </div>
                   <div className="flex flex-col items-center text-center">
-                    <span className="font-mono text-[#ff0099]" style={{ fontWeight: '400' }}>BASE</span>
+                    <span className="font-inconsolata text-[#ff0099]" style={{ fontWeight: '400' }}>BASE</span>
                   </div>
                   <div className="flex flex-col items-center text-center">
-                    <span className="font-mono text-[#ff0099]" style={{ fontWeight: '400' }}>8453</span>
+                    <span className="font-inconsolata text-[#ff0099]" style={{ fontWeight: '400' }}>8453</span>
                   </div>
                 </div>
               </div>
@@ -378,16 +378,16 @@ export default function ProvenancePage() {
                         )}
                       </div>
                     </th>
-                    <th className="w-48 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
+                    <th className="w-52 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       SHA-256 Hash
                     </th>
-                    <th className="w-48 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
+                    <th className="w-52 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       Keccak-256 Hash
                     </th>
-                    <th className="w-56 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
+                    <th className="w-52 px-2 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       IPFS Metadata CID
                     </th>
-                    <th className="w-56 pl-2 pr-4 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
+                    <th className="w-52 pl-2 pr-4 py-4 text-left text-xs font-semibold text-[#FFFBEB] uppercase tracking-wider">
                       IPFS Media CID
                     </th>
                   </tr>
@@ -402,11 +402,11 @@ export default function ProvenancePage() {
                   ) : (
                     paginatedRecords.map((record) => (
                       <tr key={record.token_id} className="border-b border-neutral-700 hover:bg-accent/30 transition-colors">
-                        <td className="w-16 pl-4 pr-2 py-4 text-xs font-mono" style={{ fontWeight: '300' }}>{record.token_id}</td>
-                        <td className="w-16 px-2 py-4 text-xs font-mono" style={{ fontWeight: '300' }}>{record.nft_number}</td>
-                        <td className="w-48 px-2 py-4">
+                        <td className="w-16 pl-4 pr-2 py-4 text-xs font-inconsolata" style={{ fontWeight: '300' }}>{record.token_id}</td>
+                        <td className="w-16 px-2 py-4 text-xs font-inconsolata" style={{ fontWeight: '300' }}>{record.nft_number}</td>
+                        <td className="w-52 px-2 py-4">
                           <div className="flex items-center gap-1">
-                            <span className="text-xs font-mono break-all" style={{ fontWeight: '300' }}>{record.sha256_hash}</span>
+                            <span className="text-xs font-inconsolata break-all" style={{ fontWeight: '300' }}>{record.sha256_hash}</span>
                             <button
                               onClick={() => copyToClipboard(record.sha256_hash, `sha-${record.token_id}`)}
                               className="p-1 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors flex-shrink-0 rounded cursor-pointer"
@@ -420,9 +420,9 @@ export default function ProvenancePage() {
                             </button>
                           </div>
                         </td>
-                        <td className="w-48 px-2 py-4">
+                        <td className="w-52 px-2 py-4">
                           <div className="flex items-center gap-1">
-                            <span className="text-xs font-mono break-all" style={{ fontWeight: '300' }}>{record.keccak256_hash}</span>
+                            <span className="text-xs font-inconsolata break-all" style={{ fontWeight: '300' }}>{record.keccak256_hash}</span>
                             <button
                               onClick={() => copyToClipboard(record.keccak256_hash, `keccak-${record.token_id}`)}
                               className="p-1 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors flex-shrink-0 rounded cursor-pointer"
@@ -436,13 +436,13 @@ export default function ProvenancePage() {
                             </button>
                           </div>
                         </td>
-                        <td className="w-56 px-2 py-4">
+                        <td className="w-52 px-2 py-4">
                           <div className="flex items-center gap-1">
                             <a
                               href={record.metadata_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs hover:text-primary transition-colors font-mono break-all"
+                              className="text-xs hover:text-primary transition-colors font-inconsolata break-all"
                               style={{ fontWeight: '300' }}
                             >
                               {record.metadata_cid || "N/A"}
@@ -450,13 +450,13 @@ export default function ProvenancePage() {
                             <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-[#ff0099] transition-colors flex-shrink-0" />
                           </div>
                         </td>
-                        <td className="w-56 pl-2 pr-4 py-4">
+                        <td className="w-52 pl-2 pr-4 py-4">
                           <div className="flex items-center gap-1">
                             <a
                               href={record.media_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs hover:text-primary transition-colors font-mono break-all"
+                              className="text-xs hover:text-primary transition-colors font-inconsolata break-all"
                               style={{ fontWeight: '300' }}
                             >
                               {record.media_cid || "N/A"}
