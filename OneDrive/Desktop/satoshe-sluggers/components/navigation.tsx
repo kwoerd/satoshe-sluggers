@@ -15,7 +15,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
   const account = useActiveAccount()
 
   return (
-    <header className="border-b border-neutral-700 px-8 sm:px-12 lg:px-16 xl:px-20 py-3 sm:py-4 flex items-center justify-between bg-neutral-950/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
+    <header className="border-b border-neutral-700 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-3 sm:py-4 flex items-center justify-between bg-neutral-950/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
       <div className="flex items-center">
         <a href="https://retinaldelights.io" target="_blank" rel="noopener noreferrer" className="flex items-center">
           <Image

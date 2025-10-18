@@ -253,7 +253,7 @@ export default function NFTDetailPage() {
             {navigationTokens.prev !== null && (
               <Link
                 href={`/nft/${navigationTokens.prev}`}
-                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-[#ff0099] transition-colors border border-neutral-700 hover:border-[#ff0099]"
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 hover:bg-[#171717] text-neutral-400 hover:text-[#ff0099] transition-colors border border-neutral-700 hover:border-[#ff0099]"
                 title={`Previous NFT #${navigationTokens.prev + 1}`}
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -267,7 +267,7 @@ export default function NFTDetailPage() {
             {navigationTokens.next !== null && (
               <Link
                 href={`/nft/${navigationTokens.next}`}
-                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-[#ff0099] transition-colors border border-neutral-700 hover:border-[#ff0099]"
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 hover:bg-[#171717] text-neutral-400 hover:text-[#ff0099] transition-colors border border-neutral-700 hover:border-[#ff0099]"
                 title={`Next NFT #${navigationTokens.next + 1}`}
               >
                 <ChevronRight className="h-5 w-5" />
@@ -276,7 +276,7 @@ export default function NFTDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 xl:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-12 px-8 sm:px-12 lg:px-16 xl:px-20">
           {/* Left Column - Image */}
           <div className="space-y-6 order-1 lg:order-1">
             {/* NFT Image Card */}
@@ -293,14 +293,84 @@ export default function NFTDetailPage() {
               </div>
             </div>
 
-            {/* IPFS Links - Hidden for test NFTs */}
-            {!isTestNFT && (
-              <div className="space-y-3">
+            {/* Artist and Platform - Two Column Layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/brands/kristen-woerdeman/kwoerd-circular-offwhite-32.png"
+                    alt="Kristen Woerdeman"
+                    width={26}
+                    height={26}
+                    className="w-6 h-6"
+                    sizes="26px"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-off-white">Artist</p>
+                    <p className="text-xs text-neutral-400">Kristen Woerdeman</p>
+                  </div>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </div>
+
+              <div className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/brands/retinal-delights/retinal-delights-cicular-offwhite-32.png"
+                    alt="Retinal Delights"
+                    width={26}
+                    height={26}
+                    className="w-6 h-6"
+                    sizes="26px"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-off-white">Platform</p>
+                    <p className="text-xs text-neutral-400">Retinal Delights</p>
+                  </div>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </div>
+            </div>
+
+            {/* IPFS Links - CID Information */}
+            <div className="space-y-3">
                 <a
                   href={metadata?.merged_data?.metadata_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-green-500 focus:outline-none"
                   aria-label="View token metadata on IPFS"
                 >
                   <div className="flex items-center gap-3">
@@ -353,7 +423,7 @@ export default function NFTDetailPage() {
                   href={metadata?.merged_data?.media_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   aria-label="View NFT image on IPFS"
                 >
                   <div className="flex items-center gap-3">
@@ -400,12 +470,11 @@ export default function NFTDetailPage() {
                   </svg>
                 </a>
               </div>
-            )}
 
           </div>
 
           {/* Right Column - NFT Details */}
-          <div className="space-y-6 -mt-2 order-2 lg:order-2">
+          <div className="space-y-6 -mt-2 order-2 lg:order-2 lg:col-span-2">
             {/* NFT Name with Heart Icon */}
             <div className="flex items-start justify-between gap-4">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight text-off-white">
@@ -430,55 +499,35 @@ export default function NFTDetailPage() {
               </button>
             </div>
 
-            {/* Buy Now Section - Moved directly under name */}
+            {/* Buy Now Section - Simplified */}
             {isForSale ? (
-              <div className="space-y-4">
-                {/* Place Your Bid */}
-                <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
-                  <h3 className="text-lg font-semibold mb-3 text-off-white">Place Your Bid</h3>
-                  <div className="flex items-center gap-3 mb-2">
-                    <input
-                      type="text"
-                      value="0.00777 ETH"
-                      readOnly
-                      className="flex-1 bg-neutral-900 border border-neutral-600 rounded px-3 py-2 text-off-white"
-                    />
-                    <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
-                      Place Bid
-                    </button>
+              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-blue-500 mb-1">Buy Now Price</p>
+                    <p className="text-2xl font-bold text-blue-500">
+                      {priceEth} ETH
+                    </p>
                   </div>
-                  <p className="text-sm text-neutral-400">Minimum bid: 0.00777 ETH</p>
-                </div>
-
-                {/* Buy Now Price */}
-                <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
-                  <h3 className="text-lg font-semibold mb-3 text-off-white">Buy Now Price</h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-2xl font-bold" style={{ color: COLORS.background }}>
-                        {priceEth} ETH
-                      </p>
-                    </div>
-                    <TransactionButton
-                      transaction={createBuyTransaction}
-                      onTransactionConfirmed={() => {
-                        alert(`NFT purchased successfully for ${priceEth} ETH!`);
-                      }}
-                      onError={(error) => {
-                        console.error("Buy now failed:", error);
-                        alert(error.message || "Failed to buy NFT. Please try again.");
-                      }}
-                      className="px-6 py-3 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 hover:bg-blue-600 rounded"
-                      style={{
-                        color: "#fffbeb",
-                        backgroundColor: COLORS.background,
-                        borderColor: COLORS.background,
-                        borderRadius: "6px"
-                      }}
-                    >
-                      BUY NOW
-                    </TransactionButton>
-                  </div>
+                  <TransactionButton
+                    transaction={createBuyTransaction}
+                    onTransactionConfirmed={() => {
+                      alert(`NFT purchased successfully for ${priceEth} ETH!`);
+                    }}
+                    onError={(error) => {
+                      console.error("Buy now failed:", error);
+                      alert(error.message || "Failed to buy NFT. Please try again.");
+                    }}
+                    className="px-6 py-3 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 bg-blue-500 hover:bg-blue-700 text-white rounded-sm"
+                    style={{
+                      backgroundColor: "#3B82F6",
+                      color: "white",
+                      borderColor: "#3B82F6",
+                      borderRadius: "2px"
+                    }}
+                  >
+                    BUY NOW
+                  </TransactionButton>
                 </div>
               </div>
             ) : (
@@ -489,7 +538,7 @@ export default function NFTDetailPage() {
 
             {/* Additional Details */}
             <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
-              <h3 className="text-lg font-semibold mb-4 text-off-white">Details</h3>
+              <h3 className="text-lg font-semibold mb-4 text-off-white">Collection Details</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-neutral-400 mb-1">NFT Number</p>
@@ -532,149 +581,75 @@ export default function NFTDetailPage() {
               </div>
             </div>
 
-            {/* Artist and Platform Cards - Moved from Left Column */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
-                <p className="text-neutral-400 text-sm mb-2">Artist</p>
-                <div className="flex items-center">
-                  <Image
-                    src="/brands/kristen-woerdeman/kwoerd-circular-offwhite-32.png"
-                    alt="Kristen Woerdeman"
-                    width={26}
-                    height={26}
-                    className="w-6 h-6 mr-2"
-                    sizes="26px"
-                  />
-                  <a 
-                    href="https://kristenwertiman.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center text-sm text-off-white hover:text-[#FF0099] transition-colors group"
-                  >
-                    <span>{metadata?.artist || "Kristen Woerdeman"}</span>
-                    <svg className="w-4 h-4 ml-2 text-neutral-400 group-hover:text-[#FF0099] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
-                <p className="text-neutral-400 text-sm mb-2">Platform</p>
-                <div className="flex items-center">
-                  <Image
-                    src="/brands/retinal-delights/retinal-delights-cicular-offwhite-32.png"
-                    alt="Retinal Delights"
-                    width={26}
-                    height={26}
-                    className="w-6 h-6 mr-2"
-                    sizes="26px"
-                  />
-                  <a 
-                    href="https://retinaldelights.io" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center text-sm text-off-white hover:text-[#FF0099] transition-colors group"
-                  >
-                    <span>{metadata?.platform || "Retinal Delights"}</span>
-                    <svg className="w-4 h-4 ml-2 text-neutral-400 group-hover:text-[#FF0099] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Contract Details Section - Without Tabs */}
+            {/* Contract Details - Moved from Women's Baseball Card */}
             <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
-              
-              <div className="space-y-2">
-                <div className="flex justify-between py-2 border-b border-neutral-700">
-                  <span className="text-neutral-400 text-sm">Contract Address</span>
-                  <button
-                    onClick={handleCopyAddress}
-                    className="text-sm hover:text-blue-400 transition-colors cursor-pointer text-off-white"
-                    title="Click to copy full address to clipboard"
-                  >
-                    0x....7c2Fc
-                  </button>
+              <h3 className="text-lg font-semibold mb-4 text-off-white">Contract Details</h3>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between py-1">
+                  <span className="text-neutral-400">Contract Address</span>
+                  <span className="text-off-white font-mono">0xf167...1d9C</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-neutral-700">
-                  <span className="text-neutral-400 text-sm">Token ID</span>
-                  <span className="text-sm text-off-white">{metadata?.token_id ?? tokenId}</span>
+                <div className="flex justify-between py-1">
+                  <span className="text-neutral-400">Token ID</span>
+                  <span className="text-off-white">{metadata?.token_id ?? tokenId}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-neutral-700">
-                  <span className="text-neutral-400 text-sm">Token Standard</span>
-                  <span className="text-sm text-off-white">ERC-721</span>
+                <div className="flex justify-between py-1">
+                  <span className="text-neutral-400">Token Standard</span>
+                  <span className="text-off-white">ERC-721</span>
                 </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-neutral-400 text-sm">Blockchain</span>
-                  <span className="text-sm text-off-white">Base</span>
+                <div className="flex justify-between py-1">
+                  <span className="text-neutral-400">Blockchain</span>
+                  <span className="text-off-white">Base</span>
                 </div>
               </div>
             </div>
 
+
+
           </div>
         </div>
 
-        {/* Women's Baseball Card Container - Moved up */}
-        <div className="bg-neutral-800 p-6 rounded border border-neutral-700 mb-6">
-          <h3 className="text-xl font-semibold mb-4 text-off-white">{metadata?.description || "Women's Baseball Card"}</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div className="flex justify-between">
-              <span className="text-neutral-400">Contract Address</span>
-              <span className="text-off-white font-mono">0xf167...1d9C</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-neutral-400">Token ID</span>
-              <span className="text-off-white">{metadata?.token_id ?? tokenId}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-neutral-400">Token Standard</span>
-              <span className="text-off-white">ERC-721</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-neutral-400">Blockchain</span>
-              <span className="text-off-white">Base</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Attributes and Rarity Distribution - Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Attributes Section - Left Column */}
-          <div className="bg-neutral-800 p-6 rounded border border-neutral-700">
-            <h3 className="text-xl font-semibold mb-6 text-off-white">Attributes</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {attributes.map((attr: any, index: number) => (
-                <div key={index} className="bg-neutral-900 p-4 rounded border border-neutral-700">
-                  <div className="flex items-center mb-2">
-                    <div 
-                      className="w-3 h-3 rounded-full mr-3" 
-                      style={{ backgroundColor: getColorForAttribute(attr.name) }}
-                    ></div>
-                    <span className="text-sm text-neutral-400">{attr.name}</span>
+        {/* Combined Attributes and Rarity Distribution */}
+        <div className="mt-8 bg-neutral-800 p-6 rounded border border-neutral-700 lg:col-span-2 px-8 sm:px-12 lg:px-16 xl:px-20">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
+            {/* Attributes Grid */}
+            <div>
+              <h3 className="text-xl font-semibold mb-6 text-off-white">Attributes</h3>
+              <div className="grid grid-cols-2 gap-3 max-w-md">
+                {attributes.map((attr: any, index: number) => (
+                  <div key={index} className="bg-neutral-900 p-3 rounded border border-neutral-700">
+                    <div className="flex items-center mb-2">
+                      <div
+                        className="w-3 h-3 rounded-full mr-2"
+                        style={{ backgroundColor: getColorForAttribute(attr.name) }}
+                      ></div>
+                      <span className="text-xs text-neutral-400">{attr.name}</span>
+                    </div>
+                    <div className="text-sm font-semibold text-off-white mb-1">{attr.value}</div>
+                    <div className="text-xs text-neutral-400">
+                      {attr.percentage}% • {attr.occurrence} of 7777
+                    </div>
                   </div>
-                  <div className="text-lg font-semibold text-off-white mb-1">{attr.value}</div>
-                  <div className="text-sm text-neutral-400">
-                    {attr.percentage}% • {attr.occurrence} of 7777
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Attribute Rarity Distribution - Right Column */}
-          <div className="bg-neutral-800 p-6 rounded border border-neutral-700">
-            <h3 className="text-xl font-semibold mb-6 text-off-white">Attribute Rarity Distribution</h3>
-            <AttributeRarityChart 
-              attributes={attributes.map((attr: any) => ({
-                name: attr.name,
-                value: attr.value,
-                percentage: attr.percentage,
-                occurrence: attr.occurrence,
-                color: getColorForAttribute(attr.name)
-              }))}
-            />
+            {/* Rarity Chart */}
+            <div>
+              <h3 className="text-xl font-semibold mb-6 text-off-white">Rarity Distribution</h3>
+              <div className="flex items-center justify-center">
+                <AttributeRarityChart
+                  attributes={attributes.map((attr: any) => ({
+                    name: attr.name,
+                    value: attr.value,
+                    percentage: attr.percentage,
+                    occurrence: attr.occurrence,
+                    color: getColorForAttribute(attr.name)
+                  }))}
+                  overallRarity={metadata?.rarity_percent || "93.5"}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

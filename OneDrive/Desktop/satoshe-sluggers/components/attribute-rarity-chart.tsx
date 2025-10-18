@@ -67,9 +67,6 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
 
   return (
     <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-8 rounded-sm">
-      <CardHeader className="items-center pb-3">
-        <CardTitle className="text-lg font-medium text-[#FFFBEB]">Attribute Rarity Distribution</CardTitle>
-      </CardHeader>
       <CardContent className="flex-1 pb-6">
         <ChartContainer
           config={chartConfig}
@@ -140,14 +137,19 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
         {/* Legend */}
         <div className="grid grid-cols-2 gap-2 mt-4 text-xs">
           {chartData.map((item, index) => (
-            <div key={index} className="flex items-center gap-2">
+            <div key={index} className="flex items-start gap-2">
               <div
-                className="w-3 h-3 rounded-full flex-shrink-0"
+                className="w-3 h-3 rounded-full flex-shrink-0 mt-0.5"
                 style={{ backgroundColor: item.fill }}
               />
-              <span className="text-neutral-300 font-normal truncate">
-                {item.name}: {item.value} ({item.percentage}%)
-              </span>
+              <div className="flex flex-col">
+                <span className="text-neutral-300 font-normal">
+                  {item.name}: {item.value}
+                </span>
+                <span className="text-neutral-400 text-xs">
+                  {item.percentage}%
+                </span>
+              </div>
             </div>
           ))}
         </div>

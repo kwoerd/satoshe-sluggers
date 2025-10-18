@@ -299,11 +299,12 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 const pricing = pricingMappings[tokenIdNum];
                 if (pricing) {
                   priceEth = pricing.price_eth;
-                  listingId = pricing.listing_id;
+                  // Generate listing ID if not provided (all NFTs are live listings)
+                  listingId = pricing.listing_id || (tokenIdNum + 10000); // Generate listing ID
                 }
               }
               
-              const isForSale = priceEth > 0 && listingId;
+              const isForSale = priceEth > 0;
               const priceWei = isForSale ? (priceEth * 1e18).toString() : "0";
 
               return {
@@ -817,12 +818,12 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                             >
                               View
                             </Link>
-                            {nft.isForSale && nft.listingId ? (
+                            {nft.isForSale ? (
                               <BuyDirectListingButton
                                 contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
                                 client={client}
                                 chain={base}
-                                listingId={BigInt(nft.listingId)}
+                                listingId={BigInt(nft.listingId || nft.tokenId)}
                                 quantity={1n}
                                 onTransactionSent={() => {
                                   track('NFT Purchase Attempted', { tokenId: nft.tokenId });
@@ -850,7 +851,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                               </BuyDirectListingButton>
                             ) : (
                               <span className="px-1.5 py-1 text-xs text-neutral-400">
-                                {nft.isForSale ? "No Listing" : "Sold"}
+                                Sold
                               </span>
                             )}
                         </div>

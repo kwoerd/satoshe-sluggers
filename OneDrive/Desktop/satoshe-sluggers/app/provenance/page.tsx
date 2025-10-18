@@ -148,7 +148,7 @@ export default function ProvenancePage() {
       <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
         <Navigation activePage="provenance" />
 
-        <div className="container mx-auto px-8 sm:px-12 lg:px-16 xl:px-20 py-8 max-w-7xl flex-grow">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8 max-w-7xl flex-grow">
         <div className="mb-16">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 uppercase tracking-tight">
             <span className="text-[#FFFBEB]">S</span><span className="text-[#FFFBEB]">A</span><span className="text-[#FFFBEB]">T</span><span className="text-[#FFFBEB]">O</span><span className="text-[#FF0099]">S</span><span className="text-[#FF0099]">H</span><span className="text-[#FF0099]">E</span> <span className="text-[#FFFBEB]">Sluggers</span>

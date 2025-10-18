@@ -182,7 +182,7 @@ export default function NFTCard({
 
           {/* Buy Section */}
           <div className="mt-0.5">
-            {isForSale && listingId ? (
+            {isForSale ? (
               <div className="space-y-0.5">
                 <div className="text-xs text-blue-500">Buy Now</div>
                 <div className="flex items-end justify-between">
@@ -221,15 +221,6 @@ export default function NFTCard({
                           >
                             BUY
                           </BuyDirectListingButton>
-                </div>
-              </div>
-            ) : priceEth > 0 ? (
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-neutral-400 font-medium">
-                  SOLD
-                </div>
-                <div className="px-2 py-1 bg-emerald-600 text-white text-xs font-normal rounded-sm">
-                  SOLD
                 </div>
               </div>
             ) : null}
@@ -292,7 +283,7 @@ export default function NFTCard({
         </div>
 
         {/* Buy Section - Minimal */}
-        {isForSale && listingId ? (
+        {isForSale ? (
           <div className="space-y-0.5">
             <div className="text-xs text-blue-500">Buy Now</div>
             <div className="flex items-end justify-between">
@@ -331,15 +322,6 @@ export default function NFTCard({
                       >
                         BUY
                       </BuyDirectListingButton>
-            </div>
-          </div>
-        ) : priceEth > 0 ? (
-          <div className="flex items-center justify-between">
-            <div className="text-xs text-neutral-400 font-medium">
-              SOLD
-            </div>
-            <div className="px-2 py-1 bg-emerald-600 text-white text-xs font-normal rounded-sm">
-              SOLD
             </div>
           </div>
         ) : null}
