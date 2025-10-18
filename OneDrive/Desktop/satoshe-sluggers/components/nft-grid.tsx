@@ -207,7 +207,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     };
 
     loadMetadata();
-  }, [pricingMappings]);
+  }, []);
 
   // Reset to page 1 when filters change
   useEffect(() => {
