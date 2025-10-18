@@ -177,7 +177,7 @@ export default function ProvenancePage() {
 
         <div className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-8 max-w-6xl flex-grow">
         <div className="mb-16">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 uppercase tracking-tight">
             <span className="text-[#FFFBEB]">S</span><span className="text-[#FFFBEB]">A</span><span className="text-[#FFFBEB]">T</span><span className="text-[#FFFBEB]">O</span><span className="text-[#FF0099]">S</span><span className="text-[#FF0099]">H</span><span className="text-[#FF0099]">E</span> <span className="text-[#FFFBEB]">Sluggers</span>
           </h1>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-8 uppercase tracking-tight text-[#FFFBEB]">
@@ -313,18 +313,18 @@ export default function ProvenancePage() {
               
               {/* Collection Stats - Under Merkle Tree */}
               <div className="mt-6">
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground uppercase tracking-wider font-medium">Collection Size:</span>
-                    <span className="font-mono text-[#ff0099]" style={{ fontWeight: '400' }}>7,777</span>
+                <div className="grid grid-cols-3 gap-4 sm:gap-8 text-sm">
+                  <div className="flex flex-col items-center text-center">
+                    <span className="text-muted-foreground uppercase tracking-wider font-medium">Collection Size</span>
+                    <span className="font-mono text-[#ff0099] mt-1" style={{ fontWeight: '400' }}>7,777</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground uppercase tracking-wider font-medium">Blockchain:</span>
-                    <span className="font-mono text-[#ff0099]" style={{ fontWeight: '400' }}>BASE</span>
+                  <div className="flex flex-col items-center text-center">
+                    <span className="text-muted-foreground uppercase tracking-wider font-medium">Blockchain</span>
+                    <span className="font-mono text-[#ff0099] mt-1" style={{ fontWeight: '400' }}>BASE</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground uppercase tracking-wider font-medium">Chain ID:</span>
-                    <span className="font-mono text-[#ff0099]" style={{ fontWeight: '400' }}>8453</span>
+                  <div className="flex flex-col items-center text-center">
+                    <span className="text-muted-foreground uppercase tracking-wider font-medium">Chain ID</span>
+                    <span className="font-mono text-[#ff0099] mt-1" style={{ fontWeight: '400' }}>8453</span>
                   </div>
                 </div>
               </div>
