@@ -61,9 +61,9 @@ export default function ProvenancePage() {
           fetch("/data/sha256_hashes.txt"),
         ])
         
-        // Load metadata using chunked data service
-        const { chunkedDataService } = await import("@/lib/chunked-data-service");
-        const metadataData = await chunkedDataService.loadAllMetadata();
+        // Load metadata using simplified data service
+        const { loadAllNFTs } = await import("@/lib/simple-data-service");
+        const metadataData = await loadAllNFTs();
 
         const merkleText = await merkleRes.text()
         const hashesText = await hashesRes.text()
@@ -80,7 +80,7 @@ export default function ProvenancePage() {
           .map((sha256, index) => {
             const tokenNum = index
             // Find the corresponding metadata by token_id
-            const metadataItem = metadataData.find((item: any) => item.merged_data?.token_id === tokenNum)
+            const metadataItem = metadataData.find((item: { merged_data?: { token_id: number } }) => item.merged_data?.token_id === tokenNum)
             
             // Debug logging for first few records
             if (index < 3) {
