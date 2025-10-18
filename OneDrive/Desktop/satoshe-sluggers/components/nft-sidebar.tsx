@@ -23,6 +23,27 @@ const defaultContextValue: FilterContextType = {
 
 export const FilterContext = React.createContext(defaultContextValue);
 
+// Type definitions
+interface FilterState {
+  rarity?: string[];
+  background?: string[];
+  skinTone?: string[];
+  shirt?: string[];
+  hair?: Record<string, string[]>;
+  eyewear?: string[];
+  headwear?: Record<string, string[]>;
+}
+
+interface NFTSidebarProps {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  searchMode: "exact" | "contains";
+  setSearchMode: (mode: "exact" | "contains") => void;
+  selectedFilters: FilterState;
+  setSelectedFilters: (val: FilterState) => void;
+  traitCounts?: Record<string, Record<string, number>>;
+}
+
 // Add prop types for FilterCategory
 interface FilterCategoryProps {
   title: string;
@@ -92,17 +113,6 @@ function FilterCategory({ title, color, options, twoColumns = false, icon, selec
     green: "border-emerald-500",
     cyan: "border-cyan-500",
     orange: "border-orange-500",
-  }
-
-  // Map color names to background classes for checkboxes - matching circular graph colors
-  const bgColorClasses: Record<string, string> = {
-    purple: "checked:bg-purple-500 checked:border-purple-500",
-    blue: "checked:bg-blue-500 checked:border-blue-500",
-    amber: "checked:bg-amber-500 checked:border-amber-500",
-    red: "checked:bg-red-500 checked:border-red-500",
-    green: "checked:bg-emerald-500 checked:border-emerald-500",
-    cyan: "checked:bg-cyan-500 checked:border-cyan-500",
-    orange: "checked:bg-orange-500 checked:border-orange-500",
   }
 
   const handleCheckboxChange = (option: string) => {
@@ -247,17 +257,6 @@ function RarityTiersCategory({ title, color, icon, selected = [], onChange, trai
     orange: "border-orange-500",
   }
 
-  // Map color names to background classes for checkboxes - matching circular graph colors
-  const bgColorClasses: Record<string, string> = {
-    purple: "checked:bg-purple-500 checked:border-purple-500",
-    blue: "checked:bg-blue-500 checked:border-blue-500",
-    amber: "checked:bg-amber-500 checked:border-amber-500",
-    red: "checked:bg-red-500 checked:border-red-500",
-    green: "checked:bg-emerald-500 checked:border-emerald-500",
-    cyan: "checked:bg-cyan-500 checked:border-cyan-500",
-    orange: "checked:bg-orange-500 checked:border-orange-500",
-  }
-
   const handleCheckboxChange = (optionValue: string) => {
     if (selected.includes(optionValue)) {
       onChange(selected.filter((o) => o !== optionValue))
@@ -396,17 +395,6 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
     orange: "border-orange-500",
   }
 
-  // Map color names to background classes for checkboxes - matching circular graph colors
-  const bgColorClasses: Record<string, string> = {
-    purple: "checked:bg-purple-500 checked:border-purple-500",
-    blue: "checked:bg-blue-500 checked:border-blue-500",
-    amber: "checked:bg-amber-500 checked:border-amber-500",
-    red: "checked:bg-red-500 checked:border-red-500",
-    green: "checked:bg-emerald-500 checked:border-emerald-500",
-    cyan: "checked:bg-cyan-500 checked:border-cyan-500",
-    orange: "checked:bg-orange-500 checked:border-orange-500",
-  }
-
   // Handle subcategory checkbox
   const handleSubcategoryCheckbox = (subcategoryName: string) => {
     if (selected[subcategoryName]) {
@@ -478,12 +466,12 @@ function FilterCategoryWithSubcategories({ title, color, subcategories, twoColum
                                         color === 'cyan' ? '#06b6d4' :
                                         color === 'orange' ? '#f97316' : '#8b5cf6'
                     } as React.CSSProperties}
-                    onClick={(e: any) => e.stopPropagation()}
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
                   />
                   <label
                     htmlFor={`subcat-${subcategory.name}`}
                     className={`text-sm cursor-pointer py-1 pr-2 block flex-1 ${isChecked ? `border-b ${borderColorClasses[color]} pb-2` : ''}`}
-                    onClick={(e: any) => e.stopPropagation()}
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
                   >
                     <div className="flex items-center justify-between pb-1">
                       <span className={colorClasses[color]}>{subcategory.name}</span>
@@ -560,8 +548,8 @@ interface NFTSidebarProps {
   setSearchTerm: (val: string) => void;
   searchMode: "exact" | "contains";
   setSearchMode: (mode: "exact" | "contains") => void;
-  selectedFilters: any;
-  setSelectedFilters: (val: any) => void;
+  selectedFilters: FilterState;
+  setSelectedFilters: (val: FilterState) => void;
   traitCounts?: Record<string, Record<string, number>>;
 }
 
@@ -811,7 +799,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
             placeholder="Search NFTs..."
             className="pl-9 py-1.5 text-sm font-normal h-8 rounded text-brand-pink border-neutral-600 focus:outline-none focus:ring-0 focus:border-brand-pink transition-colors"
             value={searchTerm}
-            onChange={(e: any) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const newValue = (e.target as HTMLInputElement).value;
               setSearchTerm(newValue);
             }}
@@ -855,7 +843,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
             />
           }
           selected={selectedFilters.rarity || []}
-          onChange={arr => setSelectedFilters((f: any) => ({ ...f, rarity: arr }))}
+          onChange={arr => setSelectedFilters({ ...selectedFilters, rarity: arr })}
           traitCounts={traitCounts}
         />
 
@@ -874,7 +862,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           }
           options={traitCounts["background"] ? Object.keys(traitCounts["background"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.background.map(value => ({ value, display: value }))}
           selected={selectedFilters.background || []}
-          onChange={arr => setSelectedFilters((f: any) => ({ ...f, background: arr }))}
+          onChange={arr => setSelectedFilters({ ...selectedFilters, background: arr })}
           traitCounts={traitCounts}
         />
 
@@ -887,7 +875,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           }
           options={traitCounts["skinTone"] ? Object.keys(traitCounts["skinTone"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.skinTone.map(value => ({ value, display: value }))}
           selected={selectedFilters.skinTone || []}
-          onChange={arr => setSelectedFilters((f: any) => ({ ...f, skinTone: arr }))}
+          onChange={arr => setSelectedFilters({ ...selectedFilters, skinTone: arr })}
           traitCounts={traitCounts}
         />
 
@@ -898,7 +886,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           icon={<Image src="/icons/nft-sidebar-categories/shirt-red.svg" alt="Shirt" width={18} height={18} className="text-red-400" sizes="18px" />}
           options={traitCounts["shirt"] ? Object.keys(traitCounts["shirt"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.shirt.map(value => ({ value, display: value }))}
           selected={selectedFilters.shirt || []}
-          onChange={arr => setSelectedFilters((f: any) => ({ ...f, shirt: arr }))}
+          onChange={arr => setSelectedFilters({ ...selectedFilters, shirt: arr })}
           traitCounts={traitCounts}
         />
 
@@ -909,7 +897,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           icon={<Image src="/icons/nft-sidebar-categories/hair-green.svg" alt="Hair" width={18} height={18} className="text-green-400" sizes="18px" />}
           subcategories={FALLBACK_OPTIONS.hair}
           selected={selectedFilters.hair || {}}
-          onChange={selected => setSelectedFilters((f: any) => ({ ...f, hair: selected }))}
+          onChange={selected => setSelectedFilters({ ...selectedFilters, hair: selected })}
           traitCounts={traitCounts}
         />
 
@@ -928,7 +916,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
             "Sunglasses",
           ]}
           selected={selectedFilters.eyewear || []}
-          onChange={arr => setSelectedFilters((f: any) => ({ ...f, eyewear: arr }))}
+          onChange={arr => setSelectedFilters({ ...selectedFilters, eyewear: arr })}
           traitCounts={traitCounts}
         />
 
@@ -941,7 +929,7 @@ export default function NFTSidebar({ searchTerm, setSearchTerm, searchMode, setS
           }
           subcategories={FALLBACK_OPTIONS.headwear}
           selected={selectedFilters.headwear || {}}
-          onChange={selected => setSelectedFilters((f: any) => ({ ...f, headwear: selected }))}
+          onChange={selected => setSelectedFilters({ ...selectedFilters, headwear: selected })}
           traitCounts={traitCounts}
         />
       </FilterContext.Provider>

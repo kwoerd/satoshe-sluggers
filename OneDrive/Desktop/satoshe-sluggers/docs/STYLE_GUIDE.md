@@ -558,6 +558,56 @@ import { designSystem, cn, getSectionHeader, getLabel, getValue } from '@/lib/de
 
 ---
 
-**Last Updated:** January 2026  
-**Version:** 1.0.0
+**Last Updated:** January 2025  
+**Version:** 2.0.0
+
+## 🎨 **CURRENT DESIGN SYSTEM (Updated)**
+
+### **Primary Color Palette**
+- **Brand Pink**: `#ff0099` (primary brand color)
+- **Off-White Text**: `#FFFBEB` (all white text)
+- **Success Green**: `#10B981` (buy buttons, success states)
+- **Info Blue**: `#3B82F6` (IPFS links, info elements)
+- **Emerald Green**: `#10B981` (sold status, success indicators)
+
+### **Neutral Grayscale (Current)**
+```
+neutral-100     → #FFFBEB (off-white - primary text)
+neutral-300     → Light gray text
+neutral-400     → Mid gray (labels, categories, inactive)
+neutral-500     → Placeholder text
+neutral-700     → Borders (#404040)
+neutral-800     → Cards, containers (#262626)
+neutral-900     → Darker backgrounds (#171717)
+neutral-950     → Darkest backgrounds, inputs (#0a0a0a)
+```
+
+### **Typography (Current)**
+- **Primary Font**: Inter (sans-serif)
+- **Mono Font**: JetBrains Mono (code, addresses)
+- **Secondary Mono**: Inconsolata (blockchain details)
+
+### **Border Radius (Consistent)**
+- **Standard**: `rounded-sm` (2px) - used everywhere
+- **Circles**: `rounded-full` - only for circular elements
+- **NO**: `rounded`, `rounded-md`, `rounded-lg` - inconsistent
+
+### **Button Styles (Current)**
+- **Buy Buttons**: Blue (`#3B82F6`) with white text
+- **Success Buttons**: Green (`#10B981`) with white text  
+- **Brand Buttons**: Pink (`#ff0099`) with white text
+- **All buttons**: `rounded-sm`, `font-normal`, no scaling on hover
+
+### **Card Styles (Current)**
+- **Background**: `bg-neutral-800` or `bg-neutral-900`
+- **Border**: `border border-neutral-700`
+- **Padding**: `p-4` (standard), `p-3` (smaller cards)
+- **Radius**: `rounded-sm` (2px)
+
+### **Current Implementation Notes**
+- **Dark mode forced**: No light mode toggle
+- **Frosted glass effects**: `backdrop-blur-md` for overlays
+- **Custom scrollbars**: Pink/off-white theme
+- **Selection color**: Pink (`#FF0099`) with off-white text
+- **Thirdweb branding**: Hidden via CSS
 

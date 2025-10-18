@@ -5,23 +5,24 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Heart, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import Footer from "@/components/footer";
 import Navigation from "@/components/navigation";
 import AttributeRarityChart from "@/components/attribute-rarity-chart";
-import { MediaRenderer, TransactionButton, useSendTransaction, useActiveAccount } from "thirdweb/react";
+import { MediaRenderer, TransactionButton, useActiveAccount } from "thirdweb/react";
 import { buyFromListing } from "thirdweb/extensions/marketplace";
 import { marketplace } from "../../../lib/contracts";
 import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
-import { getNFTByTokenId } from "@/lib/data-service";
+import { getNFTByTokenId, CompleteNFTData } from "@/lib/data-service";
 // import { track } from '@vercel/analytics';
+
+// Type definitions
+interface NFTAttribute {
+  trait_type: string;
+  value: string;
+  occurrence?: number;
+  rarity?: number;
+}
 
 // Consistent color scheme based on the radial chart
 const COLORS = {
@@ -60,16 +61,13 @@ function getColorForAttribute(attributeName: string) {
 export default function NFTDetailPage() {
   const params = useParams<{ id: string }>();
   const tokenId = params.id;
-  const [metadata, setMetadata] = useState<any>(null);
+  const [metadata, setMetadata] = useState<CompleteNFTData | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("/media/nfts/placeholder-nft.webp");
   const [isLoading, setIsLoading] = useState(true);
-  const [completeMetadata, setCompleteMetadata] = useState<any[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [navigationTokens, setNavigationTokens] = useState<{prev: number | null, next: number | null}>({prev: null, next: null});
   
   const account = useActiveAccount();
   const { isFavorited, toggleFavorite, isConnected } = useFavorites();
-  const { mutate: sendBuy } = useSendTransaction();
 
   // Calculate navigation tokens (previous and next)
   useEffect(() => {
@@ -96,14 +94,14 @@ export default function NFTDetailPage() {
 
     // Load NFT data using data service
     getNFTByTokenId(tokenId)
-      .then((nftData: any) => {
+      .then((nftData: CompleteNFTData | null) => {
         console.log("NFT data loaded:", nftData);
         
         if (nftData) {
           setMetadata(nftData);
           
           // Set image URL from metadata
-          const mediaUrl = nftData.merged_data?.media_url || nftData.media_url;
+          const mediaUrl = nftData.merged_data?.media_url;
           if (mediaUrl) {
             console.log("Setting image URL:", mediaUrl);
             setImageUrl(mediaUrl);
@@ -120,7 +118,7 @@ export default function NFTDetailPage() {
         clearTimeout(timeoutId);
         setIsLoading(false);
       })
-      .catch((error: any) => {
+      .catch((error: Error) => {
         console.error(`[NFT Detail] Error loading data for token ${tokenId}:`, error);
         setMetadata(null);
         setImageUrl("/nfts/placeholder-nft.webp");
@@ -135,7 +133,7 @@ export default function NFTDetailPage() {
   const attributes = useMemo(() => {
     // Use real attributes from complete metadata
     if (metadata && metadata.attributes) {
-      const mappedAttributes = metadata.attributes.map((attr: any) => ({
+      const mappedAttributes = metadata.attributes.map((attr: NFTAttribute) => ({
         name: attr.trait_type,
         value: attr.value,
         percentage: attr.rarity,
@@ -153,8 +151,6 @@ export default function NFTDetailPage() {
   const listingId = metadata?.merged_data?.listing_id || 0;
   const isForSale = priceEth > 0 && listingId;
   
-  // Check if this is a test NFT (token IDs 0-9)
-  const isTestNFT = parseInt(tokenId) >= 0 && parseInt(tokenId) <= 9;
 
   // Handle favorite toggle
   const handleFavoriteToggle = () => {
@@ -193,17 +189,6 @@ export default function NFTDetailPage() {
     });
   };
 
-  // Handle copy contract address to clipboard
-  const handleCopyAddress = async () => {
-    const fullAddress = "0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc"; // NFT Contract address
-    try {
-      await navigator.clipboard.writeText(fullAddress);
-      alert("Contract address copied to clipboard!");
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-      alert("Failed to copy address. Please try again.");
-    }
-  };
 
   if (isLoading) {
     return (
@@ -616,7 +601,7 @@ export default function NFTDetailPage() {
             <div>
               <h3 className="text-xl font-semibold mb-6 text-off-white">Attributes</h3>
               <div className="grid grid-cols-2 gap-3 max-w-md">
-                {attributes.map((attr: any, index: number) => (
+                {attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }, index: number) => (
                   <div key={index} className="bg-neutral-900 p-3 rounded border border-neutral-700">
                     <div className="flex items-center mb-2">
                       <div
@@ -639,10 +624,10 @@ export default function NFTDetailPage() {
               <h3 className="text-xl font-semibold mb-6 text-off-white">Rarity Distribution</h3>
               <div className="flex items-center justify-center">
                 <AttributeRarityChart
-                  attributes={attributes.map((attr: any) => ({
+                  attributes={attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }) => ({
                     name: attr.name,
                     value: attr.value,
-                    percentage: attr.percentage,
+                    percentage: attr.percentage || 0,
                     occurrence: attr.occurrence,
                     color: getColorForAttribute(attr.name)
                   }))}

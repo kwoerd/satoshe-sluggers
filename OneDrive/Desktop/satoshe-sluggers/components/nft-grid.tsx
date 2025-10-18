@@ -20,32 +20,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useFavorites } from "@/hooks/useFavorites";
 import Link from "next/link";
 import Image from "next/image";
-import { chunkedDataService, ChunkedMetadataItem } from "@/lib/chunked-data-service";
+import { chunkedDataService } from "@/lib/chunked-data-service";
 
-// Utility to display price
-function displayPrice(val: string | number | bigint) {
-  if (!val || val === "0") {
-    return "--";
-  }
-  if ((typeof val === "string" && /^\d{12,}$/.test(val)) || typeof val === "bigint") {
-    try {
-      const eth = Number(BigInt(val)) / 1e18;
-      if (eth > 10000) {
-        return "--";
-      }
-      return eth.toString();
-    } catch {
-      return "--";
-    }
-  }
-  if (typeof val === "number" && val < 1e6) {
-    return val.toString();
-  }
-  if (typeof val === "string" && /^\d*\.?\d+$/.test(val)) {
-    return val;
-  }
-  return "--";
-}
 
 const TEST_METADATA_URL = "/test-nfts";
 
@@ -158,7 +134,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         const response = await fetch('/data/token_pricing_mappings.json');
         const pricingData = await response.json();
         const mappings: Record<number, { price_eth: number; listing_id?: number }> = {};
-        pricingData.forEach((item: any) => {
+        pricingData.forEach((item: { token_id: number; price_eth: number; listing_id?: number }) => {
           mappings[item.token_id] = {
             price_eth: item.price_eth,
             listing_id: item.listing_id
@@ -216,8 +192,8 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               // Use actual pricing data from test metadata files
               price_eth: testFileData.merged_data?.price_eth || testFileData.price_eth || 0.001,
               listing_id: testFileData.merged_data?.listing_id || testFileData.listing_id || (i + 7777),
-              token_id: i + 7777, // Adjust token_id to be after main collection
-              card_number: i + 7778, // Adjust card_number
+              token_id: i, // Keep original token_id (0-9) for test NFTs
+              card_number: i + 1, // Keep original card_number (1-10)
               image: `/test-nfts/placeholder-nft-${i}.webp`, // Correct image path
             };
             
@@ -292,8 +268,8 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               
               if (isTestNFTForPricing) {
                 // For test NFTs, use merged_data or fallback
-                priceEth = (meta.merged_data as any)?.price_eth || 0;
-                listingId = (meta.merged_data as any)?.listing_id;
+                priceEth = (meta.merged_data as { price_eth?: number; listing_id?: number })?.price_eth || 0;
+                listingId = (meta.merged_data as { price_eth?: number; listing_id?: number })?.listing_id;
               } else {
                 // For main collection, use pricing mappings
                 const pricing = pricingMappings[tokenIdNum];
