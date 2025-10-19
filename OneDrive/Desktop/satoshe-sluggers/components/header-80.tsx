@@ -31,7 +31,10 @@ const useRelume = (): RelumeValues => {
     return () => window.removeEventListener('resize', checkScreenSize)
   }, [])
 
-  const { scrollYProgress } = useScroll({ target: transformRef })
+  const { scrollYProgress } = useScroll({ 
+    target: transformRef,
+    offset: ["start end", "end start"]
+  })
   const animatedScrollYProgress = useSpring(scrollYProgress, { bounce: 0 })
 
   // Different animation ranges based on screen size
@@ -53,7 +56,8 @@ const useRelume = (): RelumeValues => {
 const Header80: React.FC = () => {
   const useActive = useRelume()
   return (
-    <section id="relume" className="relative h-[150vh] px-[5%] md:h-[230vh] bg-background" ref={useActive.transformRef}>
+    <div style={{ position: 'relative' }}>
+      <section id="relume" className="relative h-[150vh] px-[5%] md:h-[230vh] bg-background" ref={useActive.transformRef}>
       <div className="sticky top-0 h-screen overflow-hidden">
         <div className="absolute top-0 right-auto bottom-0 left-0 z-10">
           <motion.div className="flex flex-col gap-[24vw] pt-[55vh]" style={{ y: useActive.yFirst }}>
@@ -161,6 +165,7 @@ const Header80: React.FC = () => {
         <div className="absolute inset-0 -z-10 mt-[35rem] md:mt-[100vh]" />
       </div>
     </section>
+    </div>
   )
 }
 

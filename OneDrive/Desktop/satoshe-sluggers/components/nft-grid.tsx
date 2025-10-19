@@ -711,6 +711,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                       tokenId={nft.tokenId}
                       cardNumber={nft.cardNumber}
                       isForSale={nft.isForSale}
+                      tier={nft.tier}
                       viewMode={viewMode}
                     />
                   </div>

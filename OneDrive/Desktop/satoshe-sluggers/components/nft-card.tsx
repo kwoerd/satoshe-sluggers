@@ -20,6 +20,7 @@ interface NFTCardProps {
   tokenId: string;
   cardNumber: number; // NFT card number (not token ID)
   isForSale: boolean;
+  tier: string | number;
   viewMode?: 'grid-large' | 'grid-medium' | 'grid-small' | 'compact';
 }
 
@@ -33,6 +34,7 @@ export default function NFTCard({
   tokenId,
   cardNumber,
   isForSale,
+  tier,
   viewMode = 'grid-medium',
 }: NFTCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -183,8 +185,11 @@ export default function NFTCard({
             {isForSale ? (
               <div className="flex items-center justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] sm:text-xs text-blue-500 font-medium truncate">
-                    Buy Now {priceEth} ETH
+                  <div className="text-[10px] sm:text-xs text-blue-500 font-medium">
+                    Buy Now
+                  </div>
+                  <div className="text-xs sm:text-sm text-blue-400 font-semibold">
+                    {priceEth} ETH
                   </div>
                 </div>
                 <div className="flex-shrink-0">

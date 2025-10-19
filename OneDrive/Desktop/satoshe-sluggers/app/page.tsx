@@ -10,30 +10,20 @@ export default function HomePage() {
   return (
     <>
       <Head>
+        {/* Critical LCP image preload with highest priority */}
         <link
           rel="preload"
           as="image"
           href="/brands/satoshe-sluggers/satoshe-sluggers-home-white.svg"
           type="image/svg+xml"
+          fetchPriority="high"
         />
-        <link
-          rel="preload"
-          as="image"
-          href="/nfts/1.webp"
-          type="image/webp"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="/nfts/5.webp"
-          type="image/webp"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="/nfts/9.webp"
-          type="image/webp"
-        />
+        {/* DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        {/* Preconnect to critical origins */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Head>
       <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB]">
         <Navigation activePage="home" />
