@@ -7,8 +7,8 @@ export default function PageLoadAnimation() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Start with a minimum animation time, then check for images
-    const minAnimationTime = 1500 // 1.5 seconds minimum
+    // Start animation immediately, complete after a reasonable time
+    const animationDuration = 2000 // 2 seconds total
     
     const checkImagesLoaded = () => {
       const criticalImages = [
@@ -31,10 +31,10 @@ export default function PageLoadAnimation() {
       })
 
       Promise.all(imagePromises).then(() => {
-        // Complete the animation after minimum time + images are loaded
+        // Complete the animation after images are loaded or minimum time
         setTimeout(() => {
           setIsLoading(false)
-        }, minAnimationTime)
+        }, animationDuration)
       })
     }
 
