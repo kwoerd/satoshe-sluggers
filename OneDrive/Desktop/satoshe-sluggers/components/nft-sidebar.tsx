@@ -440,6 +440,51 @@ export default function NFTSidebar({
         </div>
 
         {/* Contract Links */}
+        <div className="space-y-3 mt-3">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-xs font-inconsolata text-off-white">Marketplace</h4>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => window.open('https://basescan.org/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
+              >
+                BaseScan
+                <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
+              </button>
+              <button
+                onClick={() => window.open('https://base.blockscout.com/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
+              >
+                Blockscout
+                <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-xs font-inconsolata text-off-white">NFT Contract</h4>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => window.open('https://basescan.org/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
+              >
+                BaseScan
+                <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
+              </button>
+              <button
+                onClick={() => window.open('https://base.blockscout.com/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
+              >
+                Blockscout
+                <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="border-b border-neutral-700 mb-4"></div>
