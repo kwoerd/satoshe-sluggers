@@ -774,7 +774,34 @@ export default function NFTDetailPage() {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between items-center">
                     <span className="text-neutral-400">Contract Address</span>
-                    <span className="text-off-white">0xf167...1d9C</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-off-white">0xf167...1d9C</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText('0xf167...1d9C');
+                          // You could add a toast notification here if desired
+                        }}
+                        className="p-1 hover:bg-neutral-700 rounded transition-colors group"
+                        aria-label="Copy contract address"
+                        title="Copy contract address"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-neutral-400 group-hover:text-green-500 transition-colors"
+                        >
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   <Separator className="bg-neutral-600" />
                   <div className="flex justify-between items-center">
