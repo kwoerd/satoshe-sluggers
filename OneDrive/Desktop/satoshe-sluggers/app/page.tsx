@@ -5,6 +5,7 @@ import Header80 from "@/components/header-80"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
 import Head from "next/head"
+import PageLoadAnimation from "@/components/page-load-animation"
 
 export default function HomePage() {
   return (
@@ -25,6 +26,7 @@ export default function HomePage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Head>
+      <PageLoadAnimation />
       <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB]">
         <Navigation activePage="home" />
         <Header80 />

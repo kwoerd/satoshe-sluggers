@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000, // 1 year
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Configure allowed quality values for Next.js 16 compatibility
+    qualities: [75, 85, 100],
   },
   // Enable experimental features for better performance
   experimental: {

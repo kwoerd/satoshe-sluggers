@@ -7,6 +7,7 @@ import { ThirdwebProvider } from "thirdweb/react"
 import ScrollButtons from "@/components/scroll-buttons"
 import TermlyScript from "@/components/termly-script"
 import ErrorBoundary from "@/components/error-boundary"
+import PageTransitionProvider from "@/components/page-transition-provider"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -168,12 +169,14 @@ export default function RootLayout({
         </a>
         
         <ErrorBoundary>
-          <ThirdwebProvider>
-            {children}
-            <ScrollButtons />
-          </ThirdwebProvider>
-          <TermlyScript />
-          <Analytics />
+          <PageTransitionProvider>
+            <ThirdwebProvider>
+              {children}
+              <ScrollButtons />
+            </ThirdwebProvider>
+            <TermlyScript />
+            <Analytics />
+          </PageTransitionProvider>
           
           {/* Live region for screen reader announcements */}
           <div
