@@ -98,7 +98,7 @@ function FilterSection({
     <div className={`${isOpen ? 'pt-3 pb-3' : 'pt-1'}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between py-2 focus:outline-none text-off-white ${isOpen ? `border-b ${borderClasses[color]} pb-2` : ''}`}
+        className={`w-full flex items-center justify-between py-1.5 focus:outline-none text-off-white ${isOpen ? `border-b ${borderClasses[color]} pb-1.5` : ''}`}
       >
         <div className="flex items-center gap-2">
           {icon && <span className={colorClasses[color]}>{icon}</span>}
@@ -161,7 +161,7 @@ function FilterSection({
                     />
                     <label
                       htmlFor={optValue}
-                      className="text-sm text-neutral-300 cursor-pointer flex-1 py-1 whitespace-pre-line leading-tight"
+                      className="text-sm text-neutral-300 cursor-pointer flex-1 py-0.5 whitespace-pre-line leading-tight"
                     >
                       <div className="flex items-center justify-between">
                         <span>{optDisplay.replace('\n', ' ')}</span>
@@ -251,7 +251,7 @@ function SubcategorySection({
     <div className={`${isOpen ? 'pt-3 pb-3' : 'pt-1'}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between py-2 focus:outline-none text-off-white ${isOpen ? `border-b ${borderClasses[color]} pb-2` : ''}`}
+        className={`w-full flex items-center justify-between py-1.5 focus:outline-none text-off-white ${isOpen ? `border-b ${borderClasses[color]} pb-1.5` : ''}`}
       >
         <div className="flex items-center gap-2">
           {icon && <span className={colorClasses[color]}>{icon}</span>}
@@ -304,7 +304,7 @@ function SubcategorySection({
                   />
                   <label
                     htmlFor={`subcat-${subcategory.name}`}
-                    className={`text-sm cursor-pointer py-1 pr-2 block flex-1 ${isChecked ? `border-b ${borderClasses[color]} pb-2` : ''}`}
+                    className={`text-sm cursor-pointer py-0.5 pr-2 block flex-1 ${isChecked ? `border-b ${borderClasses[color]} pb-1` : ''}`}
                     onClick={(e: React.MouseEvent) => e.stopPropagation()}
                   >
                     <div className="flex items-center justify-between pb-1">
@@ -325,7 +325,7 @@ function SubcategorySection({
                       const count = traitCounts[key]?.[fullValue]
                       
                       return (
-                        <div key={option} className="flex items-center group hover:bg-neutral-800/50 rounded px-1 py-1 transition-colors">
+                        <div key={option} className="flex items-center group hover:bg-neutral-800/50 rounded px-1 py-0.5 transition-colors">
                           <input
                             type="checkbox"
                             id={`${subcategory.name}-${option}`}
@@ -344,7 +344,7 @@ function SubcategorySection({
                           />
                           <label
                             htmlFor={`${subcategory.name}-${option}`}
-                            className="text-sm text-neutral-300 cursor-pointer flex-1 py-1 pr-2 block flex justify-between items-center"
+                            className="text-sm text-neutral-300 cursor-pointer flex-1 py-0.5 pr-2 block flex justify-between items-center"
                           >
                             <span>{option}</span>
                             {count && (
