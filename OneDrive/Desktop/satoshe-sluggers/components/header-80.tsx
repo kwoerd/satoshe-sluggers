@@ -69,6 +69,8 @@ const Header80: React.FC = () => {
                 alt="Satoshe Slugger Number 1"
                 sizes="(max-width: 768px) 30vw, (max-width: 1024px) 28vw, 22vw"
                 priority={false}
+                quality={85}
+                placeholder="empty"
               />
             </div>
             <div className="relative h-[35vw] pt-[120%] sm:h-auto left-[52vw] mt-[-46vw] w-[30vw] md:w-[28vw] lg:left-[58vw] lg:w-[22vw]">
@@ -79,6 +81,8 @@ const Header80: React.FC = () => {
                 alt="Satoshe Slugger Number 5"
                 sizes="(max-width: 768px) 30vw, (max-width: 1024px) 28vw, 22vw"
                 priority={false}
+                quality={85}
+                placeholder="empty"
               />
             </div>
             <div className="relative h-[35vw] pt-[120%] sm:h-auto left-[4vw] mt-[-5vw] w-[28vw] md:w-[26vw] lg:w-[20vw]">
@@ -89,6 +93,8 @@ const Header80: React.FC = () => {
                 alt="Satoshe Slugger Number 9"
                 sizes="(max-width: 768px) 28vw, (max-width: 1024px) 26vw, 20vw"
                 priority={false}
+                quality={85}
+                placeholder="empty"
               />
             </div>
             <div className="relative h-[35vw] pt-[120%] sm:h-auto left-[64vw] mt-[-45vw] w-[26vw] md:w-[24vw] lg:w-[18vw]">
@@ -99,6 +105,8 @@ const Header80: React.FC = () => {
                 alt="Satoshe Slugger Number 11"
                 sizes="(max-width: 768px) 26vw, (max-width: 1024px) 24vw, 18vw"
                 priority={false}
+                quality={85}
+                placeholder="empty"
               />
             </div>
           </motion.div>
@@ -113,6 +121,8 @@ const Header80: React.FC = () => {
                 alt="Satoshe Slugger Number 120"
                 sizes="(max-width: 768px) 28vw, (max-width: 1024px) 26vw, 20vw"
                 priority={false}
+                quality={85}
+                placeholder="empty"
               />
             </div>
             <div className="relative h-[35vw] pt-[120%] opacity-75 sm:h-auto right-[50vw] mt-[-44vw] w-[26vw] md:w-[24vw] lg:right-[54vw] lg:w-[18vw]">
@@ -123,6 +133,8 @@ const Header80: React.FC = () => {
                 alt="Satoshe Slugger Number 634"
                 sizes="(max-width: 768px) 26vw, (max-width: 1024px) 24vw, 18vw"
                 priority={false}
+                quality={85}
+                placeholder="empty"
               />
             </div>
           </div>
@@ -131,13 +143,15 @@ const Header80: React.FC = () => {
           <div className="relative z-20 text-center">
             <div className="mb-5 md:mb-6">
               <Image
-                src="/brands/satoshe-sluggers/satoshe-sluggers-home-white.svg"
+                src="/brands/satoshe-sluggers/satoshe-sluggers-off-white-op.svg"
                 alt="Satoshe Sluggers"
                 width={600}
                 height={300}
                 className="w-full max-w-2xl mx-auto"
                 priority
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 60vw"
+                quality={100}
+                placeholder="empty"
               />
             </div>
             <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-bold text-[#FF0099]">

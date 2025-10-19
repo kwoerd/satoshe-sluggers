@@ -10,11 +10,11 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        {/* Critical LCP image preload with highest priority */}
+        {/* Critical LCP image preload with highest priority - using optimized SVG */}
         <link
           rel="preload"
           as="image"
-          href="/brands/satoshe-sluggers/satoshe-sluggers-home-white.svg"
+          href="/brands/satoshe-sluggers/satoshe-sluggers-off-white-op.svg"
           type="image/svg+xml"
           fetchPriority="high"
         />

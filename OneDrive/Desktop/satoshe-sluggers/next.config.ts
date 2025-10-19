@@ -23,6 +23,19 @@ const nextConfig: NextConfig = {
         pathname: '/ipfs/**',
       },
     ],
+    // Performance optimizations
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 31536000, // 1 year
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+  // Enable experimental features for better performance
+  experimental: {
+    optimizePackageImports: ['framer-motion', 'lucide-react'],
+  },
+  // Compiler optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 };
 
