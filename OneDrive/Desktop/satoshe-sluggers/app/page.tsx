@@ -26,7 +26,7 @@ export default function HomePage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Head>
-      <div className="relative min-h-screen">
+      <div className="relative" style={{ minHeight: '100vh' }}>
         <PageLoadAnimation />
         <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB]">
           <Navigation activePage="home" />

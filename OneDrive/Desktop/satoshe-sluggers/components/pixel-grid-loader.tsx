@@ -19,7 +19,7 @@ export default function PixelGridLoader({ isVisible, onComplete }: PixelGridLoad
     console.log('PixelGridLoader: Found', gridItems.length, 'grid items')
     if (gridItems.length === 0) return
 
-    // Create the pixel grid animation - simple fade out
+    // Create the pixel grid animation - fade out from center
     gsap.fromTo(
       gridItems,
       {
@@ -30,7 +30,7 @@ export default function PixelGridLoader({ isVisible, onComplete }: PixelGridLoad
         duration: 0.8,
         stagger: {
           amount: 1.2,
-          from: "random"
+          from: "center"
         },
         ease: "power2.out",
         onComplete: () => {
@@ -54,15 +54,16 @@ export default function PixelGridLoader({ isVisible, onComplete }: PixelGridLoad
       }}
     >
       {/* Generate pixels with no gaps, covering the entire screen */}
-      {Array.from({ length: 48 }, (_, i) => {
-        // Calculate row and column
-        const row = Math.floor(i / 8)
-        const col = i % 8
+      {Array.from({ length: 80 }, (_, i) => {
+        // Calculate row and column - 10 columns x 8 rows = 80 pixels
+        const row = Math.floor(i / 10)
+        const col = i % 10
         
         // Calculate position and size for seamless coverage
-        const pixelSize = 100 / 8 // 12.5% each
+        const pixelSize = 100 / 10 // 10% each
+        const pixelHeight = 100 / 8 // 12.5% each
         const left = col * pixelSize
-        const top = row * pixelSize
+        const top = row * pixelHeight
         
         return (
           <div
@@ -72,7 +73,7 @@ export default function PixelGridLoader({ isVisible, onComplete }: PixelGridLoad
               position: 'absolute',
               backgroundColor: '#171717',
               width: `${pixelSize}%`,
-              height: `${pixelSize}%`,
+              height: `${pixelHeight}%`,
               left: `${left}%`,
               top: `${top}%`,
               display: 'block'
