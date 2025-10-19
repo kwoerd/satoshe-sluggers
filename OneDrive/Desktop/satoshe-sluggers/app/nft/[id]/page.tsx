@@ -514,7 +514,7 @@ export default function NFTDetailPage() {
                       ></div>
                       <span className="text-xs text-neutral-400">{attr.name}</span>
                     </div>
-                    <div className="text-sm font-semibold text-off-white mb-1">{attr.value}</div>
+                    <div className="text-sm font-medium text-off-white mb-1">{attr.value}</div>
                     <div className="text-xs text-neutral-400">
                       {attr.percentage}% • {attr.occurrence} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}
                     </div>
