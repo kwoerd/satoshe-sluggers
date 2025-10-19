@@ -7,7 +7,9 @@ export default function PageLoadAnimation() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check if critical images are loaded
+    // Start with a minimum animation time, then check for images
+    const minAnimationTime = 1500 // 1.5 seconds minimum
+    
     const checkImagesLoaded = () => {
       const criticalImages = [
         '/brands/satoshe-sluggers/satoshe-sluggers-off-white-op.svg',
@@ -29,17 +31,15 @@ export default function PageLoadAnimation() {
       })
 
       Promise.all(imagePromises).then(() => {
-        // Add a small delay to ensure smooth animation
+        // Complete the animation after minimum time + images are loaded
         setTimeout(() => {
           setIsLoading(false)
-        }, 300)
+        }, minAnimationTime)
       })
     }
 
-    // Start checking after a short delay to allow initial render
-    const timer = setTimeout(checkImagesLoaded, 100)
-    
-    return () => clearTimeout(timer)
+    // Start checking images immediately
+    checkImagesLoaded()
   }, [])
 
   return (

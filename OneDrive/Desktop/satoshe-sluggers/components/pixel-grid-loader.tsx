@@ -17,22 +17,24 @@ export default function PixelGridLoader({ isVisible, onComplete }: PixelGridLoad
     const gridItems = gridRef.current.querySelectorAll('.load_grid-item')
     if (gridItems.length === 0) return
 
-    // Create the pixel grid animation
+    // Create the pixel grid animation - more dramatic
     gsap.fromTo(
       gridItems,
       {
         opacity: 1,
         scale: 1,
+        rotation: 0,
       },
       {
         opacity: 0,
-        scale: 0.8,
-        duration: 0.6,
+        scale: 0.3,
+        rotation: 180,
+        duration: 1.2,
         stagger: {
-          amount: 0.8,
+          amount: 1.0,
           from: "random"
         },
-        ease: "power2.out",
+        ease: "power3.out",
         onComplete: () => {
           onComplete?.()
         }
@@ -78,12 +80,14 @@ export default function PixelGridLoader({ isVisible, onComplete }: PixelGridLoad
             key={i}
             className="load_grid-item"
             style={{
-              backgroundColor: '#171717',
+              backgroundColor: isLeftNFT || isRightNFT ? '#2a2a2a' : '#171717',
               width: size,
               height: size,
               justifySelf: 'center',
               alignSelf: 'center',
-              transitionDelay: `${delay}s`
+              transitionDelay: `${delay}s`,
+              border: '1px solid #333',
+              borderRadius: '2px'
             }}
           />
         )
