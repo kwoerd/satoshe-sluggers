@@ -57,10 +57,10 @@ const Header80: React.FC = () => {
   const useActive = useRelume()
   return (
     <div style={{ position: 'relative' }}>
-      <section id="relume" className="relative h-[150vh] px-[5%] md:h-[230vh] bg-background" ref={useActive.transformRef}>
+      <section id="relume" className="relative h-[150vh] px-[5%] md:h-[300vh] bg-background" ref={useActive.transformRef}>
       <div className="sticky top-0 h-screen overflow-hidden">
         <div className="absolute top-0 right-auto bottom-0 left-0 z-10">
-          <motion.div className="flex flex-col gap-[24vw] pt-[55vh]" style={{ y: useActive.yFirst }}>
+          <motion.div className="flex flex-col gap-[26vw] pt-[70vh]" style={{ y: useActive.yFirst }}>
             <div className="relative h-[35vw] pt-[120%] sm:h-auto w-[30vw] md:w-[28vw] lg:w-[22vw]">
               <Image
                 src="/nfts/1.webp"
@@ -112,7 +112,7 @@ const Header80: React.FC = () => {
           </motion.div>
         </div>
         <motion.div className="absolute top-0 right-0 bottom-0 left-auto z-0" style={{ y: useActive.ySecond }}>
-          <div className="flex flex-col gap-[24vw] pt-[55vh]">
+          <div className="flex flex-col gap-[26vw] pt-[70vh]">
             <div className="relative h-[35vw] pt-[120%] opacity-75 sm:h-auto w-[28vw] md:w-[26vw] lg:w-[20vw]">
               <Image
                 src="/nfts/120.webp"
@@ -139,9 +139,9 @@ const Header80: React.FC = () => {
             </div>
           </div>
         </motion.div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative z-20 text-center">
-            <div className="mb-5 md:mb-6">
+        <div className="container relative flex h-full max-w-lg items-center pb-24 pt-16 text-center md:pt-24 lg:py-28">
+          <div>
+            <h1 className="mb-5 text-6xl font-bold md:mb-6 md:text-9xl lg:text-10xl">
               <Image
                 src="/brands/satoshe-sluggers/satoshe-sluggers-off-white-op.svg"
                 alt="Satoshe Sluggers"
@@ -153,13 +153,13 @@ const Header80: React.FC = () => {
                 quality={100}
                 placeholder="empty"
               />
-            </div>
+            </h1>
             <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-bold text-[#FF0099]">
               NFTS THAT LEVEL THE PLAYING
               <br />
               FIELD FOR WOMEN&apos;S BASEBALL
             </p>
-            <div className="relative z-20 mt-8 flex items-center justify-center gap-x-4 md:mt-10">
+            <div className="relative z-20 mt-6 flex items-center justify-center gap-x-4 md:mt-8">
               <div className="relative group">
                 {/* Enhanced glowing effect for the button */}
                 <div className="absolute inset-0 rounded bg-blue-500/40 blur-xl group-hover:bg-blue-400/60 transition-all duration-300 scale-125"></div>
