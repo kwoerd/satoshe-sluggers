@@ -38,8 +38,8 @@ export function useFavorites() {
       } else {
         setFavorites([]);
       }
-    } catch (error) {
-      
+    } catch {
+      // Error loading favorites from localStorage - continue with empty array
       setFavorites([]);
     }
   }, [account?.address]);
@@ -52,8 +52,8 @@ export function useFavorites() {
     try {
       localStorage.setItem(storageKey, JSON.stringify(newFavorites));
       setFavorites(newFavorites);
-    } catch (error) {
-      
+    } catch {
+      // Error saving favorites to localStorage - continue silently
     }
   };
 

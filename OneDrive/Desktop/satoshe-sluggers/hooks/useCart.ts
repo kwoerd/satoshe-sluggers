@@ -33,8 +33,8 @@ export function useCart() {
       try {
         const parsedCart = JSON.parse(savedCart);
         setCart(prev => ({ ...prev, items: parsedCart }));
-      } catch (error) {
-        
+      } catch {
+        // Error loading cart from localStorage - continue with empty cart
       }
     }
   }, []);

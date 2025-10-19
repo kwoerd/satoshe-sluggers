@@ -134,7 +134,7 @@ export default function NFTPurchaseModal({ isOpen, onClose, nft }: NFTPurchaseMo
                   </div>
                   
                   <BuyDirectListingButton
-                    contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
+                    contractAddress={process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS!}
                     client={client}
                     chain={base}
                     listingId={BigInt(nft.listingId)}
