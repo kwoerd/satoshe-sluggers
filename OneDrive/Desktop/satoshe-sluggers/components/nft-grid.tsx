@@ -426,7 +426,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         case "price-desc":
           return Number(b.priceWei) - Number(a.priceWei);
         default:
-          return Number(a.tokenId) - Number(b.tokenId);
+          return 0;
       }
     });
   }, [filteredNFTs, sortBy, columnSort]);
