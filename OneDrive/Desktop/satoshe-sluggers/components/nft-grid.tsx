@@ -763,35 +763,19 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                         <div className="flex items-center gap-2 justify-end">
                             <Link
                               href={`/nft/${nft.tokenId}`}
-                              className="px-3 py-1.5 bg-transparent border border-neutral-600 text-neutral-300 hover:bg-neutral-700 hover:text-[#FFFBEB] transition-all rounded-sm text-xs font-medium"
-                              style={{
-                                padding: '6px 12px',
-                                fontSize: '12px',
-                                height: 'auto',
-                                minHeight: 'unset',
-                                borderRadius: '2px'
-                              }}
+                              className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
                             >
                               View
                             </Link>
                             {nft.isForSale ? (
                               <Link
                                 href={`/nft/${nft.tokenId}`}
-                                className="px-3.5 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 h-auto min-h-0"
-                                style={{
-                                  padding: '6px 14px',
-                                  fontSize: '13px',
-                                  height: 'auto',
-                                  minHeight: 'unset',
-                                  borderRadius: '2px',
-                                  backgroundColor: '#3b82f6',
-                                  color: 'white'
-                                }}
+                                className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
                               >
                                 Buy
                               </Link>
                             ) : (
-                              <span className="px-1.5 py-1 text-xs text-blue-400">
+                              <span className="px-2.5 py-1 bg-neutral-500/10 border border-neutral-500/30 rounded-sm text-neutral-400 text-xs font-medium">
                                 Sold
                               </span>
                             )}

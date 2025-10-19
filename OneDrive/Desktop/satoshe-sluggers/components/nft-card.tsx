@@ -190,18 +190,7 @@ export default function NFTCard({
                 <div className="flex-shrink-0">
                   <Link
                     href={`/nft/${tokenId}`}
-                    className="px-3.5 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 disabled:cursor-not-allowed w-auto min-w-0 h-auto min-h-0"
-                    style={{
-                      padding: '6px 14px',
-                      fontSize: '13px',
-                      height: 'auto',
-                      minHeight: 'unset',
-                      width: 'auto',
-                      minWidth: 'unset',
-                      borderRadius: '2px',
-                      backgroundColor: '#3b82f6',
-                      color: 'white'
-                    }}
+                    className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
                     aria-label={`Buy ${name} for ${priceEth} ETH`}
                   >
                     BUY
