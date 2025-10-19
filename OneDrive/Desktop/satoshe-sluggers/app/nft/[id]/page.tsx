@@ -112,17 +112,10 @@ export default function NFTDetailPage() {
     }, 10000); // 10 second timeout
 
     const tokenIdNum = parseInt(tokenId);
-    const isTestNFT = tokenIdNum >= 0 && tokenIdNum <= 4; // Test NFTs 0-4
-
-    if (isTestNFT) {
-      // For test NFTs, redirect to main collection or show simple message
-      console.log("Test NFT detected, redirecting to main collection");
-      // Redirect to NFT #1 (first real NFT)
-      window.location.href = '/nft/1';
-      return;
-    } else {
-      // Load main collection NFT data using data service
-      getNFTByTokenId(tokenIdNum)
+    // Load main collection NFT data using data service
+    // Note: token IDs in metadata start from 0, but URLs start from 1
+    const actualTokenId = tokenIdNum - 1;
+    getNFTByTokenId(actualTokenId)
           .then((nftData: NFTData | null) => {
           console.log("NFT data loaded:", nftData);
           
@@ -154,7 +147,6 @@ export default function NFTDetailPage() {
           clearTimeout(timeoutId);
           setIsLoading(false);
         });
-    }
 
     // Cleanup timeout on unmount
     return () => clearTimeout(timeoutId);
