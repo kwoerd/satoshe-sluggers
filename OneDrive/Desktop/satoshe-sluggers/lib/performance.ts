@@ -104,8 +104,6 @@ export class PerformanceMonitor {
   }
 
   private logMetric(name: string, value: number) {
-    console.log(`[Performance] ${name}: ${value.toFixed(2)}ms`)
-    
     // Send to analytics if available
     if (typeof window !== 'undefined' && (window as unknown as { gtag: (event: string, name: string, data: Record<string, unknown>) => void }).gtag) {
       (window as unknown as { gtag: (event: string, name: string, data: Record<string, unknown>) => void }).gtag('event', 'web_vitals', {

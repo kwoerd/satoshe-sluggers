@@ -23,7 +23,7 @@ export default function NFTsPage() {
             SATO<span className="text-[#ff0099]">SHE</span> SLUGGERS
           </h1>
           <p className="text-xs sm:text-sm md:text-base lg:text-lg text-neutral-300 text-center max-w-4xl mx-auto tracking-wider whitespace-nowrap overflow-x-auto">
-            / <span className="text-[#ff0099]">SHE</span> hits different    / <span className="text-[#ff0099]">SHE</span> funds women's baseball    / <span className="text-[#ff0099]">SHE</span> makes a difference
+            / <span className="text-[#ff0099]">SHE</span> hits different    / <span className="text-[#ff0099]">SHE</span> funds women&apos;s baseball    / <span className="text-[#ff0099]">SHE</span> makes a difference
           </p>
         </div>
 

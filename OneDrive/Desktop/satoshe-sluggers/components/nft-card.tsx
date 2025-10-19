@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { track } from '@vercel/analytics';
+import { TOTAL_COLLECTION_SIZE } from "@/lib/contracts";
 // Removed BuyDirectListingButton imports - using regular buttons to avoid RPC calls
 
 interface NFTCardProps {
@@ -168,7 +169,7 @@ export default function NFTCard({
           <div className="text-xs text-neutral-400 space-y-0.5">
             <div className="flex justify-between">
               <span className="text-neutral-400">Rank:</span>
-              <span className="text-neutral-400">{rank} of 7777</span>
+              <span className="text-neutral-400">{rank} of {TOTAL_COLLECTION_SIZE}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-neutral-400">Rarity:</span>

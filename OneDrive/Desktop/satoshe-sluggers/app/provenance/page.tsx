@@ -82,16 +82,6 @@ export default function ProvenancePage() {
             // Find the corresponding metadata by token_id
             const metadataItem = metadataData.find((item: { merged_data?: { token_id: number } }) => item.merged_data?.token_id === tokenNum)
             
-            // Debug logging for first few records
-            if (index < 3) {
-              console.log(`[DEBUG] Token ${tokenNum}:`, {
-                found: !!metadataItem,
-                media_cid: metadataItem?.merged_data?.media_cid,
-                metadata_cid: metadataItem?.merged_data?.metadata_cid,
-                media_url: metadataItem?.merged_data?.media_url,
-                metadata_url: metadataItem?.merged_data?.metadata_url
-              })
-            }
 
             return {
               token_id: tokenNum,

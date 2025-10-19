@@ -47,15 +47,12 @@ export async function loadAllNFTs(): Promise<NFTData[]> {
   }
 
   try {
-    console.log('Loading metadata from /data/complete_metadata.json');
     const response = await fetch('/data/complete_metadata.json');
     if (!response.ok) {
       throw new Error(`Failed to load metadata: ${response.statusText}`);
     }
     const data = await response.json();
-    console.log('Metadata loaded, first item:', data[0]);
     metadataCache = data as NFTData[];
-    console.log(`Cached ${metadataCache.length} NFTs`);
     return metadataCache;
   } catch (error) {
     console.error('Error loading metadata:', error);
@@ -65,14 +62,8 @@ export async function loadAllNFTs(): Promise<NFTData[]> {
 
 // Get NFT by token ID
 export async function getNFTByTokenId(tokenId: number): Promise<NFTData | null> {
-  console.log(`Loading NFT data for token ID: ${tokenId}`);
   const allNFTs = await loadAllNFTs();
-  console.log(`Total NFTs loaded: ${allNFTs.length}`);
   const foundNFT = allNFTs.find(nft => nft.token_id === tokenId);
-  console.log(`Found NFT:`, foundNFT ? 'Yes' : 'No');
-  if (foundNFT) {
-    console.log(`NFT attributes:`, foundNFT.attributes);
-  }
   return foundNFT || null;
 }
 

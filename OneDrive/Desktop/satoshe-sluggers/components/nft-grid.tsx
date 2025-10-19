@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
+import { TOTAL_COLLECTION_SIZE } from "@/lib/contracts";
 import {
   Select,
   SelectContent,
@@ -251,14 +252,12 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         
         // Load main collection using simple data service
         const mainMetadata = await loadAllNFTs();
-        console.log('Loaded metadata count:', mainMetadata.length);
         
         // Use only main collection metadata (test NFTs removed)
         const combinedMetadata = mainMetadata || [];
         setAllMetadata(combinedMetadata);
 
-      } catch (error) {
-        console.error('Error loading metadata:', error);
+      } catch {
       } finally {
         setIsLoading(false);
       }
@@ -816,7 +815,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                           </Link>
                         </div>
                       </td>
-                      <td className="px-6 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rank} / 7777</td>
+                      <td className="px-6 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rank} / {TOTAL_COLLECTION_SIZE}</td>
                       <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarityPercent}%</td>
                       <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarity}</td>
                       <td className="px-4 py-3 text-xs font-normal text-blue-500 whitespace-nowrap">{nft.priceEth} ETH</td>

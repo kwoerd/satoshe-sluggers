@@ -31,7 +31,7 @@ export function LiveRegion({ message, priority = "polite", className = "" }: Liv
 
 // Hook for announcing messages
 export function useLiveRegion() {
-  const announce = (message: string, priority: "polite" | "assertive" = "polite") => {
+  const announce = (message: string) => {
     const region = document.getElementById('live-region')
     if (region) {
       region.textContent = message

@@ -582,8 +582,8 @@ Micro (0.625rem/10px) → Micro text
 
 ### **Font Families**
 - **Primary**: Inter (sans-serif) - All UI text, headings, body
-- **Secondary**: Inconsolata (monospace) - Values, addresses, blockchain data
-- **Mono**: JetBrains Mono (monospace) - Code, technical details
+- **Secondary**: JetBrains Mono (monospace) - Values, addresses, blockchain data, technical details
+- **Mono**: JetBrains Mono (monospace) - Code, technical details (replaced Inconsolata)
 
 ### **Color System (Tokenized)**
 ```
@@ -675,7 +675,7 @@ import { typography, components, getValue, getLabel } from '@/lib/design-tokens'
 - **Typography hierarchy**: Clear size and weight relationships
 - **Tokenized colors**: No hardcoded color values
 - **Consistent spacing**: Use design tokens for all gaps/padding
-- **Font usage**: Inter for UI, Inconsolata for values/data
+- **Font usage**: Inter for UI, JetBrains Mono for values/data
 - **Component variants**: Standardized button and card styles
 - **Dark mode only**: No light mode toggle
 - **Frosted glass effects**: `backdrop-blur-md` for overlays

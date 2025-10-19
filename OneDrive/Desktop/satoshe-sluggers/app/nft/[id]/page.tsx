@@ -15,6 +15,7 @@ import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
 import { getNFTByTokenId, NFTData } from "@/lib/simple-data-service";
 import { track } from '@vercel/analytics';
+import { TOTAL_COLLECTION_SIZE } from "@/lib/contracts";
 import confetti from 'canvas-confetti';
 import { Separator } from "@/components/ui/separator";
 
@@ -79,27 +80,15 @@ export default function NFTDetailPage() {
   // Calculate navigation tokens (previous and next)
   useEffect(() => {
     const currentTokenId = parseInt(tokenId);
-    const isTestNFT = currentTokenId >= 0 && currentTokenId <= 4; // Test NFTs 0-4
     
-    if (isTestNFT) {
-      // For test NFTs, only navigate within test range (0-4)
-      const prevToken = currentTokenId > 0 ? currentTokenId - 1 : null;
-      const nextToken = currentTokenId < 4 ? currentTokenId + 1 : null;
-      
-      setNavigationTokens({
-        prev: prevToken,
-        next: nextToken
-      });
-    } else {
-      // For main collection, navigate within main range (5-7776)
-      const prevToken = currentTokenId > 5 ? currentTokenId - 1 : null;
-      const nextToken = currentTokenId < 7776 ? currentTokenId + 1 : null;
-      
-      setNavigationTokens({
-        prev: prevToken,
-        next: nextToken
-      });
-    }
+    // For main collection, navigate within main range (1-TOTAL_COLLECTION_SIZE)
+    const prevToken = currentTokenId > 1 ? currentTokenId - 1 : null;
+    const nextToken = currentTokenId < TOTAL_COLLECTION_SIZE ? currentTokenId + 1 : null;
+    
+    setNavigationTokens({
+      prev: prevToken,
+      next: nextToken
+    });
   }, [tokenId]);
 
   // Load NFT metadata
@@ -117,7 +106,6 @@ export default function NFTDetailPage() {
     const actualTokenId = tokenIdNum - 1;
     getNFTByTokenId(actualTokenId)
           .then((nftData: NFTData | null) => {
-          console.log("NFT data loaded:", nftData);
           
           if (nftData) {
             setMetadata(nftData);
@@ -125,23 +113,18 @@ export default function NFTDetailPage() {
             // Set image URL from metadata
             const mediaUrl = nftData.merged_data?.media_url;
             if (mediaUrl) {
-              console.log("Setting image URL:", mediaUrl);
               setImageUrl(mediaUrl);
             } else {
-              console.log("Using fallback image");
               setImageUrl("/nfts/placeholder-nft.webp");
             }
           } else {
-            console.log("No NFT found for tokenId:", tokenId);
             setMetadata(null);
             setImageUrl("/nfts/placeholder-nft.webp");
           }
-          console.log("Setting isLoading to false");
           clearTimeout(timeoutId);
           setIsLoading(false);
         })
-        .catch((error: Error) => {
-          console.error(`[NFT Detail] Error loading data for token ${tokenId}:`, error);
+        .catch(() => {
           setMetadata(null);
           setImageUrl("/nfts/placeholder-nft.webp");
           clearTimeout(timeoutId);
@@ -176,11 +159,8 @@ export default function NFTDetailPage() {
           occurrence: attr.occurrence
         };
       });
-      console.log("Mapped attributes for chart:", mappedAttributes);
-      console.log("Attributes length:", mappedAttributes.length);
       return mappedAttributes;
     }
-    console.log("No attributes found in metadata:", metadata);
     return [];
   }, [metadata]);
 
@@ -201,13 +181,11 @@ export default function NFTDetailPage() {
 
   // Handle transaction state changes
   const handleTransactionPending = () => {
-    console.log("Transaction pending...");
     setTransactionState('pending');
     setTransactionError(null);
   };
 
   const handleTransactionSuccess = async (receipt: { transactionHash: string; blockNumber: bigint }) => {
-    console.log("Transaction confirmed on blockchain:", receipt);
     setTransactionState('success');
     setIsPurchased(true);
     setShowSuccess(true);
@@ -353,7 +331,7 @@ export default function NFTDetailPage() {
             )}
             
             <span className="text-sm text-neutral-500 px-2">
-              {parseInt(tokenId) + 1} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}
+              {parseInt(tokenId) + 1} of {TOTAL_COLLECTION_SIZE}
             </span>
             
             {navigationTokens.next !== null && (
@@ -508,7 +486,7 @@ export default function NFTDetailPage() {
                     </div>
                     <div className="text-sm font-medium text-off-white mb-1">{attr.value}</div>
                     <div className="text-xs text-neutral-400">
-                      {attr.percentage}% • {attr.occurrence} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}
+                      {attr.percentage}% • {attr.occurrence} of {TOTAL_COLLECTION_SIZE}
                     </div>
                   </div>
                 ))}
@@ -680,7 +658,7 @@ export default function NFTDetailPage() {
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Rank</p>
-                  <p className="font-normal text-off-white">{metadata?.rank ?? "—"} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}</p>
+                  <p className="font-normal text-off-white">{metadata?.rank ?? "—"} of {TOTAL_COLLECTION_SIZE}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Rarity Percentage</p>
