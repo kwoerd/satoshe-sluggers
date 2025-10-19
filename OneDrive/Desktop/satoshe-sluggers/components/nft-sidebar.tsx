@@ -114,7 +114,9 @@ function FilterSection({
                        color === 'green' ? '#10b981' : 
                        color === 'yellow' ? '#f59e0b' : 
                        color === 'purple' ? '#8b5cf6' : 
-                       color === 'orange' ? '#f97316' : '#6b7280' }}
+                       color === 'orange' ? '#f97316' : 
+                       color === 'cyan' ? '#06b6d4' : 
+                       color === 'amber' ? '#f59e0b' : '#6b7280' }}
             />
           )}
       </div>
