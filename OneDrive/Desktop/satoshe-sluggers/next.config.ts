@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000, // 1 year
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    qualities: [75, 85, 100], // Required for Next.js 16
   },
   // Enable experimental features for better performance
   experimental: {
@@ -36,6 +37,10 @@ const nextConfig: NextConfig = {
   // Compiler optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
+  },
+  // Turbopack configuration
+  turbopack: {
+    root: __dirname,
   },
 };
 
