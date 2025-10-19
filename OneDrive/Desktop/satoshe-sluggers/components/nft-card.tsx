@@ -250,39 +250,27 @@ export default function NFTCard({
 
       {/* NFT Details Section - Medium grid design */}
       <div className="pl-4 pr-3 pt-0.5 pb-1.5 flex-1 flex flex-col">
-        {/* Pills and Favorite */}
-        <div className="flex items-center gap-2 mb-1">
-          {/* Green NFT Number Button */}
-          <div className="px-2.5 py-1 bg-green-500/10 border border-green-500/30 rounded-sm text-green-400 text-xs font-medium">
-            NFT #{cardNumber}
+        {/* Number and Buy Button */}
+        <div className="flex items-center justify-between mb-1">
+          {/* Just the number */}
+          <div className="text-green-400 text-sm font-medium">
+            #{cardNumber}
           </div>
           
-          {/* Blue Buy Button */}
+          {/* Buy Button (replaces heart) */}
           {isForSale ? (
             <Link
               href={`/nft/${tokenId}`}
-              className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
+              className="px-3 py-1.5 bg-blue-500 text-white text-xs font-medium rounded-sm hover:bg-blue-600 transition-colors"
               aria-label={`Buy ${name} for ${priceEth} ETH`}
             >
               Buy
             </Link>
           ) : (
-            <div className="px-2.5 py-1 bg-neutral-500/10 border border-neutral-500/30 rounded-sm text-neutral-400 text-xs font-medium">
+            <div className="px-3 py-1.5 bg-neutral-500 text-neutral-300 text-xs font-medium rounded-sm">
               Sold
             </div>
           )}
-          
-          {/* Heart Icon */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0 ml-auto"
-            onClick={handleFavoriteClick}
-            aria-label={isFav ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
-            aria-pressed={isFav}
-          >
-            <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-[#FFFBEB] hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
-          </Button>
         </div>
 
       </div>
