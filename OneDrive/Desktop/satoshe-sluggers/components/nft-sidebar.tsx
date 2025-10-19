@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { ChevronDown, ChevronRight, Search, X, ArrowDown, ArrowUp, ExternalLink, Copy, Check } from "lucide-react"
+import { ChevronDown, ChevronRight, Search, X, ArrowDown, ArrowUp, ExternalLink } from "lucide-react"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -414,24 +414,7 @@ export default function NFTSidebar({
   setSelectedFilters, 
   traitCounts = {} 
 }: NFTSidebarProps) {
-  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
 
-  const MARKETPLACE_ADDRESS = "0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-  const NFT_CONTRACT_ADDRESS = "0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc"
-
-  const copyToClipboard = async (address: string) => {
-    try {
-      await navigator.clipboard.writeText(address)
-      setCopiedAddress(address)
-      setTimeout(() => setCopiedAddress(null), 2000)
-    } catch {
-      // Silent fail - copy failed
-    }
-  }
-
-  const truncateAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`
-  }
 
   const clearAllFilters = () => {
     setSearchTerm("")
@@ -457,79 +440,6 @@ export default function NFTSidebar({
         </div>
 
         {/* Contract Links */}
-        <div className="space-y-3 mt-3">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-xs font-inconsolata text-off-white">Marketplace</h4>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-inconsolata text-off-white/70">{truncateAddress(MARKETPLACE_ADDRESS)}</span>
-                <button
-                  onClick={() => copyToClipboard(MARKETPLACE_ADDRESS)}
-                  className="p-1 hover:bg-neutral-700 rounded transition-colors"
-                  title="Copy address"
-                >
-                  {copiedAddress === MARKETPLACE_ADDRESS ? (
-                    <Check className="h-3 w-3 text-green-400" />
-                  ) : (
-                    <Copy className="h-3 w-3 text-off-white/70 hover:text-off-white" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => window.open('https://basescan.org/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
-              >
-                BaseScan
-                <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
-              </button>
-              <button
-                onClick={() => window.open('https://base.blockscout.com/address/0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817', '_blank')}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
-              >
-                Blockscout
-                <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-xs font-inconsolata text-off-white">NFT Contract</h4>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-inconsolata text-off-white/70">{truncateAddress(NFT_CONTRACT_ADDRESS)}</span>
-                <button
-                  onClick={() => copyToClipboard(NFT_CONTRACT_ADDRESS)}
-                  className="p-1 hover:bg-neutral-700 rounded transition-colors"
-                  title="Copy address"
-                >
-                  {copiedAddress === NFT_CONTRACT_ADDRESS ? (
-                    <Check className="h-3 w-3 text-green-400" />
-                  ) : (
-                    <Copy className="h-3 w-3 text-off-white/70 hover:text-off-white" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => window.open('https://basescan.org/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
-              >
-                BaseScan
-                <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
-              </button>
-              <button
-                onClick={() => window.open('https://base.blockscout.com/address/0x53b062474eF48FD1aE6798f9982c58Ec0267c2Fc', '_blank')}
-                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-[11px] px-2 py-1.5 rounded transition-colors border border-neutral-600 flex items-center justify-center gap-1 text-off-white"
-              >
-                Blockscout
-                <ExternalLink className="h-3 w-3" style={{ color: "#fffbeb" }} />
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="border-b border-neutral-700 mb-4"></div>
