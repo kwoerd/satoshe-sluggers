@@ -163,48 +163,50 @@ export default function NFTCard({
           </div>
 
           {/* Stats */}
-          <div className="text-xs text-neutral-300 space-y-0">
+          <div className="text-xs text-neutral-400 space-y-0">
             <div className="flex justify-between">
-              <span>Rank:</span>
-              <span className="text-neutral-300">{rank} of 7777</span>
+              <span className="text-neutral-400">Rank:</span>
+              <span className="text-neutral-400">{rank} of 7777</span>
             </div>
             <div className="flex justify-between">
-              <span>Rarity:</span>
-              <span className="text-neutral-300">{rarityPercent}%</span>
+              <span className="text-neutral-400">Rarity:</span>
+              <span className="text-neutral-400">{rarityPercent}%</span>
             </div>
             <div className="flex justify-between">
-              <span>Tier:</span>
-              <span className="text-neutral-300">{rarity.replace(" (Ultra-Legendary)", "")}</span>
+              <span className="text-neutral-400">Tier:</span>
+              <span className="text-neutral-400">{rarity.replace(" (Ultra-Legendary)", "")}</span>
             </div>
           </div>
 
           {/* Buy Section */}
           <div className="-mt-1">
             {isForSale ? (
-              <div className="space-y-0">
-                <div className="text-xs text-blue-500 font-medium">Buy Now</div>
-                <div className="flex items-end justify-between">
+              <div className="grid grid-cols-2 gap-2 items-center">
+                <div className="col-span-1">
+                  <div className="text-xs text-blue-500 font-medium">Buy Now</div>
                   <div className="text-base text-blue-500 font-semibold">
                     {priceEth} ETH
                   </div>
-                          <Link
-                            href={`/nft/${tokenId}`}
-                            className="px-3 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 disabled:cursor-not-allowed w-auto min-w-0 h-auto min-h-0"
-                            style={{
-                              padding: '6px 12px',
-                              fontSize: '12px',
-                              height: 'auto',
-                              minHeight: 'unset',
-                              width: 'auto',
-                              minWidth: 'unset',
-                              borderRadius: '2px',
-                              backgroundColor: '#3b82f6',
-                              color: 'white'
-                            }}
-                            aria-label={`Buy ${name} for ${priceEth} ETH`}
-                          >
-                            BUY
-                          </Link>
+                </div>
+                <div className="col-span-1 flex justify-end">
+                  <Link
+                    href={`/nft/${tokenId}`}
+                    className="px-3.5 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 disabled:cursor-not-allowed w-auto min-w-0 h-auto min-h-0"
+                    style={{
+                      padding: '6px 14px',
+                      fontSize: '13px',
+                      height: 'auto',
+                      minHeight: 'unset',
+                      width: 'auto',
+                      minWidth: 'unset',
+                      borderRadius: '2px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white'
+                    }}
+                    aria-label={`Buy ${name} for ${priceEth} ETH`}
+                  >
+                    BUY
+                  </Link>
                 </div>
               </div>
             ) : null}
@@ -252,7 +254,7 @@ export default function NFTCard({
         {/* Pills and Favorite */}
         <div className="flex items-center gap-2 mb-1">
           {/* Green NFT Number Pill */}
-          <div className="px-2 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-green-400 text-xs font-medium">
+          <div className="px-2.5 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-green-400 text-xs font-medium">
             NFT #{cardNumber}
           </div>
           
@@ -260,13 +262,13 @@ export default function NFTCard({
           {isForSale ? (
             <Link
               href={`/nft/${tokenId}`}
-              className="px-2 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
+              className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
               aria-label={`Buy ${name} for ${priceEth} ETH`}
             >
               Buy
             </Link>
           ) : (
-            <div className="px-2 py-1 bg-neutral-500/10 border border-neutral-500/30 rounded-full text-neutral-400 text-xs font-medium">
+            <div className="px-2.5 py-1 bg-neutral-500/10 border border-neutral-500/30 rounded-full text-neutral-400 text-xs font-medium">
               Sold
             </div>
           )}

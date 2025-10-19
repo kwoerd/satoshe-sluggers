@@ -777,10 +777,10 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                             {nft.isForSale ? (
                               <Link
                                 href={`/nft/${nft.tokenId}`}
-                                className="px-3 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 h-auto min-h-0"
+                                className="px-3.5 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 h-auto min-h-0"
                                 style={{
-                                  padding: '6px 12px',
-                                  fontSize: '12px',
+                                  padding: '6px 14px',
+                                  fontSize: '13px',
                                   height: 'auto',
                                   minHeight: 'unset',
                                   borderRadius: '2px',

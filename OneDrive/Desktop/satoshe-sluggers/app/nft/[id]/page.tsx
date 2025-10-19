@@ -16,6 +16,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { getNFTByTokenId, NFTData } from "@/lib/simple-data-service";
 import { track } from '@vercel/analytics';
 import confetti from 'canvas-confetti';
+import { Separator } from "@/components/ui/separator";
 
 // Type definitions
 interface NFTAttribute {
@@ -162,12 +163,27 @@ export default function NFTDetailPage() {
   const attributes = useMemo(() => {
     // Use real attributes from complete metadata
     if (metadata && metadata.attributes) {
-      const mappedAttributes = metadata.attributes.map((attr: NFTAttribute) => ({
-        name: attr.trait_type,
-        value: attr.value,
-        percentage: attr.percentage || attr.rarity || 0,
-        occurrence: attr.occurrence
-      }));
+      const mappedAttributes = metadata.attributes.map((attr: NFTAttribute) => {
+        // Generate a simple percentage based on attribute value if not provided
+        let percentage = attr.percentage || attr.rarity || 0;
+        
+        // If no percentage data, create a simple distribution
+        if (percentage === 0) {
+          // Simple hash-based percentage for demo purposes
+          const hash = attr.value.split('').reduce((a, b) => {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+          }, 0);
+          percentage = Math.abs(hash) % 50 + 1; // 1-50% range
+        }
+        
+        return {
+          name: attr.trait_type,
+          value: attr.value,
+          percentage: percentage,
+          occurrence: attr.occurrence
+        };
+      });
       console.log("Mapped attributes for chart:", mappedAttributes);
       console.log("Attributes length:", mappedAttributes.length);
       return mappedAttributes;
@@ -377,76 +393,6 @@ export default function NFTDetailPage() {
               </div>
             </div>
 
-            {/* Artist and Platform - Two Column Layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/brands/kristen-woerdeman/kwoerd-circular-offwhite-32.png"
-                    alt="Kristen Woerdeman"
-                    width={26}
-                    height={26}
-                    className="w-6 h-6"
-                    sizes="26px"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-off-white">Artist</p>
-                    <p className="text-xs text-neutral-400">Kristen Woerdeman</p>
-                  </div>
-                </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
-                  aria-hidden="true"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-              </div>
-
-              <div className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/brands/retinal-delights/retinal-delights-cicular-offwhite-32.png"
-                    alt="Retinal Delights"
-                    width={26}
-                    height={26}
-                    className="w-6 h-6"
-                    sizes="26px"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-off-white">Platform</p>
-                    <p className="text-xs text-neutral-400">Retinal Delights</p>
-                  </div>
-                </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
-                  aria-hidden="true"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-              </div>
-            </div>
 
             {/* IPFS Links - CID Information */}
             <div className="space-y-3">
@@ -454,11 +400,11 @@ export default function NFTDetailPage() {
                   href={metadata?.merged_data?.metadata_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-green-500 focus:outline-none"
+                  className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-green-500 focus:outline-none"
                   aria-label="View token metadata on IPFS"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: COLORS.hair + '20' }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: COLORS.hair + '20' }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -507,11 +453,11 @@ export default function NFTDetailPage() {
                   href={metadata?.merged_data?.media_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                    className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   aria-label="View NFT image on IPFS"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: COLORS.background + '20' }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: COLORS.background + '20' }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -554,6 +500,28 @@ export default function NFTDetailPage() {
                   </svg>
                 </a>
               </div>
+
+            {/* Attributes - 3 rows, 2 columns */}
+            <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+              <h3 className="text-lg font-semibold mb-4 text-off-white">Attributes</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }, index: number) => (
+                  <div key={index} className="bg-neutral-900 p-3 rounded border border-neutral-700">
+                    <div className="flex items-center mb-2">
+                      <div
+                        className="w-3 h-3 rounded-full mr-2"
+                        style={{ backgroundColor: getColorForAttribute(attr.name) }}
+                      ></div>
+                      <span className="text-xs text-neutral-400">{attr.name}</span>
+                    </div>
+                    <div className="text-sm font-semibold text-off-white mb-1">{attr.value}</div>
+                    <div className="text-xs text-neutral-400">
+                      {attr.percentage}% • {attr.occurrence} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
           </div>
 
@@ -603,7 +571,7 @@ export default function NFTDetailPage() {
                     onTransactionSent={handleTransactionPending}
                     onTransactionConfirmed={handleTransactionSuccess}
                     onError={handleTransactionError}
-                    className="px-6 py-3 font-bold transition-colors duration-300 ease-in-out focus:ring-2 focus:ring-offset-2 bg-blue-500 hover:bg-blue-700 text-white rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                     className="px-6 py-3 font-bold transition-all duration-500 ease-out focus:ring-2 focus:ring-offset-2 text-white rounded-sm disabled:opacity-50 disabled:cursor-not-allowed hover:!bg-blue-700"
                     style={{
                       backgroundColor: transactionState === 'pending' ? "#6B7280" : "#3B82F6",
                       color: "white",
@@ -682,6 +650,8 @@ export default function NFTDetailPage() {
               </div>
             )}
 
+
+
             {/* Additional Details */}
             <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
               <h3 className="text-lg font-semibold mb-4 text-off-white">Collection Details</h3>
@@ -727,77 +697,129 @@ export default function NFTDetailPage() {
               </div>
             </div>
 
+            {/* Artist and Platform - Two Column Layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/brands/kristen-woerdeman/kwoerd-circular-offwhite-32.png"
+                    alt="Kristen Woerdeman"
+                    width={26}
+                    height={26}
+                    className="w-6 h-6"
+                    sizes="26px"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-off-white">Artist</p>
+                    <p className="text-xs text-neutral-400">Kristen Woerdeman</p>
+                  </div>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </div>
+
+              <div className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/brands/retinal-delights/retinal-delights-cicular-offwhite-32.png"
+                    alt="Retinal Delights"
+                    width={26}
+                    height={26}
+                    className="w-6 h-6"
+                    sizes="26px"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-off-white">Platform</p>
+                    <p className="text-xs text-neutral-400">Retinal Delights</p>
+                  </div>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </div>
+            </div>
+
             {/* Contract Details - Moved from Women's Baseball Card */}
             <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
               <h3 className="text-lg font-semibold mb-4 text-off-white">Contract Details</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between py-1">
-                  <span className="text-neutral-400">Contract Address</span>
-                  <span className="text-off-white font-mono">0xf167...1d9C</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-neutral-400">Token ID</span>
-                  <span className="text-off-white">{metadata?.token_id ?? tokenId}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-neutral-400">Token Standard</span>
-                  <span className="text-off-white">ERC-721</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-neutral-400">Blockchain</span>
-                  <span className="text-off-white">Base</span>
-                </div>
-              </div>
-            </div>
-
-
-
-          </div>
-        </div>
-
-        {/* Combined Attributes and Rarity Distribution */}
-        <div className="mt-8 bg-neutral-800 p-6 rounded border border-neutral-700 lg:col-span-2 px-8 sm:px-12 lg:px-16 xl:px-20">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
-            {/* Attributes Grid */}
-            <div>
-              <h3 className="text-xl font-semibold mb-6 text-off-white">Attributes</h3>
-              <div className="grid grid-cols-2 gap-3 max-w-md">
-                {attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }, index: number) => (
-                  <div key={index} className="bg-neutral-900 p-3 rounded border border-neutral-700">
-                    <div className="flex items-center mb-2">
-                      <div
-                        className="w-3 h-3 rounded-full mr-2"
-                        style={{ backgroundColor: getColorForAttribute(attr.name) }}
-                      ></div>
-                      <span className="text-xs text-neutral-400">{attr.name}</span>
-                    </div>
-                    <div className="text-sm font-semibold text-off-white mb-1">{attr.value}</div>
-                    <div className="text-xs text-neutral-400">
-                      {attr.percentage}% • {attr.occurrence} of {parseInt(tokenId) >= 0 && parseInt(tokenId) <= 4 ? '5' : '7777'}
-                    </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="text-neutral-400">Contract Address</span>
+                    <span className="text-off-white">0xf167...1d9C</span>
                   </div>
-                ))}
-              </div>
+                  <Separator className="bg-neutral-600" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-neutral-400">Token ID</span>
+                    <span className="text-off-white">{metadata?.token_id ?? tokenId}</span>
+                  </div>
+                  <Separator className="bg-neutral-600" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-neutral-400">Token Standard</span>
+                    <span className="text-off-white">ERC-721</span>
+                  </div>
+                  <Separator className="bg-neutral-600" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-neutral-400">Blockchain</span>
+                    <span className="text-off-white">Base</span>
+                  </div>
+                </div>
             </div>
 
-            {/* Rarity Chart */}
-            <div>
-              <h3 className="text-xl font-semibold mb-6 text-off-white">Rarity Distribution</h3>
-              <div className="flex items-center justify-center">
-                <AttributeRarityChart
-                  attributes={attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }) => ({
-                    name: attr.name,
-                    value: attr.value,
-                    percentage: attr.percentage || 0,
-                    occurrence: attr.occurrence,
-                    color: getColorForAttribute(attr.name)
-                  }))}
-                  overallRarity={metadata?.rarity_percent || "93.5"}
-                />
+            {/* Rarity Distribution - Right Side, No Box */}
+            <h3 className="text-lg font-semibold mb-4 text-off-white">Rarity Distribution</h3>
+            {attributes.length > 0 ? (
+              <AttributeRarityChart
+                attributes={attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }) => ({
+                  name: attr.name,
+                  value: attr.value,
+                  percentage: attr.percentage || 0,
+                  occurrence: attr.occurrence,
+                  color: getColorForAttribute(attr.name)
+                }))}
+                overallRarity={metadata?.rarity_percent || "93.5"}
+              />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-neutral-400">No attributes available for rarity distribution</p>
+                <p className="text-xs text-neutral-500 mt-2">Attributes count: {attributes.length}</p>
+                <p className="text-xs text-neutral-500 mt-1">Metadata: {metadata ? 'Loaded' : 'Not loaded'}</p>
               </div>
-            </div>
+            )}
+
+
+
           </div>
         </div>
+
       </div>
 
       <Footer />

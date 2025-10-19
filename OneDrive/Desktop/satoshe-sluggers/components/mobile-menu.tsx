@@ -73,93 +73,92 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
       onClick={handleClose}
     >
           <div 
-            className={`w-1/3 fixed right-0 rounded-b-lg pt-2 pb-12 px-6 sm:px-8 bg-neutral-950 transition-all duration-700 ease-out ${
+            className={`w-80 max-w-[90vw] fixed left-1/2 -translate-x-1/2 rounded-lg pt-4 pb-8 px-8 bg-neutral-950 transition-all duration-700 ease-out ${
               isClosing 
                 ? '-translate-y-full opacity-0' 
                 : 'translate-y-0 opacity-100'
             }`}
         style={{
           top: '76px', // Position below navbar (navbar height is ~76px)
-          maxHeight: 'calc(100vh - 60px)', // Extend further down
-          overflowY: 'auto'
+          maxHeight: 'calc(100vh - 100px)', // Leave some margin
         }}
         onClick={(e) => e.stopPropagation()}
       >
             {/* Close button */}
-            <div className="flex justify-end mb-2">
+            <div className="flex justify-end mb-4">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-16 w-16 p-0 hover:bg-transparent"
+                className="h-10 w-10 p-0 hover:bg-neutral-800 rounded-full"
                 onClick={handleClose}
               >
-                <X className="h-14 w-14 text-[#ff0099]" />
+                <X className="h-6 w-6 text-[#ff0099]" />
                 <span className="sr-only">Close menu</span>
               </Button>
             </div>
 
-        <div className="flex flex-col gap-1 py-1 items-center">
-                  <div className="mb-3 flex items-center gap-3">
+        <div className="flex flex-col gap-2 py-2 items-center">
+                  <div className="mb-4 flex items-center justify-center w-full">
                     <SimpleConnectButton />
                   </div>
-          <nav className="flex flex-col space-y-0.5 items-center w-full">
+          <nav className="flex flex-col space-y-3 items-center w-full">
             <Link
               href="/"
-              className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 ${
+              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
                 activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
               HOME
-              <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
+              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
                 activePage === "home" ? "w-16 bg-[#ff0099]" : "w-0 group-hover:w-16 bg-neutral-100"
               }`}></span>
             </Link>
             <Link
               href="/about"
-              className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 ${
+              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
                 activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
               ABOUT
-              <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
+              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
                 activePage === "about" ? "w-16 bg-[#ff0099]" : "w-0 group-hover:w-16 bg-neutral-100"
               }`}></span>
             </Link>
             <Link
               href="/nfts"
-              className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 ${
+              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
                 activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
               NFTS
-              <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
+              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
                 activePage === "nfts" ? "w-16 bg-[#ff0099]" : "w-0 group-hover:w-16 bg-neutral-100"
               }`}></span>
             </Link>
             <Link
               href="/provenance"
-              className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 ${
+              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
                 activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
               PROVENANCE
-              <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
+              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
                 activePage === "provenance" ? "w-28 bg-[#ff0099]" : "w-0 group-hover:w-28 bg-neutral-100"
               }`}></span>
             </Link>
             <Link
               href="/contact"
-              className={`text-base sm:text-lg font-medium py-1 w-full text-center relative group transition-all duration-300 ${
+              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
                 activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
               }`}
               onClick={handleClose}
             >
               CONTACT
-              <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
+              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
                 activePage === "contact" ? "w-20 bg-[#ff0099]" : "w-0 group-hover:w-20 bg-neutral-100"
               }`}></span>
             </Link>
