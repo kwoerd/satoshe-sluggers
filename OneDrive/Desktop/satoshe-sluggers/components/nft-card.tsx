@@ -181,13 +181,13 @@ export default function NFTCard({
           {/* Buy Section */}
           <div className="-mt-1">
             {isForSale ? (
-              <div className="grid grid-cols-2 gap-2 items-center">
-                <div className="col-span-1">
-                  <div className="text-xs text-blue-500 font-medium">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] sm:text-xs text-blue-500 font-medium truncate">
                     Buy Now {priceEth} ETH
                   </div>
                 </div>
-                <div className="col-span-1 flex justify-end">
+                <div className="flex-shrink-0">
                   <Link
                     href={`/nft/${tokenId}`}
                     className="px-3.5 py-1.5 bg-blue-500 text-white font-normal rounded-sm hover:bg-blue-600 transition-all text-xs disabled:opacity-50 disabled:cursor-not-allowed w-auto min-w-0 h-auto min-h-0"
