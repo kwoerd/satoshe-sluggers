@@ -26,12 +26,14 @@ export default function HomePage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Head>
-      <PageLoadAnimation />
-      <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB]">
-        <Navigation activePage="home" />
-        <Header80 />
-        <Footer />
-      </main>
+      <div className="relative min-h-screen">
+        <PageLoadAnimation />
+        <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB]">
+          <Navigation activePage="home" />
+          <Header80 />
+          <Footer />
+        </main>
+      </div>
     </>
   )
 }

@@ -12,9 +12,11 @@ export default function PixelGridLoader({ isVisible, onComplete }: PixelGridLoad
   const gridRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    console.log('PixelGridLoader: isVisible =', isVisible)
     if (!isVisible || !gridRef.current) return
 
     const gridItems = gridRef.current.querySelectorAll('.load_grid-item')
+    console.log('PixelGridLoader: Found', gridItems.length, 'grid items')
     if (gridItems.length === 0) return
 
     // Create the pixel grid animation - simple fade out
@@ -43,12 +45,12 @@ export default function PixelGridLoader({ isVisible, onComplete }: PixelGridLoad
   return (
     <div 
       ref={gridRef}
-      className="load_grid fixed inset-0 z-50 pointer-events-none"
+      className="load_grid absolute inset-0 pointer-events-none"
       style={{
         display: 'block',
-        backgroundColor: '#171717',
         width: '100%',
-        height: '100%'
+        height: '100%',
+        zIndex: 9999
       }}
     >
       {/* Generate pixels with no gaps, covering the entire screen */}
