@@ -52,7 +52,7 @@ function FilterSection({
 
   const colorClasses: Record<string, string> = {
     purple: "text-purple-400",
-    blue: "text-blue-500", 
+    blue: "text-blue-500",
     amber: "text-amber-500",
     red: "text-red-500",
     green: "text-emerald-500",
@@ -63,7 +63,7 @@ function FilterSection({
   const borderClasses: Record<string, string> = {
     purple: "border-purple-400",
     blue: "border-blue-500",
-    amber: "border-amber-500", 
+    amber: "border-amber-500",
     red: "border-red-500",
     green: "border-emerald-500",
     cyan: "border-cyan-500",
@@ -73,7 +73,7 @@ function FilterSection({
   const handleCheckboxChange = (option: string) => {
     if (selected.includes(option)) {
       onChange(selected.filter(o => o !== option))
-    } else {
+      } else {
       onChange([...selected, option])
     }
   }
@@ -105,7 +105,7 @@ function FilterSection({
           <h3 className={`font-normal text-base ${isOpen ? colorClasses[color] : ''}`} style={!isOpen ? { color: "#fffbeb" } : {}}>
             {title}
           </h3>
-        </div>
+      </div>
         {isOpen ? (
           <ChevronDown className={`h-5 w-5 ${colorClasses[color]}`} />
         ) : (
@@ -117,24 +117,24 @@ function FilterSection({
         <div className="mt-2 space-y-1">
           {sortable && (
             <div className="mb-3 px-1">
-              <span className="text-sm text-neutral-400 block mb-1">Sort by:</span>
-              <button
+            <span className="text-sm text-neutral-400 block mb-1">Sort by:</span>
+            <button
                 onClick={() => setSortOrder(sortOrder === "commonToRare" ? "rareToCommon" : "commonToRare")}
-                className="flex items-center gap-1 text-sm px-3 py-1.5 rounded bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 transition-colors w-full justify-between text-off-white"
-              >
-                <span className={colorClasses[color]}>
-                  {sortOrder === "commonToRare" ? "Common to Rare" : "Rare to Common"}
-                </span>
-                {sortOrder === "commonToRare" ? (
-                  <ArrowDown className={`h-3.5 w-3.5 ${colorClasses[color]}`} />
-                ) : (
-                  <ArrowUp className={`h-3.5 w-3.5 ${colorClasses[color]}`} />
-                )}
-              </button>
-            </div>
+              className="flex items-center gap-1 text-sm px-3 py-1.5 rounded bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 transition-colors w-full justify-between text-off-white"
+            >
+              <span className={colorClasses[color]}>
+                {sortOrder === "commonToRare" ? "Common to Rare" : "Rare to Common"}
+              </span>
+              {sortOrder === "commonToRare" ? (
+                <ArrowDown className={`h-3.5 w-3.5 ${colorClasses[color]}`} />
+              ) : (
+                <ArrowUp className={`h-3.5 w-3.5 ${colorClasses[color]}`} />
+              )}
+            </button>
+          </div>
           )}
 
-          <div className="space-y-0.5">
+      <div className="space-y-0.5">
             {options.map((option) => {
               const optValue = typeof option === 'string' ? option : option.value
               const optDisplay = typeof option === 'string' ? option : option.display
@@ -142,42 +142,42 @@ function FilterSection({
               
               return (
                 <div key={optValue} className="flex items-center group hover:bg-neutral-800/50 rounded px-1 py-0.5 transition-colors">
-                  <div className="relative flex items-center w-full">
-                    <input
-                      type="checkbox"
+                <div className="relative flex items-center w-full">
+                  <input
+                    type="checkbox"
                       id={optValue}
                       checked={selected.includes(optValue)}
                       onChange={() => handleCheckboxChange(optValue)}
-                      className="sidebar-checkbox mr-3"
-                      style={{
-                        '--checkbox-color': color === 'purple' ? '#8b5cf6' : 
-                                          color === 'blue' ? '#3b82f6' :
-                                          color === 'amber' ? '#f59e0b' :
-                                          color === 'red' ? '#ef4444' :
-                                          color === 'green' ? '#10b981' :
-                                          color === 'cyan' ? '#06b6d4' :
-                                          color === 'orange' ? '#f97316' : '#8b5cf6'
-                      } as React.CSSProperties}
-                    />
-                    <label
+                    className="sidebar-checkbox mr-3"
+                    style={{
+                      '--checkbox-color': color === 'purple' ? '#8b5cf6' : 
+                                        color === 'blue' ? '#3b82f6' :
+                                        color === 'amber' ? '#f59e0b' :
+                                        color === 'red' ? '#ef4444' :
+                                        color === 'green' ? '#10b981' :
+                                        color === 'cyan' ? '#06b6d4' :
+                                        color === 'orange' ? '#f97316' : '#8b5cf6'
+                    } as React.CSSProperties}
+                  />
+                  <label
                       htmlFor={optValue}
                       className="text-sm text-neutral-300 cursor-pointer flex-1 py-0.5 whitespace-pre-line leading-tight"
-                    >
-                      <div className="flex items-center justify-between">
+                  >
+                    <div className="flex items-center justify-between">
                         <span>{optDisplay.replace('\n', ' ')}</span>
                         {count && (
                           <span className={`${colorClasses[color]} text-xs font-medium`}>
                             ({count})
                           </span>
                         )}
-                      </div>
-                    </label>
+                    </div>
+                  </label>
                   </div>
                 </div>
               )
             })}
           </div>
-        </div>
+      </div>
       )}
     </div>
   )
@@ -207,7 +207,7 @@ function SubcategorySection({
     purple: "text-purple-400",
     blue: "text-blue-500",
     amber: "text-amber-500",
-    red: "text-red-500", 
+    red: "text-red-500",
     green: "text-emerald-500",
     cyan: "text-cyan-500",
     orange: "text-orange-500",
@@ -218,7 +218,7 @@ function SubcategorySection({
     blue: "border-blue-500",
     amber: "border-amber-500",
     red: "border-red-500",
-    green: "border-emerald-500", 
+    green: "border-emerald-500",
     cyan: "border-cyan-500",
     orange: "border-orange-500",
   }
@@ -310,9 +310,9 @@ function SubcategorySection({
                     <div className="flex items-center justify-between pb-1">
                       <span className={colorClasses[color]}>{subcategory.name}</span>
                       {totalCount > 0 && (
-                        <span className={`${colorClasses[color]} text-xs font-medium`}>
-                          ({totalCount})
-                        </span>
+                          <span className={`${colorClasses[color]} text-xs font-medium`}>
+                            ({totalCount})
+                          </span>
                       )}
                     </div>
                   </label>
@@ -326,42 +326,42 @@ function SubcategorySection({
                       
                       return (
                         <div key={option} className="flex items-center group hover:bg-neutral-800/50 rounded px-1 py-0.5 transition-colors">
-                          <input
-                            type="checkbox"
-                            id={`${subcategory.name}-${option}`}
-                            checked={selected[subcategory.name]?.includes(option) ?? false}
+                        <input
+                          type="checkbox"
+                          id={`${subcategory.name}-${option}`}
+                          checked={selected[subcategory.name]?.includes(option) ?? false}
                             onChange={() => handleColorToggle(subcategory.name, option)}
-                            className="sidebar-checkbox mr-3"
-                            style={{
-                              '--checkbox-color': color === 'purple' ? '#8b5cf6' : 
-                                                color === 'blue' ? '#3b82f6' :
-                                                color === 'amber' ? '#f59e0b' :
-                                                color === 'red' ? '#ef4444' :
-                                                color === 'green' ? '#10b981' :
-                                                color === 'cyan' ? '#06b6d4' :
-                                                color === 'orange' ? '#f97316' : '#8b5cf6'
-                            } as React.CSSProperties}
-                          />
-                          <label
-                            htmlFor={`${subcategory.name}-${option}`}
+                          className="sidebar-checkbox mr-3"
+                          style={{
+                            '--checkbox-color': color === 'purple' ? '#8b5cf6' : 
+                                              color === 'blue' ? '#3b82f6' :
+                                              color === 'amber' ? '#f59e0b' :
+                                              color === 'red' ? '#ef4444' :
+                                              color === 'green' ? '#10b981' :
+                                              color === 'cyan' ? '#06b6d4' :
+                                              color === 'orange' ? '#f97316' : '#8b5cf6'
+                          } as React.CSSProperties}
+                        />
+                        <label
+                          htmlFor={`${subcategory.name}-${option}`}
                             className="text-sm text-neutral-300 cursor-pointer flex-1 py-0.5 pr-2 block flex justify-between items-center"
-                          >
-                            <span>{option}</span>
+                        >
+                          <span>{option}</span>
                             {count && (
                               <span className={`${colorClasses[color]} text-xs font-medium flex-shrink-0`}>
                                 ({count})
                               </span>
                             )}
-                          </label>
-                        </div>
+                        </label>
+                      </div>
                       )
                     })}
                   </div>
                 )}
               </div>
             )
-          })}
-        </div>
+                  })}
+                </div>
       )}
     </div>
   )
@@ -428,14 +428,14 @@ export default function NFTSidebar({
       suppressHydrationWarning={true}
     >
       {/* Blockchain Info */}
-      <div className="space-y-1 mb-4 p-3 border border-neutral-700 rounded">
-        <div>
+        <div className="space-y-1 mb-4 p-3 border border-neutral-700 rounded">
+          <div>
           <div className="text-xs font-inconsolata text-off-white mb-0">Blockchain: Base</div>
         </div>
-        <div>
+          <div>
           <div className="text-xs font-inconsolata text-off-white mb-0">Chain ID: 8453</div>
         </div>
-        <div>
+          <div>
           <div className="text-xs font-inconsolata text-off-white mb-2">Token Standard: ERC-721</div>
         </div>
 
@@ -510,7 +510,7 @@ export default function NFTSidebar({
               className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors ${
                 searchMode === "exact"
                   ? "bg-[#ff0099] text-white"
-                  : "text-neutral-400 hover:text-white"
+                  : "text-neutral-200 hover:text-white"
               }`}
             >
               Exact
@@ -555,92 +555,92 @@ export default function NFTSidebar({
 
       {/* Filter Sections */}
       <FilterSection
-        title="Rarity Tiers"
-        color="orange"
+          title="Rarity Tiers"
+          color="orange"
         options={RARITY_TIERS}
         selected={selectedFilters.rarity || []}
         onChange={arr => setSelectedFilters({ ...selectedFilters, rarity: arr })}
         traitCounts={traitCounts}
-        icon={
+          icon={
           <Image
-            src="/icons/nft-sidebar-categories/rarity-tier-orange.svg"
-            alt="Rarity Tiers"
-            width={18}
-            height={18}
-            className="text-orange-400"
-          />
-        }
+              src="/icons/nft-sidebar-categories/rarity-tier-orange.svg"
+              alt="Rarity Tiers"
+              width={18}
+              height={18}
+              className="text-orange-400"
+            />
+          }
         sortable={true}
-      />
+        />
 
       <FilterSection
-        title="Background"
-        color="blue"
+          title="Background"
+          color="blue"
         options={traitCounts["background"] ? Object.keys(traitCounts["background"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.background.map(value => ({ value, display: value }))}
         selected={selectedFilters.background || []}
         onChange={arr => setSelectedFilters({ ...selectedFilters, background: arr })}
         traitCounts={traitCounts}
-        icon={
+          icon={
           <Image
-            src="/icons/nft-sidebar-categories/background-blue.svg"
-            alt="Background"
-            width={18}
-            height={18}
-            className="text-blue-400"
-          />
-        }
-      />
+              src="/icons/nft-sidebar-categories/background-blue.svg"
+              alt="Background"
+              width={18}
+              height={18}
+              className="text-blue-400"
+            />
+          }
+        />
 
       <FilterSection
-        title="Skin Tone"
-        color="amber"
-        options={traitCounts["skinTone"] ? Object.keys(traitCounts["skinTone"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.skinTone.map(value => ({ value, display: value }))}
-        selected={selectedFilters.skinTone || []}
+          title="Skin Tone"
+          color="amber"
+          options={traitCounts["skinTone"] ? Object.keys(traitCounts["skinTone"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.skinTone.map(value => ({ value, display: value }))}
+          selected={selectedFilters.skinTone || []}
         onChange={arr => setSelectedFilters({ ...selectedFilters, skinTone: arr })}
-        traitCounts={traitCounts}
+          traitCounts={traitCounts}
         icon={
           <Image src="/icons/nft-sidebar-categories/skin-tone-yellow.svg" alt="Skin Tone" width={18} height={18} className="text-amber-400" sizes="18px" />
         }
-      />
+        />
 
       <FilterSection
-        title="Shirt"
-        color="red"
-        options={traitCounts["shirt"] ? Object.keys(traitCounts["shirt"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.shirt.map(value => ({ value, display: value }))}
-        selected={selectedFilters.shirt || []}
+          title="Shirt"
+          color="red"
+          options={traitCounts["shirt"] ? Object.keys(traitCounts["shirt"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.shirt.map(value => ({ value, display: value }))}
+          selected={selectedFilters.shirt || []}
         onChange={arr => setSelectedFilters({ ...selectedFilters, shirt: arr })}
-        traitCounts={traitCounts}
+          traitCounts={traitCounts}
         icon={<Image src="/icons/nft-sidebar-categories/shirt-red.svg" alt="Shirt" width={18} height={18} className="text-red-400" sizes="18px" />}
-      />
+        />
 
       <SubcategorySection
-        title="Hair"
-        color="green"
+          title="Hair"
+          color="green"
         subcategories={FALLBACK_OPTIONS.hair}
-        selected={selectedFilters.hair || {}}
+          selected={selectedFilters.hair || {}}
         onChange={selected => setSelectedFilters({ ...selectedFilters, hair: selected })}
-        traitCounts={traitCounts}
+          traitCounts={traitCounts}
         icon={<Image src="/icons/nft-sidebar-categories/hair-green.svg" alt="Hair" width={18} height={18} className="text-green-400" sizes="18px" />}
-      />
+        />
 
       <FilterSection
-        title="Eyewear"
-        color="cyan"
+          title="Eyewear"
+          color="cyan"
         options={FALLBACK_OPTIONS.eyewear}
-        selected={selectedFilters.eyewear || []}
+          selected={selectedFilters.eyewear || []}
         onChange={arr => setSelectedFilters({ ...selectedFilters, eyewear: arr })}
-        traitCounts={traitCounts}
+          traitCounts={traitCounts}
         icon={<Image src="/icons/nft-sidebar-categories/eyewear-blue.svg" alt="Eyewear" width={18} height={18} className="text-cyan-400" sizes="18px" />}
-      />
+        />
 
       <SubcategorySection
-        title="Headwear"
-        color="purple"
+          title="Headwear"
+          color="purple"
         subcategories={FALLBACK_OPTIONS.headwear}
         selected={selectedFilters.headwear || {}}
         onChange={selected => setSelectedFilters({ ...selectedFilters, headwear: selected })}
         traitCounts={traitCounts}
-        icon={
+          icon={
           <Image src="/icons/nft-sidebar-categories/headwear-purple.svg" alt="Headwear" width={18} height={18} className="text-purple-400" sizes="18px" />
         }
       />
