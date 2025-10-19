@@ -174,6 +174,15 @@ export default function RootLayout({
           </ThirdwebProvider>
           <TermlyScript />
           <Analytics />
+          
+          {/* Live region for screen reader announcements */}
+          <div
+            id="live-region"
+            aria-live="polite"
+            aria-atomic="true"
+            className="sr-only"
+            role="status"
+          />
         </ErrorBoundary>
       </body>
     </html>

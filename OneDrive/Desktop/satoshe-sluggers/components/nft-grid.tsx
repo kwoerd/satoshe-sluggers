@@ -18,6 +18,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import Link from "next/link";
 import Image from "next/image";
 import { loadAllNFTs } from "@/lib/simple-data-service";
+import { announceToScreenReader } from "@/lib/accessibility-utils";
 
 
 
@@ -33,6 +34,7 @@ type NFTGridItem = {
   rank: number | string;
   rarity: string;
   rarityPercent: string | number;
+  tier: string | number;
   isForSale: boolean;
   background?: string;
   skinTone?: string;
@@ -137,6 +139,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [allMetadata, setAllMetadata] = useState<unknown[]>([]);
   const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
   const [pricingMappings, setPricingMappings] = useState<Record<number, { price_eth: number; listing_id?: number }>>({});
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   
   // Load pricing mappings (optimized)
   useEffect(() => {
@@ -199,6 +202,46 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     setSortBy("default");
   };
 
+  // Keyboard navigation for grid items
+  const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
+    const totalItems = paginatedNFTs.length;
+    const itemsPerRow = viewMode === 'grid-large' ? 5 : viewMode === 'grid-medium' ? 7 : viewMode === 'grid-small' ? 8 : 1;
+    
+    switch (event.key) {
+      case 'ArrowRight':
+        event.preventDefault();
+        if (index < totalItems - 1) {
+          setFocusedIndex(index + 1);
+        }
+        break;
+      case 'ArrowLeft':
+        event.preventDefault();
+        if (index > 0) {
+          setFocusedIndex(index - 1);
+        }
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        if (index + itemsPerRow < totalItems) {
+          setFocusedIndex(index + itemsPerRow);
+        }
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        if (index - itemsPerRow >= 0) {
+          setFocusedIndex(index - itemsPerRow);
+        }
+        break;
+      case 'Home':
+        event.preventDefault();
+        setFocusedIndex(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        setFocusedIndex(totalItems - 1);
+        break;
+    }
+  };
 
   // Load metadata
   useEffect(() => {
@@ -278,6 +321,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 rank,
                 rarity,
                 rarityPercent,
+                tier: meta.rarity_tier || "Unknown",
                 background: getAttribute(meta, "Background"),
                 skinTone: getAttribute(meta, "Skin Tone"),
                 shirt: getAttribute(meta, "Shirt"),
@@ -524,8 +568,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setViewMode('grid-large')}
+                      onClick={() => {
+                        setViewMode('grid-large')
+                        announceToScreenReader('Switched to large grid view')
+                      }}
                       className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-large' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      aria-label="Switch to large grid view"
+                      aria-pressed={viewMode === 'grid-large'}
                     >
                       <Square className="w-4 h-4" />
                     </button>
@@ -537,8 +586,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setViewMode('grid-medium')}
+                      onClick={() => {
+                        setViewMode('grid-medium')
+                        announceToScreenReader('Switched to medium grid view')
+                      }}
                       className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-medium' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      aria-label="Switch to medium grid view"
+                      aria-pressed={viewMode === 'grid-medium'}
                     >
                       <LayoutGrid className="w-4 h-4" />
                     </button>
@@ -550,8 +604,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setViewMode('grid-small')}
+                      onClick={() => {
+                        setViewMode('grid-small')
+                        announceToScreenReader('Switched to small grid view')
+                      }}
                       className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-small' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      aria-label="Switch to small grid view"
+                      aria-pressed={viewMode === 'grid-small'}
                     >
                       <Grid3x3 className="w-4 h-4" />
                     </button>
@@ -563,8 +622,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setViewMode('compact')}
+                      onClick={() => {
+                        setViewMode('compact')
+                        announceToScreenReader('Switched to compact table view')
+                      }}
                       className={`p-2 rounded-sm transition-colors ${viewMode === 'compact' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      aria-label="Switch to compact table view"
+                      aria-pressed={viewMode === 'compact'}
                     >
                       <Rows3 className="w-4 h-4" />
                     </button>
@@ -628,20 +692,28 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               viewMode === 'grid-medium' ? 'gap-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7' :
               'gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'
             }`}>
-              {paginatedNFTs.map((nft) => (
-                  <NFTCard
+              {paginatedNFTs.map((nft, index) => (
+                  <div
                     key={nft.id}
-                    image={nft.image}
-                    name={nft.name}
-                    rank={nft.rank}
-                    rarity={nft.rarity}
-                    rarityPercent={nft.rarityPercent}
-                    priceEth={nft.priceEth}
-                    tokenId={nft.tokenId}
-                    cardNumber={nft.cardNumber}
-                    isForSale={nft.isForSale}
-                    viewMode={viewMode}
-                  />
+                    tabIndex={0}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                    className={`focus:outline-none focus:ring-2 focus:ring-[#ff0099] focus:ring-offset-2 focus:ring-offset-neutral-900 rounded-sm ${
+                      focusedIndex === index ? 'ring-2 ring-[#ff0099] ring-offset-2 ring-offset-neutral-900' : ''
+                    }`}
+                  >
+                    <NFTCard
+                      image={nft.image}
+                      name={nft.name}
+                      rank={nft.rank}
+                      rarity={nft.rarity}
+                      rarityPercent={nft.rarityPercent}
+                      priceEth={nft.priceEth}
+                      tokenId={nft.tokenId}
+                      cardNumber={nft.cardNumber}
+                      isForSale={nft.isForSale}
+                      viewMode={viewMode}
+                    />
+                  </div>
               ))}
             </div>
           )}
@@ -724,11 +796,18 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 </thead>
                 <tbody>
                   {paginatedNFTs.map((nft, index) => (
-                    <tr key={nft.id} className={`border-b border-neutral-700/50 hover:bg-neutral-800/30 transition-colors ${index % 2 === 0 ? 'bg-neutral-900/20' : ''}`}>
+                    <tr 
+                      key={nft.id} 
+                      tabIndex={0}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      className={`border-b border-neutral-700/50 hover:bg-neutral-800/30 transition-colors focus:outline-none focus:ring-2 focus:ring-[#ff0099] focus:ring-inset ${
+                        index % 2 === 0 ? 'bg-neutral-900/20' : ''
+                      } ${focusedIndex === index ? 'ring-2 ring-[#ff0099] ring-inset' : ''}`}
+                    >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <Link href={`/nft/${nft.tokenId}`} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                            <Image src={nft.image} alt={nft.name} width={40} height={40} className="rounded object-contain" />
+                            <Image src={nft.image} alt={`${nft.name} - NFT #${nft.cardNumber}, Rank ${nft.rank}, ${nft.rarity} rarity, Tier ${nft.tier}`} width={40} height={40} className="rounded object-contain" />
                             <div>
                               <p className="text-xs font-normal text-[#FFFBEB] truncate">{nft.name}</p>
                               <p className="text-xs text-neutral-500 truncate">Token ID: {nft.tokenId}</p>

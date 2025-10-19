@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight, Search, X, ArrowDown, ArrowUp, ExternalLink 
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { announceToScreenReader } from "@/lib/accessibility-utils"
 
 // Simple types
 interface FilterState {
@@ -447,6 +448,78 @@ export default function NFTSidebar({
     setSearchTerm("")
     setSearchMode("contains")
     setSelectedFilters({})
+    announceToScreenReader("All filters cleared")
+  }
+
+  // Wrapper functions with announcements
+  const handleRarityChange = (arr: string[]) => {
+    setSelectedFilters({ ...selectedFilters, rarity: arr })
+    if (arr.length > 0) {
+      announceToScreenReader(`Rarity filter applied: ${arr.join(', ')}`)
+    } else {
+      announceToScreenReader("Rarity filter cleared")
+    }
+  }
+
+  const handleBackgroundChange = (arr: string[]) => {
+    setSelectedFilters({ ...selectedFilters, background: arr })
+    if (arr.length > 0) {
+      announceToScreenReader(`Background filter applied: ${arr.join(', ')}`)
+    } else {
+      announceToScreenReader("Background filter cleared")
+    }
+  }
+
+  const handleSkinToneChange = (arr: string[]) => {
+    setSelectedFilters({ ...selectedFilters, skinTone: arr })
+    if (arr.length > 0) {
+      announceToScreenReader(`Skin tone filter applied: ${arr.join(', ')}`)
+    } else {
+      announceToScreenReader("Skin tone filter cleared")
+    }
+  }
+
+  const handleShirtChange = (arr: string[]) => {
+    setSelectedFilters({ ...selectedFilters, shirt: arr })
+    if (arr.length > 0) {
+      announceToScreenReader(`Shirt filter applied: ${arr.join(', ')}`)
+    } else {
+      announceToScreenReader("Shirt filter cleared")
+    }
+  }
+
+  const handleHairChange = (selected: Record<string, string[]>) => {
+    setSelectedFilters({ ...selectedFilters, hair: selected })
+    const selectedCount = Object.values(selected).flat().length
+    if (selectedCount > 0) {
+      announceToScreenReader(`Hair filter applied: ${selectedCount} items selected`)
+    } else {
+      announceToScreenReader("Hair filter cleared")
+    }
+  }
+
+  const handleEyewearChange = (arr: string[]) => {
+    setSelectedFilters({ ...selectedFilters, eyewear: arr })
+    if (arr.length > 0) {
+      announceToScreenReader(`Eyewear filter applied: ${arr.join(', ')}`)
+    } else {
+      announceToScreenReader("Eyewear filter cleared")
+    }
+  }
+
+  const handleHeadwearChange = (selected: Record<string, string[]>) => {
+    setSelectedFilters({ ...selectedFilters, headwear: selected })
+    const selectedCount = Object.values(selected).flat().length
+    if (selectedCount > 0) {
+      announceToScreenReader(`Headwear filter applied: ${selectedCount} items selected`)
+    } else {
+      announceToScreenReader("Headwear filter cleared")
+    }
+  }
+
+  const handleSearchModeChange = (mode: "exact" | "contains") => {
+    setSearchMode(mode)
+    announceToScreenReader(`Search mode changed to ${mode}`)
   }
 
   return (
@@ -523,22 +596,24 @@ export default function NFTSidebar({
         <div className="mb-3">
           <div className="flex bg-neutral-700 rounded p-1">
             <button
-              onClick={() => setSearchMode("contains")}
+              onClick={() => handleSearchModeChange("contains")}
               className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors ${
                 searchMode === "contains"
                   ? "bg-[#ff0099] text-white"
                   : "text-neutral-400 hover:text-white"
               }`}
+              aria-pressed={searchMode === "contains"}
             >
               Contains
             </button>
             <button
-              onClick={() => setSearchMode("exact")}
+              onClick={() => handleSearchModeChange("exact")}
               className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors ${
                 searchMode === "exact"
                   ? "bg-[#ff0099] text-white"
                   : "text-neutral-200 hover:text-white"
               }`}
+              aria-pressed={searchMode === "exact"}
             >
               Exact
             </button>
@@ -554,13 +629,20 @@ export default function NFTSidebar({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setSearchTerm(e.target.value)
             }}
+            aria-label="Search NFTs by name, token ID, or NFT number"
+            aria-describedby="search-help"
           />
         </div>
+        
+        <p id="search-help" className="text-xs text-neutral-500 mb-2">
+          Search by NFT name, token ID, or NFT number
+        </p>
         
         <Button
           variant="outline"
           size="sm"
           className="text-sm font-light flex items-center justify-center h-8 w-full mb-4 rounded border-neutral-600 focus:outline-none focus:ring-0 focus:border-neutral-500 text-off-white"
+          aria-label="Search NFTs"
         >
           Search
         </Button>
@@ -575,6 +657,7 @@ export default function NFTSidebar({
           onClick={clearAllFilters}
           className="text-sm font-light flex items-center justify-center gap-1 h-9 w-full rounded border-neutral-600 focus:outline-none focus:ring-0 focus:border-neutral-500" 
           style={{ color: "#fffbeb" }}
+          aria-label="Clear all filters and search"
         >
           <X className="h-4 w-4" /> Clear All Filters
         </Button>
@@ -586,7 +669,7 @@ export default function NFTSidebar({
           color="orange"
         options={RARITY_TIERS}
         selected={selectedFilters.rarity || []}
-        onChange={arr => setSelectedFilters({ ...selectedFilters, rarity: arr })}
+        onChange={handleRarityChange}
         traitCounts={traitCounts}
           icon={
           <Image
@@ -605,7 +688,7 @@ export default function NFTSidebar({
           color="blue"
         options={traitCounts["background"] ? Object.keys(traitCounts["background"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.background.map(value => ({ value, display: value }))}
         selected={selectedFilters.background || []}
-        onChange={arr => setSelectedFilters({ ...selectedFilters, background: arr })}
+        onChange={handleBackgroundChange}
         traitCounts={traitCounts}
           icon={
           <Image
@@ -623,7 +706,7 @@ export default function NFTSidebar({
           color="amber"
           options={traitCounts["skinTone"] ? Object.keys(traitCounts["skinTone"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.skinTone.map(value => ({ value, display: value }))}
           selected={selectedFilters.skinTone || []}
-        onChange={arr => setSelectedFilters({ ...selectedFilters, skinTone: arr })}
+        onChange={handleSkinToneChange}
           traitCounts={traitCounts}
         icon={
           <Image src="/icons/nft-sidebar-categories/skin-tone-yellow.svg" alt="Skin Tone" width={18} height={18} className="text-amber-400" sizes="18px" />
@@ -635,7 +718,7 @@ export default function NFTSidebar({
           color="red"
           options={traitCounts["shirt"] ? Object.keys(traitCounts["shirt"]).sort().map(value => ({ value, display: value })) : FALLBACK_OPTIONS.shirt.map(value => ({ value, display: value }))}
           selected={selectedFilters.shirt || []}
-        onChange={arr => setSelectedFilters({ ...selectedFilters, shirt: arr })}
+        onChange={handleShirtChange}
           traitCounts={traitCounts}
         icon={<Image src="/icons/nft-sidebar-categories/shirt-red.svg" alt="Shirt" width={18} height={18} className="text-red-400" sizes="18px" />}
         />
@@ -645,7 +728,7 @@ export default function NFTSidebar({
           color="green"
         subcategories={FALLBACK_OPTIONS.hair}
           selected={selectedFilters.hair || {}}
-        onChange={selected => setSelectedFilters({ ...selectedFilters, hair: selected })}
+        onChange={handleHairChange}
           traitCounts={traitCounts}
         icon={<Image src="/icons/nft-sidebar-categories/hair-green.svg" alt="Hair" width={18} height={18} className="text-green-400" sizes="18px" />}
         />
@@ -655,7 +738,7 @@ export default function NFTSidebar({
           color="cyan"
         options={FALLBACK_OPTIONS.eyewear}
           selected={selectedFilters.eyewear || []}
-        onChange={arr => setSelectedFilters({ ...selectedFilters, eyewear: arr })}
+        onChange={handleEyewearChange}
           traitCounts={traitCounts}
         icon={<Image src="/icons/nft-sidebar-categories/eyewear-blue.svg" alt="Eyewear" width={18} height={18} className="text-cyan-400" sizes="18px" />}
         />
@@ -665,7 +748,7 @@ export default function NFTSidebar({
           color="purple"
         subcategories={FALLBACK_OPTIONS.headwear}
         selected={selectedFilters.headwear || {}}
-        onChange={selected => setSelectedFilters({ ...selectedFilters, headwear: selected })}
+        onChange={handleHeadwearChange}
         traitCounts={traitCounts}
           icon={
           <Image src="/icons/nft-sidebar-categories/headwear-purple.svg" alt="Headwear" width={18} height={18} className="text-purple-400" sizes="18px" />
