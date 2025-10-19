@@ -105,6 +105,18 @@ function FilterSection({
           <h3 className={`font-normal text-base ${isOpen ? colorClasses[color] : ''}`} style={!isOpen ? { color: "#fffbeb" } : {}}>
             {title}
           </h3>
+          {/* Active filter indicator */}
+          {selected && selected.length > 0 && (
+            <div 
+              className="w-2 h-2 rounded-full flex-shrink-0" 
+              style={{ backgroundColor: color === 'red' ? '#ef4444' : 
+                       color === 'blue' ? '#3b82f6' : 
+                       color === 'green' ? '#10b981' : 
+                       color === 'yellow' ? '#f59e0b' : 
+                       color === 'purple' ? '#8b5cf6' : 
+                       color === 'orange' ? '#f97316' : '#6b7280' }}
+            />
+          )}
       </div>
         {isOpen ? (
           <ChevronDown className={`h-5 w-5 ${colorClasses[color]}`} />
@@ -258,6 +270,19 @@ function SubcategorySection({
           <h3 className={`font-normal text-base ${isOpen ? colorClasses[color] : ''}`} style={!isOpen ? { color: "#fffbeb" } : {}}>
             {title}
           </h3>
+          {/* Active filter indicator for subcategories */}
+          {Object.values(selected).some(arr => arr && arr.length > 0) && (
+            <div 
+              className="w-2 h-2 rounded-full flex-shrink-0" 
+              style={{ backgroundColor: color === 'purple' ? '#8b5cf6' : 
+                       color === 'blue' ? '#3b82f6' : 
+                       color === 'green' ? '#10b981' : 
+                       color === 'yellow' ? '#f59e0b' : 
+                       color === 'red' ? '#ef4444' : 
+                       color === 'cyan' ? '#06b6d4' : 
+                       color === 'orange' ? '#f97316' : '#6b7280' }}
+            />
+          )}
         </div>
         {isOpen ? (
           <ChevronDown className={`h-5 w-5 ${colorClasses[color]}`} />
