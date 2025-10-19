@@ -203,7 +203,7 @@ export default function NFTDetailPage() {
   };
 
   const handleTransactionError = (error: Error) => {
-    console.error("Transaction failed:", error);
+    // Transaction failed - error handled by UI
     setTransactionState('error');
     
     // Parse error message for user-friendly display

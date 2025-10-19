@@ -54,8 +54,8 @@ export async function loadAllNFTs(): Promise<NFTData[]> {
     const data = await response.json();
     metadataCache = data as NFTData[];
     return metadataCache;
-  } catch (error) {
-    console.error('Error loading metadata:', error);
+  } catch {
+    // Error loading metadata - handled by fallback
     return [];
   }
 }
