@@ -554,7 +554,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                   <span className="text-blue-400">0 Sold</span>
                 </div>
                 <div className="text-xs text-neutral-500 mt-1">
-                  Showing {startIndex + 1}-{Math.min(endIndex, filteredNFTs.length)} of {filteredNFTs.length} NFTs
+                  {startIndex + 1}-{Math.min(endIndex, filteredNFTs.length)} of {filteredNFTs.length} NFTs
                 </div>
               </>
             )}
@@ -843,7 +843,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                         <div className="flex items-center gap-2 justify-end">
                             <Link
                               href={`/nft/${nft.tokenId}`}
-                              className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
+                              className="px-2.5 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-sm text-yellow-400 text-xs font-medium hover:bg-yellow-500/20 hover:border-yellow-500/50 transition-colors"
                             >
                               View
                             </Link>

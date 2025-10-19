@@ -22,8 +22,8 @@ export default function NFTsPage() {
           <h1 id="collection-heading" className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-center mb-3 text-[#FFFBEB]">
             SATO<span className="text-[#ff0099]">SHE</span> SLUGGERS
           </h1>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-neutral-300 text-center max-w-3xl mx-auto tracking-wider">
-            A RETINAL DELIGHTS NFT MARKETPLACE
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-neutral-300 text-center max-w-4xl mx-auto tracking-wider whitespace-nowrap overflow-x-auto">
+            / <span className="text-[#ff0099]">SHE</span> hits different    / <span className="text-[#ff0099]">SHE</span> funds women's baseball    / <span className="text-[#ff0099]">SHE</span> makes a difference
           </p>
         </div>
 

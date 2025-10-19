@@ -530,20 +530,20 @@ export default function NFTSidebar({
       {/* Blockchain Info */}
         <div className="space-y-1 mb-4 p-3 border border-neutral-700 rounded">
           <div>
-          <div className="text-xs font-inconsolata text-off-white mb-0">Blockchain: Base</div>
+          <div className="text-[10px] font-mono font-light text-off-white mb-0">Blockchain: Base</div>
         </div>
           <div>
-          <div className="text-xs font-inconsolata text-off-white mb-0">Chain ID: 8453</div>
+          <div className="text-[10px] font-mono font-light text-off-white mb-0">Chain ID: 8453</div>
         </div>
           <div>
-          <div className="text-xs font-inconsolata text-off-white mb-2">Token Standard: ERC-721</div>
+          <div className="text-[10px] font-mono font-light text-off-white mb-2">Token Standard: ERC-721</div>
         </div>
 
         {/* Contract Links */}
         <div className="space-y-3 mt-3">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-xs font-inconsolata text-off-white">Marketplace</h4>
+              <h4 className="text-[10px] font-mono font-light text-off-white">Marketplace</h4>
             </div>
             <div className="flex gap-2">
               <button
@@ -565,7 +565,7 @@ export default function NFTSidebar({
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-xs font-inconsolata text-off-white">NFT Contract</h4>
+              <h4 className="text-[10px] font-mono font-light text-off-white">NFT Contract</h4>
             </div>
             <div className="flex gap-2">
               <button
@@ -635,13 +635,13 @@ export default function NFTSidebar({
         </div>
         
         <p id="search-help" className="text-xs text-neutral-500 mb-2">
-          Search by NFT name, token ID, or NFT number
+          Search by name, token ID, or NFT #
         </p>
         
         <Button
           variant="outline"
           size="sm"
-          className="text-sm font-light flex items-center justify-center h-8 w-full mb-4 rounded border-neutral-600 focus:outline-none focus:ring-0 focus:border-neutral-500 text-off-white"
+          className="text-sm font-light flex items-center justify-center h-8 w-full mb-4 rounded border-[#ff0099] text-[#ff0099] hover:bg-[#ff0099] hover:text-white focus:outline-none focus:ring-0 focus:border-[#ff0099] transition-colors"
           aria-label="Search NFTs"
         >
           Search
@@ -655,8 +655,7 @@ export default function NFTSidebar({
           variant="outline" 
           size="sm" 
           onClick={clearAllFilters}
-          className="text-sm font-light flex items-center justify-center gap-1 h-9 w-full rounded border-neutral-600 focus:outline-none focus:ring-0 focus:border-neutral-500" 
-          style={{ color: "#fffbeb" }}
+          className="text-sm font-light flex items-center justify-center gap-1 h-9 w-full rounded border-neutral-500 text-neutral-300 hover:bg-neutral-700 hover:text-white hover:border-neutral-400 focus:outline-none focus:ring-0 focus:border-neutral-400 transition-colors" 
           aria-label="Clear all filters and search"
         >
           <X className="h-4 w-4" /> Clear All Filters
