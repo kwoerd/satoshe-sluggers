@@ -258,9 +258,13 @@ export default function NFTCard({
                 Buy
               </Link>
             ) : (
-              <div className="px-2.5 py-1 bg-neutral-500/10 border border-neutral-500/30 rounded-sm text-neutral-400 text-xs font-medium">
+              <Link
+                href={`/nft/${tokenId}`}
+                className="px-2.5 py-1 bg-orange-500/10 border border-orange-500/30 rounded-sm text-orange-400 text-xs font-medium hover:bg-orange-500/20 hover:border-orange-500/50 transition-colors"
+                aria-label={`View sold ${name} details`}
+              >
                 Sold
-              </div>
+              </Link>
             )}
             
             {/* Heart Icon */}
