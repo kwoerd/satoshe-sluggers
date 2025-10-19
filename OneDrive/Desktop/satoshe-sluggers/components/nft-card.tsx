@@ -183,9 +183,8 @@ export default function NFTCard({
             {isForSale ? (
               <div className="grid grid-cols-2 gap-2 items-center">
                 <div className="col-span-1">
-                  <div className="text-xs text-blue-500 font-medium">Buy Now</div>
-                  <div className="text-base text-blue-500 font-semibold">
-                    {priceEth} ETH
+                  <div className="text-xs text-blue-500 font-medium">
+                    Buy Now {priceEth} ETH
                   </div>
                 </div>
                 <div className="col-span-1 flex justify-end">
