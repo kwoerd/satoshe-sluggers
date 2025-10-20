@@ -141,6 +141,8 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
   const [pricingMappings, setPricingMappings] = useState<Record<number, { price_eth: number; listing_id?: number }>>({});
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+  const gridRef = useRef<HTMLDivElement>(null);
   
   // Load pricing mappings (optimized)
   useEffect(() => {
@@ -162,6 +164,25 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             };
           });
           
+          // Load test listings
+          try {
+            const testResponse = await fetch('/data/test_listings.json');
+            if (testResponse.ok) {
+              const testData = await testResponse.json();
+              Object.entries(testData.test_listings).forEach(([listingId, data]) => {
+                const testListing = data as { token_id: number; price_eth: number; status: string };
+                if (testListing.status === 'Active') {
+                  mappings[testListing.token_id] = {
+                    price_eth: testListing.price_eth,
+                    listing_id: parseInt(listingId)
+                  };
+                }
+              });
+            }
+          } catch (error) {
+            console.warn('Failed to load test listings:', error);
+          }
+          
           setPricingMappings(mappings);
           return;
         }
@@ -176,6 +197,26 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             listing_id: item.listing_id
           };
         });
+        
+        // Load test listings for fallback too
+        try {
+          const testResponse = await fetch('/data/test_listings.json');
+          if (testResponse.ok) {
+            const testData = await testResponse.json();
+            Object.entries(testData.test_listings).forEach(([listingId, data]) => {
+              const testListing = data as { token_id: number; price_eth: number; status: string };
+              if (testListing.status === 'Active') {
+                mappings[testListing.token_id] = {
+                  price_eth: testListing.price_eth,
+                  listing_id: parseInt(listingId)
+                };
+              }
+            });
+          }
+        } catch (error) {
+          console.warn('Failed to load test listings:', error);
+        }
+        
         setPricingMappings(mappings);
       } catch {
         // Silent fail - pricing will be empty
@@ -339,6 +380,16 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   }, [allMetadata, pricingMappings]);
 
 
+  // Preserve scroll position when filters change
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Filter NFTs
   const filteredNFTs = useMemo(() => {
     return nfts.filter(nft => {
@@ -429,6 +480,16 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     );
   });
   }, [nfts, searchTerm, searchMode, selectedFilters]);
+
+  // Restore scroll position after filtering
+  useEffect(() => {
+    if (scrollPosition > 0 && !isLoading) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        window.scrollTo(0, scrollPosition);
+      }, 100);
+    }
+  }, [filteredNFTs, scrollPosition, isLoading]);
 
   // Sort filtered NFTs
   const sortedNFTs = useMemo(() => {
@@ -686,7 +747,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         <>
           {/* Grid Views */}
           {(viewMode === 'grid-large' || viewMode === 'grid-medium' || viewMode === 'grid-small') && (
-            <div className={`mt-4 mb-8 grid ${
+            <div ref={gridRef} className={`mt-4 mb-8 grid ${
               viewMode === 'grid-large' ? 'gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' :
               viewMode === 'grid-medium' ? 'gap-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7' :
               'gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'

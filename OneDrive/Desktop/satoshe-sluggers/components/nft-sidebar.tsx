@@ -641,7 +641,7 @@ export default function NFTSidebar({
         <Button
           variant="outline"
           size="sm"
-          className="text-sm font-light flex items-center justify-center h-8 w-full mb-4 rounded border-[#ff0099] text-[#ff0099] hover:bg-[#ff0099] hover:text-white focus:outline-none focus:ring-0 focus:border-[#ff0099] transition-colors"
+          className="text-sm font-light flex items-center justify-center h-8 w-full mb-4 rounded border-[#ff0099] text-[#ff0099] bg-transparent hover:bg-[#ff0099] hover:text-white focus:outline-none focus:ring-0 focus:border-[#ff0099] transition-colors"
           aria-label="Search NFTs"
         >
           Search

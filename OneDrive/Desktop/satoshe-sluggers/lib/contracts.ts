@@ -66,7 +66,7 @@ export const marketplace = getContract({
 
 // Collection configuration
 export const MAX_NFTS = 3000; // Temporary limit while uploads complete
-export const TOTAL_COLLECTION_SIZE = 7777; // Full collection size
+export const TOTAL_COLLECTION_SIZE = 7782; // Full collection size (7777 + 5 test NFTs)
 
 // RPC Rate Limiting Configuration
 export const RPC_RATE_LIMIT = 225; // Max 225 calls/second (safe buffer under 250 limit)

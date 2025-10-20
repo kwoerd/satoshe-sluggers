@@ -78,7 +78,7 @@ export default function ContactPage() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-grow" role="main" aria-labelledby="contact-heading">
         <div className="text-center mb-6 sm:mb-8">
-          <h1 id="contact-heading" className="text-2xl sm:text-3xl font-bold mb-3 text-[#FFFBEB]">
+          <h1 id="contact-heading" className="text-2xl sm:text-3xl font-bold mb-6 text-[#FFFBEB]">
             CONTACT US
           </h1>
           <p className="text-neutral-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed px-4 font-normal">
@@ -137,7 +137,11 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="Satoshe Slugger"
-                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099]"
+                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-600 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
+                    style={{
+                      WebkitBoxShadow: '0 0 0 1000px #262626 inset',
+                      WebkitTextFillColor: '#FFFBEB'
+                    }}
                     aria-required="true"
                     aria-describedby="name-error"
                     spellCheck={false}
@@ -162,7 +166,11 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="hello@satoshesluggers.com"
-                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099]"
+                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-600 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
+                    style={{
+                      WebkitBoxShadow: '0 0 0 1000px #262626 inset',
+                      WebkitTextFillColor: '#FFFBEB'
+                    }}
                     aria-required="true"
                     aria-describedby="email-error"
                     autoComplete="email"
@@ -188,7 +196,11 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder="What is this regarding?"
-                  className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099]"
+                  className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
+                  style={{
+                    WebkitBoxShadow: '0 0 0 1000px #262626 inset',
+                    WebkitTextFillColor: '#FFFBEB'
+                  }}
                   aria-required="true"
                   aria-describedby="subject-error"
                   spellCheck={false}
@@ -211,7 +223,11 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  className="min-h-[150px] bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099]"
+                  className="min-h-[150px] bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-600 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
+                  style={{
+                    WebkitBoxShadow: '0 0 0 1000px #262626 inset',
+                    WebkitTextFillColor: '#FFFBEB'
+                  }}
                   placeholder="How can we help you?"
                   aria-required="true"
                   aria-describedby="message-error"
@@ -270,7 +286,7 @@ export default function ContactPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="py-3 px-8 text-lg font-normal transition-all duration-200 border bg-transparent text-[#FF0099] border-[#FF0099] hover:bg-[#FF0099]/90 hover:text-[#FFFBEB] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="py-3 px-8 text-lg font-normal transition-all duration-200 border bg-transparent text-[#FF0099] border-[#FF0099] hover:bg-[#FF0099] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-live="polite"
                 >
                   {isSubmitting ? (

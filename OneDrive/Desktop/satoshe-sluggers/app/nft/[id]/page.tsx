@@ -8,9 +8,8 @@ import { ArrowLeft, Heart, ChevronLeft, ChevronRight, ExternalLink } from "lucid
 import Footer from "@/components/footer";
 import Navigation from "@/components/navigation";
 import AttributeRarityChart from "@/components/attribute-rarity-chart";
-import { MediaRenderer, TransactionButton, useActiveAccount } from "thirdweb/react";
-import { buyFromListing } from "thirdweb/extensions/marketplace";
-import { marketplace } from "../../../lib/contracts";
+import { MediaRenderer, useActiveAccount, BuyDirectListingButton } from "thirdweb/react";
+import { base } from "thirdweb/chains";
 import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
 import { getNFTByTokenId, NFTData } from "@/lib/simple-data-service";
@@ -74,7 +73,6 @@ export default function NFTDetailPage() {
   const [transactionState, setTransactionState] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [transactionError, setTransactionError] = useState<string | null>(null);
   
-  const account = useActiveAccount();
   const { isFavorited, toggleFavorite, isConnected } = useFavorites();
 
   // Calculate navigation tokens (previous and next)
@@ -102,7 +100,7 @@ export default function NFTDetailPage() {
 
     const tokenIdNum = parseInt(tokenId);
     // Load main collection NFT data using data service
-    // Note: token IDs in metadata start from 0, but URLs start from 1
+    // Note: token IDs in metadata start from 0, but URLs use human-friendly numbers (1-based)
     const actualTokenId = tokenIdNum - 1;
     getNFTByTokenId(actualTokenId)
           .then((nftData: NFTData | null) => {
@@ -256,23 +254,6 @@ export default function NFTDetailPage() {
     }
   };
 
-  // Transaction function for buying NFT
-  const createBuyTransaction = () => {
-    if (!account?.address) {
-      throw new Error("Please connect your wallet first");
-    }
-
-    if (!isForSale) {
-      throw new Error("This NFT is not available for purchase");
-    }
-
-    return buyFromListing({
-      contract: marketplace,
-      listingId: BigInt(listingId),
-      quantity: 1n,
-      recipient: account.address,
-    });
-  };
 
 
   if (isLoading) {
@@ -536,12 +517,16 @@ export default function NFTDetailPage() {
                       </p>
                     )}
                   </div>
-                  <TransactionButton
-                    transaction={createBuyTransaction}
+                  <BuyDirectListingButton
+                    contractAddress={process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS!}
+                    client={client}
+                    chain={base}
+                    listingId={BigInt(listingId)}
+                    quantity={1n}
                     onTransactionSent={handleTransactionPending}
                     onTransactionConfirmed={handleTransactionSuccess}
                     onError={handleTransactionError}
-                     className="px-6 py-3 font-bold transition-all duration-500 ease-out focus:ring-2 focus:ring-offset-2 text-white rounded-sm disabled:opacity-50 disabled:cursor-not-allowed hover:!bg-blue-700"
+                    className="px-6 py-3 font-bold transition-all duration-500 ease-out focus:ring-2 focus:ring-offset-2 text-white rounded-sm disabled:opacity-50 disabled:cursor-not-allowed hover:!bg-blue-700"
                     style={{
                       backgroundColor: transactionState === 'pending' ? "#6B7280" : "#3B82F6",
                       color: "white",
@@ -550,7 +535,7 @@ export default function NFTDetailPage() {
                     }}
                   >
                     {transactionState === 'pending' ? 'PROCESSING...' : 'BUY NOW'}
-                  </TransactionButton>
+                  </BuyDirectListingButton>
                 </div>
               </div>
             ) : isPurchased ? (
@@ -632,7 +617,7 @@ export default function NFTDetailPage() {
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Token ID</p>
-                  <p className="font-normal text-off-white">{metadata?.token_id ?? tokenId}</p>
+                  <p className="font-normal text-off-white">{metadata?.token_id ?? parseInt(tokenId) - 1}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Collection</p>

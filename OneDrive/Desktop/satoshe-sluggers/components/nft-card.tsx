@@ -82,7 +82,7 @@ export default function NFTCard({
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-black/20 blur-sm"></div>
         
         {/* NFT Image Only */}
-        <Link href={`/nft/${tokenId}`} className="block w-full">
+        <Link href={`/nft/${cardNumber}`} className="block w-full">
           <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.9/1" }}>
             <Image
               src={showPlaceholder ? placeholder : image}
@@ -118,7 +118,7 @@ export default function NFTCard({
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-black/20 blur-sm"></div>
         
         {/* NFT Image */}
-        <Link href={`/nft/${tokenId}`} className="block w-full">
+        <Link href={`/nft/${cardNumber}`} className="block w-full">
           <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.9/1" }}>
             <Image
               src={showPlaceholder ? placeholder : image}
@@ -148,7 +148,7 @@ export default function NFTCard({
         <div className="space-y-1 pl-4 pr-2 pb-2">
           {/* Title and Favorite */}
           <div className="flex items-start justify-between gap-2">
-            <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
+            <Link href={`/nft/${cardNumber}`} className="flex-1 min-w-0">
               <h3 className="font-medium text-sm leading-tight text-[#FFFBEB] truncate">
                 {name}
               </h3>
@@ -195,8 +195,8 @@ export default function NFTCard({
                 </div>
                 <div className="flex-shrink-0 -mt-1">
                   <Link
-                    href={`/nft/${tokenId}`}
-                    className="px-3 py-1.5 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
+                    href={`/nft/${cardNumber}`}
+                    className="px-3 py-1.5 bg-blue-500/10 border-2 border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
                     aria-label={`Buy ${name} for ${priceEth} ETH`}
                   >
                     BUY
@@ -270,7 +270,7 @@ export default function NFTCard({
           {isForSale ? (
             <Link
               href={`/nft/${tokenId}`}
-              className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
+              className="px-2.5 py-1 bg-blue-500/10 border-2 border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
               aria-label={`Buy ${name} for ${priceEth} ETH`}
             >
               Buy
