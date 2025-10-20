@@ -159,12 +159,12 @@ const Header80: React.FC = () => {
             </p>
             <div className="relative z-20 mt-6 flex items-center justify-center gap-x-4 md:mt-8">
               <div className="relative group">
-                {/* Dark blue glowing effect for the button */}
-                <div className="absolute inset-0 rounded bg-[#0000ff]/30 blur-xl group-hover:bg-[#0000ff]/50 transition-all duration-300 scale-125"></div>
+                {/* Subtle blue glowing effect for the button */}
+                <div className="absolute inset-0 rounded bg-blue-600/20 blur-xl group-hover:bg-blue-600/30 transition-all duration-300 scale-125"></div>
                 <Link href="/nfts">
                   <Button
                     variant="outline"
-                    className="relative z-10 text-xl md:text-2xl lg:text-3xl px-10 py-8 md:px-14 md:py-10 font-bold text-[#0000ff] border-[#0000ff] border hover:border-[#0000ff]/80 hover:bg-[hsl(0,0%,4%)] transition-all duration-300 shadow-[0_0_15px_rgba(0,0,255,0.4)] hover:shadow-[0_0_25px_rgba(0,0,255,0.6)] bg-neutral-900/80 rounded cursor-pointer"
+                    className="relative z-10 text-xl md:text-2xl lg:text-3xl px-10 py-8 md:px-14 md:py-10 font-bold text-blue-500 border-blue-500 border hover:border-blue-400 hover:bg-[hsl(0,0%,4%)] transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.4)] bg-neutral-900/80 rounded cursor-pointer"
                     title="BUY A SLUGGER"
                   >
                     BUY A SLUGGER
