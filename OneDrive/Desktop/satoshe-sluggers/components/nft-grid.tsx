@@ -140,10 +140,36 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [allMetadata, setAllMetadata] = useState<unknown[]>([]);
   const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
   const [pricingMappings, setPricingMappings] = useState<Record<number, { price_eth: number; listing_id?: number }>>({});
+  const [ipfsUrls, setIpfsUrls] = useState<Record<number, { mediaUrl: string; metadataUrl: string }>>({});
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const [scrollPosition, setScrollPosition] = useState<number>(0);
   const gridRef = useRef<HTMLDivElement>(null);
   
+  // Load IPFS URLs
+  useEffect(() => {
+    const loadIpfsUrls = async () => {
+      try {
+        const response = await fetch('/data/urls/ipfs_urls.json');
+        if (response.ok) {
+          const urlsData = await response.json();
+          const urlMap: Record<number, { mediaUrl: string; metadataUrl: string }> = {};
+          
+          urlsData.forEach((item: any) => {
+            urlMap[item.TokenID] = {
+              mediaUrl: item["Media URL"],
+              metadataUrl: item["Metadata URL"]
+            };
+          });
+          
+          setIpfsUrls(urlMap);
+        }
+      } catch (error) {
+        console.warn('Failed to load IPFS URLs:', error);
+      }
+    };
+    loadIpfsUrls();
+  }, []);
+
   // Load pricing mappings (optimized)
   useEffect(() => {
     const loadPricingMappings = async () => {
@@ -349,7 +375,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
   // Process NFTs from metadata and check marketplace listings
   useEffect(() => {
-    if (allMetadata.length > 0 && Object.keys(pricingMappings).length > 0) {
+    if (allMetadata.length > 0 && Object.keys(pricingMappings).length > 0 && Object.keys(ipfsUrls).length > 0) {
       const processNFTs = async () => {
         const mappedNFTs: NFTGridItem[] = await Promise.all(
           (allMetadata as NFTMetadata[])
@@ -357,9 +383,10 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             .map(async (meta: NFTMetadata) => {
               const tokenId = meta.token_id?.toString() || "";
               
-              // Use actual media_url from metadata
-              const mediaUrl = meta.merged_data?.media_url || meta.media_url;
-              const imageUrl = mediaUrl || `/nfts/placeholder-nft.webp`;
+              // Use IPFS URL for image
+              const tokenIdNum = parseInt(tokenId);
+              const ipfsData = ipfsUrls[tokenIdNum];
+              const imageUrl = ipfsData?.mediaUrl || `/nfts/placeholder-nft.webp`;
 
               const name = meta.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`;
               const rank = (meta.rank as number | string) ?? "—";
@@ -367,7 +394,6 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               const rarity = ((meta.rarity_tier as string) ?? "Unknown").replace(" (Ultra-Legendary)", "");
               
               // Use static price data from pricing mappings - no RPC calls for display
-              const tokenIdNum = parseInt(tokenId);
               let priceEth = 0;
               let listingId = undefined;
               
@@ -411,7 +437,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
       processNFTs();
     }
-  }, [allMetadata, pricingMappings]);
+  }, [allMetadata, pricingMappings, ipfsUrls]);
 
 
   // Preserve scroll position when filters change

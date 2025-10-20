@@ -13,6 +13,7 @@ export interface NFTData {
   rank: number;
   rarity_percent: number;
   rarity_tier: string;
+  image: string;
   attributes: Array<{
     trait_type: string;
     value: string;
@@ -25,7 +26,7 @@ export interface NFTData {
   compiler: string;
   copyright: string;
   date: number;
-  merged_data: {
+  merged_data?: {
     nft: number;
     token_id: number;
     listing_id: number;

@@ -32,6 +32,7 @@ export default function ProvenancePage() {
   const [itemsPerPage] = useState(50)
   const [sortField, setSortField] = useState<'token_id' | 'nft_number' | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     document.title = "Satoshe Sluggers"
@@ -134,10 +135,23 @@ export default function ProvenancePage() {
     }
   }
 
-  const getSortedRecords = () => {
-    if (!sortField) return provenanceRecords
+  const getFilteredAndSortedRecords = () => {
+    let filtered = provenanceRecords
 
-    return [...provenanceRecords].sort((a, b) => {
+    // Filter by search term (Token ID or NFT #)
+    if (searchTerm.trim()) {
+      const searchNum = parseInt(searchTerm.trim())
+      if (!isNaN(searchNum)) {
+        filtered = provenanceRecords.filter(record => 
+          record.token_id === searchNum || record.nft_number === searchNum
+        )
+      }
+    }
+
+    // Sort if needed
+    if (!sortField) return filtered
+
+    return [...filtered].sort((a, b) => {
       const aValue = a[sortField]
       const bValue = b[sortField]
       
@@ -150,14 +164,19 @@ export default function ProvenancePage() {
   }
 
   // Pagination logic
-  const sortedRecords = getSortedRecords()
-  const totalPages = Math.ceil(sortedRecords.length / itemsPerPage)
+  const filteredRecords = getFilteredAndSortedRecords()
+  const totalPages = Math.ceil(filteredRecords.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const paginatedRecords = sortedRecords.slice(startIndex, endIndex)
+  const paginatedRecords = filteredRecords.slice(startIndex, endIndex)
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
+  }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+    setCurrentPage(1) // Reset to first page when searching
   }
 
   return (
@@ -168,7 +187,7 @@ export default function ProvenancePage() {
         <div className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-8 max-w-7xl flex-grow">
         <div className="mb-16">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 uppercase tracking-tight">
-            <span className="text-[#FFFBEB]">SATOSHE</span> <span className="text-[#FFFBEB]">Sluggers</span>
+            <span className="text-[#FFFBEB]">SATO</span><span className="text-[#ff0099]">SHE</span> <span className="text-[#FFFBEB]">Sluggers</span>
           </h1>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-8 uppercase tracking-tight text-[#FFFBEB]">
             PROVENANCE RECORD
@@ -263,20 +282,6 @@ export default function ProvenancePage() {
 
               <div className="bg-card border border-neutral-700 p-4 rounded">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider">Final Proof Hash</div>
-                  <button
-                    onClick={copyProofHash}
-                    className="p-2 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors rounded"
-                    title="Copy to clipboard"
-                  >
-                    {copiedProof ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </button>
-                </div>
-                <div className="text-sm font-inconsolata break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{FINAL_PROOF_HASH}</div>
-              </div>
-
-              <div className="bg-card border border-neutral-700 p-4 rounded">
-                <div className="flex items-center justify-between mb-2">
                   <div className="text-xs text-muted-foreground uppercase tracking-wider">Merkle Root</div>
                   <button
                     onClick={copyMerkleRoot}
@@ -287,6 +292,20 @@ export default function ProvenancePage() {
                   </button>
                 </div>
                 <div className="text-sm font-inconsolata break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{MERKLE_ROOT}</div>
+              </div>
+
+              <div className="bg-card border border-neutral-700 p-4 rounded">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs text-muted-foreground uppercase tracking-wider">Final Proof Hash</div>
+                  <button
+                    onClick={copyProofHash}
+                    className="p-2 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors rounded"
+                    title="Copy to clipboard"
+                  >
+                    {copiedProof ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </button>
+                </div>
+                <div className="text-sm font-inconsolata break-all whitespace-nowrap" style={{ fontWeight: '300' }}>{FINAL_PROOF_HASH}</div>
               </div>
 
             </div>
@@ -360,7 +379,35 @@ export default function ProvenancePage() {
         </div>
 
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 uppercase tracking-tight">Provenance Record</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold uppercase tracking-tight">Provenance Record</h2>
+            
+            {/* Search Box */}
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search Token ID or NFT #"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="bg-neutral-800 border border-neutral-600 rounded px-4 py-2 text-sm text-[#FFFBEB] placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff0099] focus:border-transparent w-64"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-[#FFFBEB] transition-colors"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+              {searchTerm && (
+                <div className="text-sm text-neutral-400">
+                  {filteredRecords.length} result{filteredRecords.length !== 1 ? 's' : ''}
+                </div>
+              )}
+            </div>
+          </div>
 
           <div className="bg-card border border-neutral-700 overflow-hidden rounded">
             <div className="overflow-x-auto scrollbar-custom max-w-full" style={{ maxHeight: "600px", overflowY: "auto" }}>
@@ -500,7 +547,7 @@ export default function ProvenancePage() {
             <NFTPagination
               currentPage={currentPage}
               totalPages={totalPages}
-              totalItems={sortedRecords.length}
+              totalItems={filteredRecords.length}
               itemsPerPage={itemsPerPage}
               onPageChange={handlePageChange}
             />
