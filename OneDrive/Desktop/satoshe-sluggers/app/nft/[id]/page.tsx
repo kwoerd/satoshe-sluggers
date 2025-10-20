@@ -99,22 +99,38 @@ export default function NFTDetailPage() {
     }, 10000); // 10 second timeout
 
     const tokenIdNum = parseInt(tokenId);
-    // Load main collection NFT data using data service
-    // Note: token IDs in metadata start from 0, but URLs use human-friendly numbers (1-based)
-    const actualTokenId = tokenIdNum - 1;
-    getNFTByTokenId(actualTokenId)
-          .then((nftData: NFTData | null) => {
+    
+    // Check if this is a test NFT first (token IDs 7777-7781)
+    if (tokenIdNum >= 7777 && tokenIdNum <= 7781) {
+      // Load test NFT metadata and listing data
+      Promise.all([
+        fetch(`/data/test-nfts/${tokenIdNum}.json`).then(res => res.json()),
+        fetch('/data/test_listings.json').then(res => res.json())
+      ])
+        .then(([metadata, listingsData]) => {
+          const testListing = Object.values(listingsData.test_listings).find((listing: any) => 
+            listing.token_id === tokenIdNum && listing.status === 'Active'
+          ) as any;
           
-          if (nftData) {
-            setMetadata(nftData);
-            
-            // Set image URL from metadata
-            const mediaUrl = nftData.merged_data?.media_url;
-            if (mediaUrl) {
-              setImageUrl(mediaUrl);
-            } else {
-              setImageUrl("/nfts/placeholder-nft.webp");
-            }
+          if (testListing) {
+            // Merge the real metadata with listing data
+            const testMetadata = {
+              ...metadata,
+              merged_data: {
+                nft: testListing.token_id,
+                token_id: testListing.token_id,
+                listing_id: parseInt(Object.keys(listingsData.test_listings).find(key => 
+                  listingsData.test_listings[key].token_id === tokenIdNum
+                ) || "0"),
+                metadata_cid: "test-cid",
+                media_cid: "test-cid",
+                metadata_url: "/nfts/placeholder-nft.webp",
+                media_url: "/nfts/placeholder-nft.webp",
+                price_eth: testListing.price_eth
+              }
+            };
+            setMetadata(testMetadata);
+            setImageUrl("/nfts/placeholder-nft.webp");
           } else {
             setMetadata(null);
             setImageUrl("/nfts/placeholder-nft.webp");
@@ -128,6 +144,37 @@ export default function NFTDetailPage() {
           clearTimeout(timeoutId);
           setIsLoading(false);
         });
+    } else {
+      // Load main collection NFT data using data service
+      // Note: token IDs in metadata start from 0, but URLs use human-friendly numbers (1-based)
+      const actualTokenId = tokenIdNum - 1;
+      getNFTByTokenId(actualTokenId)
+            .then((nftData: NFTData | null) => {
+            
+            if (nftData) {
+              setMetadata(nftData);
+              
+              // Set image URL from metadata
+              const mediaUrl = nftData.merged_data?.media_url;
+              if (mediaUrl) {
+                setImageUrl(mediaUrl);
+              } else {
+                setImageUrl("/nfts/placeholder-nft.webp");
+              }
+            } else {
+              setMetadata(null);
+              setImageUrl("/nfts/placeholder-nft.webp");
+            }
+            clearTimeout(timeoutId);
+            setIsLoading(false);
+          })
+          .catch(() => {
+            setMetadata(null);
+            setImageUrl("/nfts/placeholder-nft.webp");
+            clearTimeout(timeoutId);
+            setIsLoading(false);
+          });
+    }
 
     // Cleanup timeout on unmount
     return () => clearTimeout(timeoutId);

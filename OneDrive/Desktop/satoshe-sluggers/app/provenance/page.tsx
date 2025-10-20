@@ -56,9 +56,10 @@ export default function ProvenancePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [merkleRes, hashesRes] = await Promise.all([
+        const [merkleRes, sha256Res, keccak256Res] = await Promise.all([
           fetch("/data/merkle_tree.txt"),
           fetch("/data/sha256_hashes.txt"),
+          fetch("/data/keccak256_hashes.txt"),
         ])
         
         // Load metadata using simple data service
@@ -66,28 +67,31 @@ export default function ProvenancePage() {
         const metadataData = await loadAllNFTs();
 
         const merkleText = await merkleRes.text()
-        const hashesText = await hashesRes.text()
+        const sha256Text = await sha256Res.text()
+        const keccak256Text = await keccak256Res.text()
 
         // Metadata data loaded successfully
 
-
         setMerkleTree(merkleText)
 
-        // Parse hashes text file (one hash per line)
-        const hashLines = hashesText.split("\n")
-        const records: ProvenanceRecord[] = hashLines
+        // Parse hashes text files (one hash per line)
+        const sha256Lines = sha256Text.split("\n")
+        const keccak256Lines = keccak256Text.split("\n")
+        const records: ProvenanceRecord[] = sha256Lines
           .filter((line) => line.trim())
           .map((sha256, index) => {
             const tokenNum = index
             // Find the corresponding metadata by token_id
             const metadataItem = metadataData.find((item: { merged_data?: { token_id: number } }) => item.merged_data?.token_id === tokenNum)
             
+            // Get the corresponding keccak256 hash
+            const keccak256 = keccak256Lines[index]?.trim() || ""
 
             return {
               token_id: tokenNum,
               nft_number: tokenNum + 1,
               sha256_hash: sha256.trim(),
-              keccak256_hash: sha256.trim(), // Using sha256 as placeholder
+              keccak256_hash: keccak256,
               media_cid: metadataItem?.merged_data?.media_cid || "",
               metadata_cid: metadataItem?.merged_data?.metadata_cid || "",
               media_url: metadataItem?.merged_data?.media_url || "",
@@ -316,13 +320,13 @@ export default function ProvenancePage() {
                   
                   {/* Bottom row - Values */}
                   <div className="flex flex-col items-center text-center">
-                    <span className="font-inconsolata text-[#ff0099]" style={{ fontWeight: '400' }}>7,777</span>
+                    <span className="font-inconsolata text-[#ff0099] text-lg" style={{ fontWeight: '400' }}>7,777</span>
                   </div>
                   <div className="flex flex-col items-center text-center">
-                    <span className="font-inconsolata text-[#ff0099]" style={{ fontWeight: '400' }}>BASE</span>
+                    <span className="font-inconsolata text-[#ff0099] text-lg" style={{ fontWeight: '400' }}>BASE</span>
                   </div>
                   <div className="flex flex-col items-center text-center">
-                    <span className="font-inconsolata text-[#ff0099]" style={{ fontWeight: '400' }}>8453</span>
+                    <span className="font-inconsolata text-[#ff0099] text-lg" style={{ fontWeight: '400' }}>8453</span>
                   </div>
                 </div>
               </div>
