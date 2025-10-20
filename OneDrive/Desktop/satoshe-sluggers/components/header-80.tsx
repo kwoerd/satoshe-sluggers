@@ -57,7 +57,7 @@ const Header80: React.FC = () => {
   const useActive = useRelume()
   return (
     <div style={{ position: 'relative' }}>
-      <section id="relume" className="relative h-[150vh] px-[5%] md:h-[300vh] bg-background" ref={useActive.transformRef}>
+      <section id="relume" className="relative h-[150vh] px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 md:h-[300vh] bg-background" ref={useActive.transformRef}>
       <div className="sticky top-0 h-screen overflow-hidden">
         <div className="absolute top-0 right-auto bottom-0 left-0 z-10">
           <motion.div className="flex flex-col gap-[26vw] pt-[70vh]" style={{ y: useActive.yFirst }}>
@@ -155,12 +155,13 @@ const Header80: React.FC = () => {
               />
             </h1>
             <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-medium text-center -mt-2">
-              <span className="text-[#FF0099] font-bold">SHE</span> <span className="text-[#EAEAEA]">hits different</span>
+              <span className="text-[#FF0099] font-bold">THE ONLY NFTS FUNDING</span><br />
+              <span className="text-[#FF0099] font-bold">A FUTURE FOR WOMEN'S BASEBALL</span>
             </p>
             <div className="relative z-20 mt-16 flex items-center justify-center gap-x-4 md:mt-20">
               <div className="relative group">
                 {/* Enhanced glowing effect for the button */}
-                <div className="absolute inset-0 rounded bg-blue-600/25 blur-xl group-hover:bg-blue-500/35 transition-all duration-300 scale-125"></div>
+                <div className="absolute inset-0 rounded bg-blue-600/25 blur-xl group-hover:bg-blue-500/50 transition-all duration-300 scale-125"></div>
                 <Link href="/nfts">
                   <Button
                     variant="outline"

@@ -76,7 +76,7 @@ export default function ContactPage() {
     <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
       <Navigation activePage="contact" />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-grow" role="main" aria-labelledby="contact-heading">
+      <div className="max-w-4xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-8 sm:py-12 flex-grow" role="main" aria-labelledby="contact-heading">
         <div className="text-center mb-6 sm:mb-8">
           <h1 id="contact-heading" className="text-2xl sm:text-3xl font-bold mb-6 text-[#FFFBEB]">
             CONTACT US

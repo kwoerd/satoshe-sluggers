@@ -138,7 +138,7 @@ function MyNFTsContent() {
     <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
       <Navigation />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-8 flex-grow">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div>

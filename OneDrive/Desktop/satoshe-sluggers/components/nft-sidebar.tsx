@@ -530,20 +530,20 @@ export default function NFTSidebar({
       {/* Blockchain Info */}
         <div className="space-y-1 mb-4 p-3 border border-neutral-700 rounded">
           <div>
-          <div className="text-[10px] font-mono font-light text-off-white mb-0">Blockchain: Base</div>
+          <div className="text-[11px] font-mono font-extralight text-off-white mb-0">Blockchain: Base</div>
         </div>
           <div>
-          <div className="text-[10px] font-mono font-light text-off-white mb-0">Chain ID: 8453</div>
+          <div className="text-[11px] font-mono font-extralight text-off-white mb-0">Chain ID: 8453</div>
         </div>
           <div>
-          <div className="text-[10px] font-mono font-light text-off-white mb-2">Token Standard: ERC-721</div>
+          <div className="text-[11px] font-mono font-extralight text-off-white mb-2">Token Standard: ERC-721</div>
         </div>
 
         {/* Contract Links */}
         <div className="space-y-3 mt-3">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-[10px] font-mono font-light text-off-white">Marketplace</h4>
+              <h4 className="text-[11px] font-mono font-extralight text-off-white">Marketplace</h4>
             </div>
             <div className="flex gap-2">
               <button
@@ -565,7 +565,7 @@ export default function NFTSidebar({
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-[10px] font-mono font-light text-off-white">NFT Contract</h4>
+              <h4 className="text-[11px] font-mono font-extralight text-off-white">NFT Contract</h4>
             </div>
             <div className="flex gap-2">
               <button
@@ -624,24 +624,20 @@ export default function NFTSidebar({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-500" />
           <Input
             placeholder="Search NFTs..."
-            className="pl-9 py-1.5 text-sm font-normal h-8 rounded text-brand-pink border-neutral-600 focus:outline-none focus:ring-0 focus:border-brand-pink transition-colors"
+            className="pl-9 py-1.5 text-sm font-light h-8 rounded text-brand-pink border-neutral-600 focus:outline-none focus:ring-0 focus:border-brand-pink transition-colors placeholder:font-light"
             value={searchTerm}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setSearchTerm(e.target.value)
             }}
             aria-label="Search NFTs by name, token ID, or NFT number"
-            aria-describedby="search-help"
+            spellCheck={false}
           />
         </div>
-        
-        <p id="search-help" className="text-xs text-neutral-500 mb-2">
-          Search by name, token ID, or NFT #
-        </p>
         
         <Button
           variant="outline"
           size="sm"
-          className="text-sm font-light flex items-center justify-center h-8 w-full mb-4 rounded border-[#ff0099] text-[#ff0099] bg-transparent hover:bg-[#ff0099] hover:text-white focus:outline-none focus:ring-0 focus:border-[#ff0099] transition-colors"
+          className="text-sm font-medium flex items-center justify-center h-8 w-full mb-4 rounded border-[#ff0099] text-[#ff0099] bg-transparent hover:bg-[#ff0099] hover:text-white focus:outline-none focus:ring-0 focus:border-[#ff0099] transition-colors"
           aria-label="Search NFTs"
         >
           Search

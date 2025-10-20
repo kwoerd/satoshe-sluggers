@@ -294,8 +294,42 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         // Load main collection using simple data service
         const mainMetadata = await loadAllNFTs();
         
-        // Use only main collection metadata (test NFTs removed)
-        const combinedMetadata = mainMetadata || [];
+        // Load test listings to add test NFTs to metadata (for testing only)
+        let testMetadata: any[] = [];
+        try {
+          const testResponse = await fetch('/data/test_listings.json');
+          if (testResponse.ok) {
+            const testData = await testResponse.json();
+            testMetadata = Object.entries(testData.test_listings)
+              .filter(([_, data]) => (data as any).status === 'Active')
+              .map(([listingId, data]) => {
+                const testListing = data as any;
+                return {
+                  token_id: testListing.token_id,
+                  name: testListing.name,
+                  rarity_tier: "Test",
+                  merged_data: {
+                    media_url: "/nfts/placeholder-nft.webp",
+                    price_eth: testListing.price_eth,
+                    listing_id: parseInt(listingId)
+                  },
+                  attributes: [
+                    { trait_type: "Background", value: "Test" },
+                    { trait_type: "Skin Tone", value: "Test" },
+                    { trait_type: "Shirt", value: "Test" },
+                    { trait_type: "Eyewear", value: "Test" },
+                    { trait_type: "Hair", value: "Test" },
+                    { trait_type: "Headwear", value: "Test" }
+                  ]
+                };
+              });
+          }
+        } catch (error) {
+          console.warn('Failed to load test listings for metadata:', error);
+        }
+        
+        // Combine main collection with test NFTs (for testing)
+        const combinedMetadata = [...(mainMetadata || []), ...testMetadata];
         setAllMetadata(combinedMetadata);
 
       } catch {
@@ -309,13 +343,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
   // Reset to page 1 when filters change
   useEffect(() => {
+
     setCurrentPage(1);
   }, [itemsPerPage, searchTerm]);
 
   // Process NFTs from metadata and check marketplace listings
   useEffect(() => {
-    if (allMetadata.length > 0) {
-
+    if (allMetadata.length > 0 && Object.keys(pricingMappings).length > 0) {
       const processNFTs = async () => {
         const mappedNFTs: NFTGridItem[] = await Promise.all(
           (allMetadata as NFTMetadata[])
@@ -485,11 +519,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   useEffect(() => {
     if (scrollPosition > 0 && !isLoading) {
       // Small delay to ensure DOM is updated
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         window.scrollTo(0, scrollPosition);
       }, 100);
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [filteredNFTs, scrollPosition, isLoading]);
+  }, [filteredNFTs.length, scrollPosition, isLoading]); // Only depend on length, not the entire array
 
   // Sort filtered NFTs
   const sortedNFTs = useMemo(() => {
@@ -944,4 +980,5 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     </div>
   );
 }
+
 

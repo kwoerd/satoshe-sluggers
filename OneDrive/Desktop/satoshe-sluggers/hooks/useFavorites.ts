@@ -15,21 +15,28 @@ export interface FavoriteNFT {
 export function useFavorites() {
   const account = useActiveAccount();
   const [favorites, setFavorites] = useState<FavoriteNFT[]>([]);
+  const [currentAddress, setCurrentAddress] = useState<string | null>(null);
 
   // Get storage key for current wallet
-  const getStorageKey = () => {
-    if (!account?.address) return null;
-    return `nft_favorites_${account.address.toLowerCase()}`;
+  const getStorageKey = (address: string) => {
+    return `nft_favorites_${address.toLowerCase()}`;
   };
+
+  // Track address changes to avoid unnecessary re-renders
+  useEffect(() => {
+    if (account?.address !== currentAddress) {
+      setCurrentAddress(account?.address || null);
+    }
+  }, [account?.address, currentAddress]);
 
   // Load favorites from localStorage
   useEffect(() => {
-    const storageKey = getStorageKey();
-    if (!storageKey) {
+    if (!currentAddress) {
       setFavorites([]);
       return;
     }
 
+    const storageKey = getStorageKey(currentAddress);
     try {
       const stored = localStorage.getItem(storageKey);
       if (stored) {
@@ -42,13 +49,13 @@ export function useFavorites() {
       // Error loading favorites from localStorage - continue with empty array
       setFavorites([]);
     }
-  }, [account?.address]);
+  }, [currentAddress]);
 
   // Save favorites to localStorage
   const saveFavorites = (newFavorites: FavoriteNFT[]) => {
-    const storageKey = getStorageKey();
-    if (!storageKey) return;
+    if (!currentAddress) return;
 
+    const storageKey = getStorageKey(currentAddress);
     try {
       localStorage.setItem(storageKey, JSON.stringify(newFavorites));
       setFavorites(newFavorites);
@@ -59,7 +66,7 @@ export function useFavorites() {
 
   // Add NFT to favorites
   const addToFavorites = (nft: Omit<FavoriteNFT, 'addedAt'>) => {
-    if (!account?.address) return false;
+    if (!currentAddress) return false;
 
     const newFavorite: FavoriteNFT = {
       ...nft,
@@ -84,7 +91,7 @@ export function useFavorites() {
 
   // Toggle favorite status
   const toggleFavorite = (nft: Omit<FavoriteNFT, 'addedAt'>) => {
-    if (!account?.address) return false;
+    if (!currentAddress) return false;
 
     if (isFavorited(nft.tokenId)) {
       removeFromFavorites(nft.tokenId);
@@ -101,7 +108,7 @@ export function useFavorites() {
     removeFromFavorites,
     isFavorited,
     toggleFavorite,
-    isConnected: !!account?.address,
+    isConnected: !!currentAddress,
   };
 }
 

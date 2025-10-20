@@ -10,7 +10,7 @@ export default function AboutPage() {
     <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
       <Navigation activePage="about" />
 
-      <div className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
+      <div className="flex-grow container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-12 flex items-center justify-center">
         <div className="max-w-3xl w-full">
           <Image
             src="/about-page/satoshe-sluggers-about-us-offwhite-op.svg"

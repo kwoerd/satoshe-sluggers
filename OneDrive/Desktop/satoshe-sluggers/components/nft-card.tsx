@@ -217,13 +217,13 @@ export default function NFTCard({
       
       {/* NFT Image */}
       <Link href={`/nft/${tokenId}`} className="block w-full">
-        <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.8/1" }}>
+        <div className="relative w-full overflow-visible" style={{ aspectRatio: "0.8/1" }}>
           <Image
             src={showPlaceholder ? placeholder : image}
             alt={name}
             fill
             loading="lazy"
-            className={`object-contain p-3 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
+            className={`object-contain p-1 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
             onLoad={() => {
               setImgLoaded(true);
               setImgLoading(false);
@@ -244,7 +244,7 @@ export default function NFTCard({
       </Link>
 
       {/* NFT Details Section - Medium grid design */}
-      <div className="pl-4 pr-3 pt-1 pb-2 flex flex-col">
+      <div className="pl-4 pr-3 -mt-1 pb-2 flex flex-col">
         {/* NFT Info and Heart - Top Row */}
         <div className="flex items-center justify-between mb-1">
           {/* NFT Info */}

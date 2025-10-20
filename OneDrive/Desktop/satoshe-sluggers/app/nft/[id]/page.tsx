@@ -289,7 +289,7 @@ export default function NFTDetailPage() {
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground flex flex-col">
       <Navigation activePage="nfts" />
-      <div className="max-w-7xl mx-auto py-4 sm:py-6 flex-grow pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
+      <div className="max-w-7xl mx-auto py-4 sm:py-6 flex-grow pt-24 sm:pt-28 pb-16 sm:pb-20 px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24">
         <div className="flex items-center justify-between mb-8 sm:mb-10">
           <Link
             href="/nfts"
