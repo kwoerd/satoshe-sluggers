@@ -154,17 +154,17 @@ const Header80: React.FC = () => {
                 placeholder="empty"
               />
             </h1>
-            <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-bold text-center">
+            <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-medium text-center">
               <span className="text-[#FF0099]">SHE</span> <span className="text-[#FFFBEB]">hits different</span>
             </p>
             <div className="relative z-20 mt-6 flex items-center justify-center gap-x-4 md:mt-8">
               <div className="relative group">
-                {/* Electric navy glowing effect for the button */}
-                <div className="absolute inset-0 rounded bg-slate-600/30 blur-xl group-hover:bg-slate-500/50 transition-all duration-300 scale-125"></div>
+                {/* Dark blue glowing effect for the button */}
+                <div className="absolute inset-0 rounded bg-[#0000ff]/30 blur-xl group-hover:bg-[#0000ff]/50 transition-all duration-300 scale-125"></div>
                 <Link href="/nfts">
                   <Button
                     variant="outline"
-                    className="relative z-10 text-xl md:text-2xl lg:text-3xl px-10 py-8 md:px-14 md:py-10 font-bold text-slate-300 border-slate-400 border hover:border-slate-300 hover:bg-[hsl(0,0%,4%)] transition-all duration-300 shadow-[0_0_15px_rgba(71,85,105,0.4)] hover:shadow-[0_0_25px_rgba(71,85,105,0.6)] bg-neutral-900/80 rounded cursor-pointer"
+                    className="relative z-10 text-xl md:text-2xl lg:text-3xl px-10 py-8 md:px-14 md:py-10 font-bold text-[#0000ff] border-[#0000ff] border hover:border-[#0000ff]/80 hover:bg-[hsl(0,0%,4%)] transition-all duration-300 shadow-[0_0_15px_rgba(0,0,255,0.4)] hover:shadow-[0_0_25px_rgba(0,0,255,0.6)] bg-neutral-900/80 rounded cursor-pointer"
                     title="BUY A SLUGGER"
                   >
                     BUY A SLUGGER
