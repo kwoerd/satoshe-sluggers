@@ -139,8 +139,8 @@ const Header80: React.FC = () => {
             </div>
           </div>
         </motion.div>
-        <div className="container relative flex h-full max-w-lg items-center pb-24 pt-16 text-center md:pt-24 lg:py-28">
-          <div>
+        <div className="container relative flex h-full max-w-4xl mx-auto items-center justify-center pb-24 pt-16 text-center md:pt-24 lg:py-28">
+          <div className="w-full flex flex-col items-center">
             <h1 className="mb-5 text-6xl font-bold md:mb-6 md:text-9xl lg:text-10xl">
               <Image
                 src="/brands/satoshe-sluggers/satoshe-sluggers-off-white-op.svg"
@@ -154,10 +154,8 @@ const Header80: React.FC = () => {
                 placeholder="empty"
               />
             </h1>
-            <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-bold text-[#FF0099]">
-              NFTS THAT LEVEL THE PLAYING
-              <br />
-              FIELD FOR WOMEN&apos;S BASEBALL
+            <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-bold text-[#FF0099] text-center">
+              SHE hits different
             </p>
             <div className="relative z-20 mt-6 flex items-center justify-center gap-x-4 md:mt-8">
               <div className="relative group">
