@@ -171,12 +171,12 @@ export default function ProvenancePage() {
         <div className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-8 max-w-7xl flex-grow">
         <div className="mb-16">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 uppercase tracking-tight">
-            <span className="text-[#FFFBEB]">S</span><span className="text-[#FFFBEB]">A</span><span className="text-[#FFFBEB]">T</span><span className="text-[#FFFBEB]">O</span><span className="text-[#FF0099]">S</span><span className="text-[#FF0099]">H</span><span className="text-[#FF0099]">E</span> <span className="text-[#FFFBEB]">Sluggers</span>
+            <span className="text-[#FFFBEB] px-1">S</span><span className="text-[#FFFBEB] px-1">A</span><span className="text-[#FFFBEB] px-1">T</span><span className="text-[#FFFBEB] px-1">O</span><span className="text-[#FF0099] px-1">S</span><span className="text-[#FF0099] px-1">H</span><span className="text-[#FF0099] px-1">E</span> <span className="text-[#FFFBEB]">Sluggers</span>
           </h1>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-8 uppercase tracking-tight text-[#FFFBEB]">
             PROVENANCE RECORD
           </h2>
-          <div className="text-muted-foreground leading-relaxed max-w-6xl space-y-2">
+          <div className="text-muted-foreground leading-relaxed max-w-6xl space-y-2 mb-12">
             <p className="text-sm sm:text-base md:text-lg font-medium">
               Every NFT in the Satoshe Sluggers collection is permanently recorded, traceable, and verifiably authentic.
             </p>
@@ -194,7 +194,7 @@ export default function ProvenancePage() {
                 <div className="text-green-500 text-lg flex-shrink-0 mt-0.5">✓</div>
                 <div>
                   <div className="font-semibold mb-1">SHA-256 chain</div>
-                  <div className="text-sm text-muted-foreground">Security that ensures your files haven&apos;t changed</div>
+                  <div className="text-sm text-muted-foreground font-light">Security that ensures your files haven&apos;t changed</div>
                 </div>
               </div>
             </div>
@@ -204,7 +204,7 @@ export default function ProvenancePage() {
                 <div className="text-green-500 text-lg flex-shrink-0 mt-0.5">✓</div>
                 <div>
                   <div className="font-semibold mb-1">Final Proof Hash</div>
-                  <div className="text-sm text-muted-foreground">One master checksum proving total authenticity</div>
+                  <div className="text-sm text-muted-foreground font-light">One master checksum proving total authenticity</div>
                 </div>
               </div>
             </div>
@@ -214,7 +214,7 @@ export default function ProvenancePage() {
                 <div className="text-green-500 text-lg flex-shrink-0 mt-0.5">✓</div>
                 <div>
                   <div className="font-semibold mb-1">Keccak + Merkle Root</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground font-light">
                     Verifies on-chain consistency and collection completeness
                   </div>
                 </div>
@@ -226,7 +226,7 @@ export default function ProvenancePage() {
                 <div className="text-green-500 text-lg flex-shrink-0 mt-0.5">✓</div>
                 <div>
                   <div className="font-semibold mb-1">IPFS CIDs / URLs</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground font-light">
                     Show where the data lives permanently and unalterably
                   </div>
                 </div>

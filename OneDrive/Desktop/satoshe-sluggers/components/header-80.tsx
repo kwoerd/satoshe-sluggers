@@ -57,7 +57,8 @@ const Header80: React.FC = () => {
   const useActive = useRelume()
   return (
     <div style={{ position: 'relative' }}>
-      <section id="relume" className="relative h-[150vh] px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 md:h-[300vh] bg-background" ref={useActive.transformRef}>
+      <div style={{ position: 'relative' }}>
+        <section id="relume" className="relative h-[150vh] px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 md:h-[300vh] bg-background" ref={useActive.transformRef}>
       <div className="sticky top-0 h-screen overflow-hidden">
         <div className="absolute top-0 right-auto bottom-0 left-0 z-10">
           <motion.div className="flex flex-col gap-[26vw] pt-[70vh]" style={{ y: useActive.yFirst }}>
@@ -178,6 +179,7 @@ const Header80: React.FC = () => {
         <div className="absolute inset-0 -z-10 mt-[35rem] md:mt-[100vh]" />
       </div>
     </section>
+      </div>
     </div>
   )
 }
