@@ -154,8 +154,8 @@ const Header80: React.FC = () => {
                 placeholder="empty"
               />
             </h1>
-            <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-bold text-[#FF0099] text-center">
-              SHE hits different
+            <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-bold text-center">
+              <span className="text-[#FF0099]">SHE</span> <span className="text-[#FFFBEB]">hits different</span>
             </p>
             <div className="relative z-20 mt-6 flex items-center justify-center gap-x-4 md:mt-8">
               <div className="relative group">
