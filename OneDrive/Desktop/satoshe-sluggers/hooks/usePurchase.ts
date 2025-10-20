@@ -23,7 +23,7 @@ export function usePurchase() {
 
   const { mutate: sendTransaction, isPending } = useSendTransaction();
 
-  const purchase = async ({ listingId, price, tokenId, name }: PurchaseParams) => {
+  const purchase = async ({ listingId, price }: PurchaseParams) => {
     if (!account) {
       throw new Error("No wallet connected");
     }
@@ -32,8 +32,7 @@ export function usePurchase() {
     setError(null);
 
     try {
-      // Convert price from ETH to Wei
-      const priceWei = BigInt(Math.floor(parseFloat(price) * Math.pow(10, 18)));
+      // Note: Price conversion handled by the contract
 
       // Create the buyFromListing transaction
       const transaction = buyFromListing({
@@ -45,19 +44,19 @@ export function usePurchase() {
 
       // Send the transaction
       sendTransaction(transaction, {
-        onSuccess: (hash) => {
-          console.log("Transaction sent:", hash);
+        onSuccess: () => {
+          // Transaction successful
           handleSuccess();
         },
         onError: (error) => {
-          console.error("Transaction failed:", error);
+          
           setError(error.message || "Transaction failed");
           setIsProcessing(false);
         },
       });
 
     } catch (error) {
-      console.error("Purchase failed:", error);
+      
       setError(error instanceof Error ? error.message : "Purchase failed");
       setIsProcessing(false);
     }
@@ -72,7 +71,7 @@ export function usePurchase() {
     setIsProcessing(false);
     setError(null);
     
-    console.log("Purchase successful!");
+    
   };
 
   return {

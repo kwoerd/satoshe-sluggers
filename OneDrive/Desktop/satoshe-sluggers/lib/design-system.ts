@@ -2,7 +2,13 @@
 /**
  * SATOSHE SLUGGERS DESIGN SYSTEM
  * Centralized design tokens for consistent styling across the entire application
+ * 
+ * This file now uses the comprehensive design-tokens.ts system
+ * with proper typography hierarchy, consistent spacing, and tokenized colors.
  */
+
+// Import the comprehensive design tokens
+export * from './design-tokens';
 
 // ============================================================================
 // TYPOGRAPHY

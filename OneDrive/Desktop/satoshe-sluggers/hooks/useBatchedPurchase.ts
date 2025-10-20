@@ -43,7 +43,7 @@ export function useBatchedPurchase() {
       });
 
     } catch (error) {
-      console.error('Failed to purchase NFTs:', error);
+      
       setIsProcessing(false);
       throw error;
     }

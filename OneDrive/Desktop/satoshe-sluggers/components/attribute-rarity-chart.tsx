@@ -6,8 +6,6 @@ import { Label, Pie, PieChart } from "recharts"
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import {
   ChartConfig,
@@ -37,7 +35,11 @@ interface AttributeRarityProps {
 }
 
 export default function AttributeRarityChart({ attributes, overallRarity }: AttributeRarityProps) {
-  const getColorForAttribute = (attributeName: string) => {
+  
+  
+  
+  try {
+    const getColorForAttribute = (attributeName: string) => {
     const colorMap: { [key: string]: string } = {
       "Background": COLORS.background,
       "Skin Tone": COLORS.skinTone,
@@ -54,7 +56,20 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
     value: attr.value,
     percentage: attr.percentage,
     fill: getColorForAttribute(attr.name),
-  }))
+  }));
+
+  // If no attributes, show a message
+  if (!attributes || attributes.length === 0) {
+    return (
+      <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-4 rounded-sm">
+        <CardContent className="flex-1 pb-4">
+          <div className="flex items-center justify-center h-[200px] text-neutral-400">
+            No attributes available for rarity distribution
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const chartConfig = attributes.reduce((config, attr) => {
     const key = attr.name.toLowerCase().replace(/\s+/g, '')
@@ -66,93 +81,85 @@ export default function AttributeRarityChart({ attributes, overallRarity }: Attr
   }, {} as ChartConfig)
 
   return (
-    <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-8 rounded-sm">
-      <CardHeader className="items-center pb-3">
-        <CardTitle className="text-lg font-medium text-[#FFFBEB]">Attribute Rarity Distribution</CardTitle>
-      </CardHeader>
-      <CardContent className="flex-1 pb-6">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[280px]"
+    <ChartContainer
+      config={chartConfig}
+      className="mx-auto aspect-square w-full h-[300px] relative"
+    >
+      <PieChart
+        width={300}
+        height={300}
+      >
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent
+            hideLabel
+            className="bg-neutral-900 border-neutral-600 text-[#FFFBEB]"
+            formatter={(value, name) => {
+              const item = chartData.find(d => d.name === name);
+              return [
+                <span key={name} className="text-[#FFFBEB] font-medium">
+                  {name}: {item?.value} ({value}%)
+                </span>,
+                ""
+              ];
+            }}
+          />}
+        />
+        <Pie
+          data={chartData}
+          dataKey="percentage"
+          nameKey="name"
+          innerRadius={80}
+          outerRadius={140}
+          strokeWidth={2}
+          stroke="#262626"
+          animationBegin={0}
+          animationDuration={1200}
+          animationEasing="ease-out"
         >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent
-                hideLabel
-                className="bg-neutral-900 border-neutral-600 text-[#FFFBEB]"
-                formatter={(value, name) => {
-                  const item = chartData.find(d => d.name === name);
-                  return [
-                    <span key={name} className="text-[#FFFBEB] font-medium">
-                      {name}: {item?.value} ({value}%)
-                    </span>,
-                    ""
-                  ];
-                }}
-              />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="percentage"
-              nameKey="name"
-              innerRadius={65}
-              outerRadius={110}
-              strokeWidth={2}
-              stroke="#262626"
-              animationBegin={0}
-              animationDuration={1200}
-              animationEasing="ease-out"
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) - 8}
-                          className="fill-neutral-100 text-2xl font-bold"
-                        >
-                          {overallRarity}%
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 18}
-                          className="fill-neutral-400 text-sm"
-                        >
-                          Rarity
-                        </tspan>
-                      </text>
-                    )
-                  }
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-
-        {/* Legend */}
-        <div className="grid grid-cols-2 gap-2 mt-4 text-xs">
-          {chartData.map((item, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full flex-shrink-0"
-                style={{ backgroundColor: item.fill }}
-              />
-              <span className="text-neutral-300 font-normal truncate">
-                {item.name}: {item.value} ({item.percentage}%)
-              </span>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          <Label
+            content={({ viewBox }) => {
+              if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                return (
+                  <text
+                    x={viewBox.cx}
+                    y={viewBox.cy}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                  >
+                    <tspan
+                      x={viewBox.cx}
+                      y={(viewBox.cy || 0) - 8}
+                      className="fill-neutral-100 text-2xl font-bold"
+                    >
+                      {overallRarity}%
+                    </tspan>
+                    <tspan
+                      x={viewBox.cx}
+                      y={(viewBox.cy || 0) + 18}
+                      className="fill-neutral-400 text-sm"
+                    >
+                      Rarity
+                    </tspan>
+                  </text>
+                )
+              }
+            }}
+          />
+        </Pie>
+      </PieChart>
+    </ChartContainer>
   )
+  } catch (error) {
+    return (
+      <Card className="flex flex-col bg-neutral-800 border-neutral-700 mb-4 rounded-sm">
+        <CardContent className="flex-1 pb-4">
+          <div className="flex items-center justify-center h-[200px] text-red-400">
+            Error loading rarity chart: {error instanceof Error ? error.message : 'Unknown error'}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 }
 

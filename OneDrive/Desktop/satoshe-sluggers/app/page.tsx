@@ -4,17 +4,32 @@
 import Header80 from "@/components/header-80"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
+import Head from "next/head"
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
-      <Navigation activePage="home" />
-
-      <div className="flex-grow">
+    <>
+      <Head>
+        {/* Critical LCP image preload with highest priority - using optimized SVG */}
+        <link
+          rel="preload"
+          as="image"
+          href="/brands/satoshe-sluggers/satoshe-sluggers-off-white-op.svg"
+          type="image/svg+xml"
+          fetchPriority="high"
+        />
+        {/* DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        {/* Preconnect to critical origins */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </Head>
+      <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB]">
+        <Navigation activePage="home" />
         <Header80 />
-      </div>
-
-      <Footer />
-    </main>
+        <Footer />
+      </main>
+    </>
   )
 }

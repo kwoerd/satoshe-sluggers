@@ -1,6 +1,4 @@
 // components/nft-card.tsx
-
-// components/nft-card.tsx
 "use client"
 
 import Link from "next/link";
@@ -10,9 +8,8 @@ import { useState } from "react";
 import { Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { track } from '@vercel/analytics';
-import { BuyDirectListingButton } from "thirdweb/react";
-import { client } from "@/lib/thirdweb";
-import { base } from "thirdweb/chains";
+import { TOTAL_COLLECTION_SIZE } from "@/lib/contracts";
+// Removed BuyDirectListingButton imports - using regular buttons to avoid RPC calls
 
 interface NFTCardProps {
   image: string;
@@ -22,9 +19,9 @@ interface NFTCardProps {
   rarityPercent: string | number;
   priceEth: number; // Static price from metadata
   tokenId: string;
-  listingId: number | string; // Required for BuyDirectListingButton
+  cardNumber: number; // NFT card number (not token ID)
   isForSale: boolean;
-  onPurchase?: () => void;
+  tier: string | number;
   viewMode?: 'grid-large' | 'grid-medium' | 'grid-small' | 'compact';
 }
 
@@ -36,9 +33,9 @@ export default function NFTCard({
   rarityPercent,
   priceEth,
   tokenId,
-  listingId,
+  cardNumber,
   isForSale,
-  onPurchase,
+  tier,
   viewMode = 'grid-medium',
 }: NFTCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -85,11 +82,11 @@ export default function NFTCard({
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-black/20 blur-sm"></div>
         
         {/* NFT Image Only */}
-        <Link href={`/nft/${tokenId}`} className="block w-full">
+        <Link href={`/nft/${cardNumber}`} className="block w-full">
           <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.9/1" }}>
             <Image
               src={showPlaceholder ? placeholder : image}
-              alt={name}
+              alt={`${name} - NFT #${cardNumber}, Rank ${rank}, ${rarity} rarity, Tier ${tier}`}
               fill
               loading="lazy"
               className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
@@ -121,11 +118,11 @@ export default function NFTCard({
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-black/20 blur-sm"></div>
         
         {/* NFT Image */}
-        <Link href={`/nft/${tokenId}`} className="block w-full">
+        <Link href={`/nft/${cardNumber}`} className="block w-full">
           <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.9/1" }}>
             <Image
               src={showPlaceholder ? placeholder : image}
-              alt={name}
+              alt={`${name} - NFT #${cardNumber}, Rank ${rank}, ${rarity} rarity, Tier ${tier}`}
               fill
               loading="lazy"
               className={`object-contain p-2 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
@@ -148,10 +145,10 @@ export default function NFTCard({
         </Link>
 
         {/* Details Section - Full details for large grid */}
-        <div className="space-y-2 px-2 pb-4">
+        <div className="space-y-1 pl-4 pr-2 pb-2">
           {/* Title and Favorite */}
           <div className="flex items-start justify-between gap-2">
-            <Link href={`/nft/${tokenId}`} className="flex-1 min-w-0">
+            <Link href={`/nft/${cardNumber}`} className="flex-1 min-w-0">
               <h3 className="font-medium text-sm leading-tight text-[#FFFBEB] truncate">
                 {name}
               </h3>
@@ -161,75 +158,49 @@ export default function NFTCard({
               size="sm"
               className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0"
               onClick={handleFavoriteClick}
+              aria-label={isFav ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
+              aria-pressed={isFav}
             >
               <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-neutral-400 hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
             </Button>
           </div>
 
           {/* Stats */}
-          <div className="text-xs text-neutral-300 space-y-1">
+          <div className="text-xs text-neutral-400 space-y-0.5">
             <div className="flex justify-between">
-              <span>Rank:</span>
-              <span className="text-neutral-300">{rank} of 7777</span>
+              <span className="text-neutral-400">Rank:</span>
+              <span className="text-neutral-400">{rank} of {TOTAL_COLLECTION_SIZE}</span>
             </div>
             <div className="flex justify-between">
-              <span>Rarity:</span>
-              <span className="text-neutral-300">{rarityPercent}%</span>
+              <span className="text-neutral-400">Rarity:</span>
+              <span className="text-neutral-400">{rarityPercent}%</span>
             </div>
             <div className="flex justify-between">
-              <span>Tier:</span>
-              <span className="text-neutral-300">{rarity.replace(" (Ultra-Legendary)", "")}</span>
+              <span className="text-neutral-400">Tier:</span>
+              <span className="text-neutral-400">{rarity.replace(" (Ultra-Legendary)", "")}</span>
             </div>
           </div>
 
           {/* Buy Section */}
-          <div className="mt-3">
-            {isForSale && listingId ? (
-              <div className="space-y-0.5">
-                <div className="text-xs text-[#FFFBEB]">Buy Now</div>
-                <div className="flex items-end justify-between">
-                  <div className="text-sm text-blue-500 font-medium">
+          <div className="pt-1">
+            {isForSale ? (
+              <div className="flex items-end justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-blue-500 font-medium mb-0.5">
+                    Buy Now
+                  </div>
+                  <div className="text-sm text-blue-400 font-semibold">
                     {priceEth} ETH
                   </div>
-                  <BuyDirectListingButton
-                    contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                    client={client}
-                    chain={base}
-                    listingId={BigInt(listingId)}
-                    quantity={1n}
-                    onTransactionSent={() => {
-                      track('NFT Purchase Attempted', { tokenId });
-                    }}
-                    onTransactionConfirmed={() => {
-                      track('NFT Purchase Success', { tokenId });
-                      if (onPurchase) onPurchase();
-                    }}
-                    onError={(error) => {
-                      console.error('Purchase failed:', error);
-                      track('NFT Purchase Failed', { tokenId });
-                    }}
-                    className="!px-3 !py-1.5 !bg-blue-500 !text-[#FFFBEB] !font-normal !rounded hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
-                    style={{
-                      padding: '6px 12px',
-                      fontSize: '12px',
-                      height: 'auto',
-                      minHeight: 'unset',
-                      width: 'auto',
-                      minWidth: 'unset',
-                      borderRadius: '2px'
-                    }}
+                </div>
+                <div className="flex-shrink-0 -mt-1">
+                  <Link
+                    href={`/nft/${cardNumber}`}
+                    className="px-3 py-1.5 bg-blue-500/10 border-2 border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
+                    aria-label={`Buy ${name} for ${priceEth} ETH`}
                   >
                     BUY
-                  </BuyDirectListingButton>
-                </div>
-              </div>
-            ) : priceEth > 0 ? (
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-neutral-400 font-medium">
-                  SOLD
-                </div>
-                <div className="px-2 py-1 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
-                  SOLD
+                  </Link>
                 </div>
               </div>
             ) : null}
@@ -246,13 +217,13 @@ export default function NFTCard({
       
       {/* NFT Image */}
       <Link href={`/nft/${tokenId}`} className="block w-full">
-        <div className="relative bg-neutral-900 w-full overflow-visible" style={{ aspectRatio: "0.8/1" }}>
+        <div className="relative w-full overflow-visible" style={{ aspectRatio: "0.8/1" }}>
           <Image
             src={showPlaceholder ? placeholder : image}
             alt={name}
             fill
             loading="lazy"
-            className={`object-contain p-3 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
+            className={`object-contain p-1 hover:scale-[1.02] hover:rotate-[5deg] hover:-translate-y-1 transition-all duration-300 ease-out relative z-20 ${showPlaceholder ? 'animate-pulse' : ''}`}
             onLoad={() => {
               setImgLoaded(true);
               setImgLoading(false);
@@ -273,74 +244,48 @@ export default function NFTCard({
       </Link>
 
       {/* NFT Details Section - Medium grid design */}
-      <div className="px-3 pt-2 pb-3 flex-1 flex flex-col">
-        {/* Title and Favorite */}
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <Link href={`/nft/${tokenId}`} className="block flex-1 min-w-0">
-            <h3 className="font-normal text-xs leading-tight text-[#FFFBEB] line-clamp-2 truncate">
-              {name}
-            </h3>
-          </Link>
+      <div className="pl-4 pr-3 -mt-1 pb-2 flex flex-col">
+        {/* NFT Info and Heart - Top Row */}
+        <div className="flex items-center justify-between mb-1">
+          {/* NFT Info */}
+          <div className="text-green-400 text-xs font-medium leading-tight">
+            NFT — #{cardNumber}
+          </div>
+          
+          {/* Heart Icon */}
           <Button
             variant="ghost"
             size="sm"
             className="h-6 w-6 p-0 hover:bg-transparent flex-shrink-0"
             onClick={handleFavoriteClick}
+            aria-label={isFav ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
+            aria-pressed={isFav}
           >
             <Heart className={`w-4 h-4 ${isFav ? "fill-[#ff0099] text-[#ff0099]" : "text-[#FFFBEB] hover:text-[#ff0099] hover:outline hover:outline-1 hover:outline-[#ff0099]"}`} />
           </Button>
         </div>
 
-        {/* Buy Section - Minimal */}
-        {isForSale && listingId ? (
-          <div className="space-y-1">
-            <div className="text-xs text-[#FFFBEB]">Buy Now</div>
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-blue-500 font-medium">
-                {priceEth} ETH
-              </div>
-              <BuyDirectListingButton
-                contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                client={client}
-                chain={base}
-                listingId={BigInt(listingId)}
-                quantity={1n}
-                onTransactionSent={() => {
-                  track('NFT Purchase Attempted', { tokenId });
-                }}
-                onTransactionConfirmed={() => {
-                  track('NFT Purchase Success', { tokenId });
-                  if (onPurchase) onPurchase();
-                }}
-                onError={(error) => {
-                  console.error('Purchase failed:', error);
-                  track('NFT Purchase Failed', { tokenId });
-                }}
-                className="!px-2 !py-1 !bg-blue-500 !text-[#FFFBEB] !font-normal !rounded hover:!bg-blue-600 !transition-all !text-xs !disabled:opacity-50 !disabled:cursor-not-allowed !w-auto !min-w-0 !h-auto !min-h-0"
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '11px',
-                  height: 'auto',
-                  minHeight: 'unset',
-                  width: 'auto',
-                  minWidth: 'unset',
-                  borderRadius: '2px'
-                }}
-              >
-                BUY
-              </BuyDirectListingButton>
-            </div>
-          </div>
-        ) : priceEth > 0 ? (
-          <div className="flex items-center justify-between">
-            <div className="text-xs text-neutral-400 font-medium">
-              SOLD
-            </div>
-            <div className="px-2 py-1 bg-neutral-700 text-neutral-500 text-xs font-normal rounded-sm">
-              SOLD
-            </div>
-          </div>
-        ) : null}
+        {/* Buy Button - Bottom Row */}
+        <div className="flex justify-start">
+          {isForSale ? (
+            <Link
+              href={`/nft/${tokenId}`}
+              className="px-2.5 py-1 bg-blue-500/10 border-2 border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
+              aria-label={`Buy ${name} for ${priceEth} ETH`}
+            >
+              Buy
+            </Link>
+          ) : (
+            <Link
+              href={`/nft/${tokenId}`}
+              className="px-2.5 py-1 bg-orange-500/10 border border-orange-500/30 rounded-sm text-orange-400 text-xs font-medium hover:bg-orange-500/20 hover:border-orange-500/50 transition-colors"
+              aria-label={`View sold ${name} details`}
+            >
+              Sold
+            </Link>
+          )}
+        </div>
+
       </div>
 
     </div>

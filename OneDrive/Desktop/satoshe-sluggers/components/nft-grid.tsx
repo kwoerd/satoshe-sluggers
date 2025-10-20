@@ -1,8 +1,8 @@
 // components/nft-grid.tsx
-// components/nft-grid.tsx
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
+import { TOTAL_COLLECTION_SIZE } from "@/lib/contracts";
 import {
   Select,
   SelectContent,
@@ -11,48 +11,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Pagination from "@/components/ui/pagination";
-import { BuyDirectListingButton } from "thirdweb/react";
-import { client } from "@/lib/thirdweb";
-import { base } from "thirdweb/chains";
+// Removed BuyDirectListingButton imports - using regular buttons to avoid RPC calls
 import NFTCard from "./nft-card";
-import { track } from '@vercel/analytics';
 import { LayoutGrid, Rows3, Grid3x3, Heart, Square } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useFavorites } from "@/hooks/useFavorites";
 import Link from "next/link";
 import Image from "next/image";
-import { chunkedDataService, ChunkedMetadataItem } from "@/lib/chunked-data-service";
+import { loadAllNFTs } from "@/lib/simple-data-service";
+import { announceToScreenReader } from "@/lib/accessibility-utils";
 
-// Utility to display price
-function displayPrice(val: string | number | bigint) {
-  if (!val || val === "0") {
-    return "--";
-  }
-  if ((typeof val === "string" && /^\d{12,}$/.test(val)) || typeof val === "bigint") {
-    try {
-      const eth = Number(BigInt(val)) / 1e18;
-      if (eth > 10000) {
-        return "--";
-      }
-      return eth.toString();
-    } catch {
-      return "--";
-    }
-  }
-  if (typeof val === "number" && val < 1e6) {
-    return val.toString();
-  }
-  if (typeof val === "string" && /^\d*\.?\d+$/.test(val)) {
-    return val;
-  }
-  return "--";
-}
 
-const TEST_METADATA_URL = "/test-nfts";
 
 type NFTGridItem = {
   id: string;
   tokenId: string;
+  cardNumber: number;
   listingId?: string | number;
   name: string;
   image: string;
@@ -61,6 +35,7 @@ type NFTGridItem = {
   rank: number | string;
   rarity: string;
   rarityPercent: string | number;
+  tier: string | number;
   isForSale: boolean;
   background?: string;
   skinTone?: string;
@@ -69,6 +44,7 @@ type NFTGridItem = {
   hair?: string;
   headwear?: string;
 };
+
 
 interface SelectedFilters {
   background?: string[];
@@ -81,7 +57,25 @@ interface SelectedFilters {
 }
 
 interface NFTMetadata {
+  token_id?: number;
+  name?: string;
+  media_url?: string;
+  rarity_tier?: string;
+  rarity_percent?: number | string;
+  rank?: number | string;
   attributes?: Array<{ trait_type: string; value: string }>;
+  merged_data?: {
+    media_url?: string;
+    metadata_url?: string;
+    token_id?: number;
+    [key: string]: unknown;
+  };
+  background?: string;
+  skinTone?: string;
+  shirt?: string;
+  eyewear?: string;
+  hair?: string;
+  headwear?: string;
   [key: string]: unknown;
 }
 
@@ -143,11 +137,120 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [columnSort, setColumnSort] = useState<{ field: string; direction: 'asc' | 'desc' } | null>(null);
   const [nfts, setNfts] = useState<NFTGridItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [allMetadata, setAllMetadata] = useState<NFTMetadata[]>([]);
+  const [allMetadata, setAllMetadata] = useState<unknown[]>([]);
   const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
+  const [pricingMappings, setPricingMappings] = useState<Record<number, { price_eth: number; listing_id?: number }>>({});
+  const [ipfsUrls, setIpfsUrls] = useState<Record<number, { mediaUrl: string; metadataUrl: string }>>({});
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+  const gridRef = useRef<HTMLDivElement>(null);
   
+  // Load IPFS URLs
+  useEffect(() => {
+    const loadIpfsUrls = async () => {
+      try {
+        const response = await fetch('/data/urls/ipfs_urls.json');
+        if (response.ok) {
+          const urlsData = await response.json();
+          const urlMap: Record<number, { mediaUrl: string; metadataUrl: string }> = {};
+          
+          urlsData.forEach((item: any) => {
+            urlMap[item.TokenID] = {
+              mediaUrl: item["Media URL"],
+              metadataUrl: item["Metadata URL"]
+            };
+          });
+          
+          setIpfsUrls(urlMap);
+        }
+      } catch (error) {
+        console.warn('Failed to load IPFS URLs:', error);
+      }
+    };
+    loadIpfsUrls();
+  }, []);
 
-  
+  // Load pricing mappings (optimized)
+  useEffect(() => {
+    const loadPricingMappings = async () => {
+      try {
+        // Try optimized file first
+        let response = await fetch('/data/pricing/optimized_pricing.json');
+        
+        if (response.ok) {
+          const optimizedData = await response.json();
+          // Convert optimized structure back to original format for compatibility
+          const mappings: Record<number, { price_eth: number; listing_id?: number }> = {};
+          
+          Object.entries(optimizedData.byTokenId).forEach(([tokenId, data]) => {
+            const typedData = data as { price_eth: number; rarity_tier: string };
+            mappings[parseInt(tokenId)] = {
+              price_eth: typedData.price_eth,
+              listing_id: undefined // Not stored in optimized format
+            };
+          });
+          
+          // Load test listings
+          try {
+            const testResponse = await fetch('/data/test-nfts/test_listings.json');
+            if (testResponse.ok) {
+              const testData = await testResponse.json();
+              Object.entries(testData.test_listings).forEach(([listingId, data]) => {
+                const testListing = data as { token_id: number; price_eth: number; status: string };
+                if (testListing.status === 'Active') {
+                  mappings[testListing.token_id] = {
+                    price_eth: testListing.price_eth,
+                    listing_id: parseInt(listingId)
+                  };
+                }
+              });
+            }
+          } catch (error) {
+            console.warn('Failed to load test listings:', error);
+          }
+          
+          setPricingMappings(mappings);
+          return;
+        }
+        
+        // Fallback to original file
+        response = await fetch('/data/pricing/token_pricing_mappings.json');
+        const pricingData = await response.json();
+        const mappings: Record<number, { price_eth: number; listing_id?: number }> = {};
+        pricingData.forEach((item: { token_id: number; price_eth: number; listing_id?: number }) => {
+          mappings[item.token_id] = {
+            price_eth: item.price_eth,
+            listing_id: item.listing_id
+          };
+        });
+        
+        // Load test listings for fallback too
+        try {
+          const testResponse = await fetch('/data/test-nfts/test_listings.json');
+          if (testResponse.ok) {
+            const testData = await testResponse.json();
+            Object.entries(testData.test_listings).forEach(([listingId, data]) => {
+              const testListing = data as { token_id: number; price_eth: number; status: string };
+              if (testListing.status === 'Active') {
+                mappings[testListing.token_id] = {
+                  price_eth: testListing.price_eth,
+                  listing_id: parseInt(listingId)
+                };
+              }
+            });
+          }
+        } catch (error) {
+          console.warn('Failed to load test listings:', error);
+        }
+        
+        setPricingMappings(mappings);
+      } catch {
+        // Silent fail - pricing will be empty
+      }
+    };
+    loadPricingMappings();
+  }, []);
+
   // Favorites functionality
   const { isFavorited, toggleFavorite } = useFavorites();
 
@@ -167,51 +270,95 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     setSortBy("default");
   };
 
+  // Keyboard navigation for grid items
+  const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
+    const totalItems = paginatedNFTs.length;
+    const itemsPerRow = viewMode === 'grid-large' ? 5 : viewMode === 'grid-medium' ? 7 : viewMode === 'grid-small' ? 8 : 1;
+    
+    switch (event.key) {
+      case 'ArrowRight':
+        event.preventDefault();
+        if (index < totalItems - 1) {
+          setFocusedIndex(index + 1);
+        }
+        break;
+      case 'ArrowLeft':
+        event.preventDefault();
+        if (index > 0) {
+          setFocusedIndex(index - 1);
+        }
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        if (index + itemsPerRow < totalItems) {
+          setFocusedIndex(index + itemsPerRow);
+        }
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        if (index - itemsPerRow >= 0) {
+          setFocusedIndex(index - itemsPerRow);
+        }
+        break;
+      case 'Home':
+        event.preventDefault();
+        setFocusedIndex(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        setFocusedIndex(totalItems - 1);
+        break;
+    }
+  };
+
   // Load metadata
   useEffect(() => {
     const loadMetadata = async () => {
       try {
         setIsLoading(true);
         
-        // Load main collection using chunked data service
-        const mainMetadata = await chunkedDataService.loadAllMetadata();
+        // Load main collection using simple data service
+        const mainMetadata = await loadAllNFTs();
         
-        // Load test NFTs
-        const testMetadata = [];
-        
-        // Load all 10 test NFTs
-        for (let i = 0; i < 10; i++) {
-          try {
-            const testFileResponse = await fetch(`${TEST_METADATA_URL}/test-nft-metadata-${i}.json`);
-            const testFileData = await testFileResponse.json();
-            
-            // Add missing fields for compatibility with main collection
-            const enhancedTestData = {
-              ...testFileData,
-              price_eth: 0.001, // Default test price
-              listing_id: i + 7777, // Test listing IDs starting from 7777
-              token_id: i + 7777, // Adjust token_id to be after main collection
-              card_number: i + 7778, // Adjust card_number
-              image: `/test-nfts/placeholder-nft-${i}.webp`, // Correct image path
-            };
-            
-            testMetadata.push(enhancedTestData);
-          } catch (error) {
-            console.warn(`Failed to load test NFT ${i}:`, error);
+        // Load test listings to add test NFTs to metadata (for testing only)
+        let testMetadata: any[] = [];
+        try {
+          const testResponse = await fetch('/data/test-nfts/test_listings.json');
+          if (testResponse.ok) {
+            const testData = await testResponse.json();
+            testMetadata = Object.entries(testData.test_listings)
+              .filter(([_, data]) => (data as any).status === 'Active')
+              .map(([listingId, data]) => {
+                const testListing = data as any;
+                return {
+                  token_id: testListing.token_id,
+                  name: testListing.name,
+                  rarity_tier: "Test",
+                  merged_data: {
+                    media_url: "/nfts/placeholder-nft.webp",
+                    price_eth: testListing.price_eth,
+                    listing_id: parseInt(listingId)
+                  },
+                  attributes: [
+                    { trait_type: "Background", value: "Test" },
+                    { trait_type: "Skin Tone", value: "Test" },
+                    { trait_type: "Shirt", value: "Test" },
+                    { trait_type: "Eyewear", value: "Test" },
+                    { trait_type: "Hair", value: "Test" },
+                    { trait_type: "Headwear", value: "Test" }
+                  ]
+                };
+              });
           }
+        } catch (error) {
+          console.warn('Failed to load test listings for metadata:', error);
         }
         
-        // Combine main collection with test NFTs
+        // Combine main collection with test NFTs (for testing)
         const combinedMetadata = [...(mainMetadata || []), ...testMetadata];
-        console.log('[NFTGrid] Loaded metadata:', {
-          mainCollection: mainMetadata?.length || 0,
-          testNFTs: testMetadata.length,
-          total: combinedMetadata.length
-        });
         setAllMetadata(combinedMetadata);
 
-      } catch (error) {
-        console.error('[NFTGrid] Error loading metadata:', error);
+      } catch {
       } finally {
         setIsLoading(false);
       }
@@ -222,37 +369,49 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
   // Reset to page 1 when filters change
   useEffect(() => {
+
     setCurrentPage(1);
   }, [itemsPerPage, searchTerm]);
 
   // Process NFTs from metadata and check marketplace listings
   useEffect(() => {
-    if (allMetadata.length > 0) {
-
+    if (allMetadata.length > 0 && Object.keys(pricingMappings).length > 0 && Object.keys(ipfsUrls).length > 0) {
       const processNFTs = async () => {
         const mappedNFTs: NFTGridItem[] = await Promise.all(
-          allMetadata
-            .filter(meta => meta.token_id !== undefined)
-            .map(async (meta: NFTMetadata & { token_id?: number; name?: string; price_eth?: number; media_url?: string; [key: string]: unknown }) => {
+          (allMetadata as NFTMetadata[])
+            .filter((meta: NFTMetadata) => meta.token_id !== undefined)
+            .map(async (meta: NFTMetadata) => {
               const tokenId = meta.token_id?.toString() || "";
               
-              // Use the actual media_url from metadata, fallback to generated URL
-              const imageUrl = meta.media_url || `https://ipfs.io/ipfs/QmPBBAsMUPtDLcw1PEunB779B8dsg9gxpdwHXrAkLnWwUD/${tokenId}.webp`;
+              // Use IPFS URL for image
+              const tokenIdNum = parseInt(tokenId);
+              const ipfsData = ipfsUrls[tokenIdNum];
+              const imageUrl = ipfsData?.mediaUrl || `/nfts/placeholder-nft.webp`;
 
               const name = meta.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`;
               const rank = (meta.rank as number | string) ?? "—";
               const rarityPercent = (meta.rarity_percent as number | string) ?? "--";
               const rarity = ((meta.rarity_tier as string) ?? "Unknown").replace(" (Ultra-Legendary)", "");
               
-              // Use static price data from metadata - no RPC calls for display
-              const priceEth = (meta.merged_data as any)?.price_eth || 0;
-              const listingId = (meta.merged_data as any)?.listing_id;
-              const isForSale = priceEth > 0 && listingId;
+              // Use static price data from pricing mappings - no RPC calls for display
+              let priceEth = 0;
+              let listingId = undefined;
+              
+              // Use pricing mappings for all NFTs
+              const pricing = pricingMappings[tokenIdNum];
+              if (pricing) {
+                priceEth = pricing.price_eth;
+                // Generate listing ID if not provided (all NFTs are live listings)
+                listingId = pricing.listing_id || (tokenIdNum + 10000); // Generate listing ID
+              }
+              
+              const isForSale = priceEth > 0;
               const priceWei = isForSale ? (priceEth * 1e18).toString() : "0";
 
               return {
                 id: tokenId,
                 tokenId,
+                cardNumber: parseInt(tokenId) + 1, // NFT number (token ID + 1)
                 listingId: listingId || meta.token_id,
                 name,
                 image: imageUrl,
@@ -262,6 +421,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 rank,
                 rarity,
                 rarityPercent,
+                tier: meta.rarity_tier || "Unknown",
                 background: getAttribute(meta, "Background"),
                 skinTone: getAttribute(meta, "Skin Tone"),
                 shirt: getAttribute(meta, "Shirt"),
@@ -277,19 +437,18 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
       processNFTs();
     }
-  }, [allMetadata]);
+  }, [allMetadata, pricingMappings, ipfsUrls]);
 
-  // Handle purchase success callback
-  const handlePurchaseSuccess = (nft: NFTGridItem) => {
-    // Update NFT status to sold
-    setNfts(prevNfts => 
-      prevNfts.map(n => 
-        n.id === nft.id 
-          ? { ...n, isForSale: false, priceWei: "0" } 
-          : n
-      )
-    );
-  };
+
+  // Preserve scroll position when filters change
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Filter NFTs
   const filteredNFTs = useMemo(() => {
@@ -381,6 +540,18 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     );
   });
   }, [nfts, searchTerm, searchMode, selectedFilters]);
+
+  // Restore scroll position after filtering
+  useEffect(() => {
+    if (scrollPosition > 0 && !isLoading) {
+      // Small delay to ensure DOM is updated
+      const timeoutId = setTimeout(() => {
+        window.scrollTo(0, scrollPosition);
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [filteredNFTs.length, scrollPosition, isLoading]); // Only depend on length, not the entire array
 
   // Sort filtered NFTs
   const sortedNFTs = useMemo(() => {
@@ -499,11 +670,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             <h2 className="text-lg font-medium">NFT Collection</h2>
             {filteredNFTs.length > 0 && (
               <>
-                <div className="text-sm font-medium text-[#ff0099] mt-1">
-                  {filteredNFTs.length} Live • 0 Sold
+                <div className="text-sm font-medium mt-1">
+                  <span className="text-green-400">{filteredNFTs.length} Live</span>
+                  <span className="text-neutral-400"> • </span>
+                  <span className="text-blue-400">0 Sold</span>
                 </div>
                 <div className="text-xs text-neutral-500 mt-1">
-                  Showing {startIndex + 1}-{Math.min(endIndex, filteredNFTs.length)} of {filteredNFTs.length} NFTs
+                  {startIndex + 1}-{Math.min(endIndex, filteredNFTs.length)} of {filteredNFTs.length} NFTs
                 </div>
               </>
             )}
@@ -517,8 +690,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setViewMode('grid-large')}
+                      onClick={() => {
+                        setViewMode('grid-large')
+                        announceToScreenReader('Switched to large grid view')
+                      }}
                       className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-large' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      aria-label="Switch to large grid view"
+                      aria-pressed={viewMode === 'grid-large'}
                     >
                       <Square className="w-4 h-4" />
                     </button>
@@ -530,8 +708,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setViewMode('grid-medium')}
+                      onClick={() => {
+                        setViewMode('grid-medium')
+                        announceToScreenReader('Switched to medium grid view')
+                      }}
                       className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-medium' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      aria-label="Switch to medium grid view"
+                      aria-pressed={viewMode === 'grid-medium'}
                     >
                       <LayoutGrid className="w-4 h-4" />
                     </button>
@@ -543,8 +726,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setViewMode('grid-small')}
+                      onClick={() => {
+                        setViewMode('grid-small')
+                        announceToScreenReader('Switched to small grid view')
+                      }}
                       className={`p-2 rounded-sm transition-colors ${viewMode === 'grid-small' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      aria-label="Switch to small grid view"
+                      aria-pressed={viewMode === 'grid-small'}
                     >
                       <Grid3x3 className="w-4 h-4" />
                     </button>
@@ -556,8 +744,13 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setViewMode('compact')}
+                      onClick={() => {
+                        setViewMode('compact')
+                        announceToScreenReader('Switched to compact table view')
+                      }}
                       className={`p-2 rounded-sm transition-colors ${viewMode === 'compact' ? 'bg-neutral-800 text-[#ff0099]' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      aria-label="Switch to compact table view"
+                      aria-pressed={viewMode === 'compact'}
                     >
                       <Rows3 className="w-4 h-4" />
                     </button>
@@ -616,26 +809,34 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         <>
           {/* Grid Views */}
           {(viewMode === 'grid-large' || viewMode === 'grid-medium' || viewMode === 'grid-small') && (
-            <div className={`mt-4 mb-8 grid ${
+            <div ref={gridRef} className={`mt-4 mb-8 grid ${
               viewMode === 'grid-large' ? 'gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' :
-              viewMode === 'grid-medium' ? 'gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' :
+              viewMode === 'grid-medium' ? 'gap-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7' :
               'gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8'
             }`}>
-              {paginatedNFTs.map((nft) => (
-                <NFTCard
-                  key={nft.id}
-                  image={nft.image}
-                  name={nft.name}
-                  rank={nft.rank}
-                  rarity={nft.rarity}
-                  rarityPercent={nft.rarityPercent}
-                  priceEth={nft.priceEth}
-                  tokenId={nft.tokenId}
-                  listingId={nft.listingId || nft.tokenId}
-                  isForSale={nft.isForSale}
-                  onPurchase={() => handlePurchaseSuccess(nft)}
-                  viewMode={viewMode}
-                />
+              {paginatedNFTs.map((nft, index) => (
+                  <div
+                    key={nft.id}
+                    tabIndex={0}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                    className={`focus:outline-none focus:ring-2 focus:ring-[#ff0099] focus:ring-offset-2 focus:ring-offset-neutral-900 rounded-sm ${
+                      focusedIndex === index ? 'ring-2 ring-[#ff0099] ring-offset-2 ring-offset-neutral-900' : ''
+                    }`}
+                  >
+                    <NFTCard
+                      image={nft.image}
+                      name={nft.name}
+                      rank={nft.rank}
+                      rarity={nft.rarity}
+                      rarityPercent={nft.rarityPercent}
+                      priceEth={nft.priceEth}
+                      tokenId={nft.tokenId}
+                      cardNumber={nft.cardNumber}
+                      isForSale={nft.isForSale}
+                      tier={nft.tier}
+                      viewMode={viewMode}
+                    />
+                  </div>
               ))}
             </div>
           )}
@@ -718,11 +919,18 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                 </thead>
                 <tbody>
                   {paginatedNFTs.map((nft, index) => (
-                    <tr key={nft.id} className={`border-b border-neutral-700/50 hover:bg-neutral-800/30 transition-colors ${index % 2 === 0 ? 'bg-neutral-900/20' : ''}`}>
+                    <tr 
+                      key={nft.id} 
+                      tabIndex={0}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      className={`border-b border-neutral-700/50 hover:bg-neutral-800/30 transition-colors focus:outline-none focus:ring-2 focus:ring-[#ff0099] focus:ring-inset ${
+                        index % 2 === 0 ? 'bg-neutral-900/20' : ''
+                      } ${focusedIndex === index ? 'ring-2 ring-[#ff0099] ring-inset' : ''}`}
+                    >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <Link href={`/nft/${nft.tokenId}`} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                            <Image src={nft.image} alt={nft.name} width={40} height={40} className="rounded object-contain" />
+                            <Image src={nft.image} alt={`${nft.name} - NFT #${nft.cardNumber}, Rank ${nft.rank}, ${nft.rarity} rarity, Tier ${nft.tier}`} width={40} height={40} className="rounded object-contain" />
                             <div>
                               <p className="text-xs font-normal text-[#FFFBEB] truncate">{nft.name}</p>
                               <p className="text-xs text-neutral-500 truncate">Token ID: {nft.tokenId}</p>
@@ -730,7 +938,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                           </Link>
                         </div>
                       </td>
-                      <td className="px-6 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rank} / 7777</td>
+                      <td className="px-6 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rank} / {TOTAL_COLLECTION_SIZE}</td>
                       <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarityPercent}%</td>
                       <td className="px-4 py-3 text-xs text-neutral-300 truncate font-normal">{nft.rarity}</td>
                       <td className="px-4 py-3 text-xs font-normal text-blue-500 whitespace-nowrap">{nft.priceEth} ETH</td>
@@ -757,42 +965,20 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                         <div className="flex items-center gap-2 justify-end">
                             <Link
                               href={`/nft/${nft.tokenId}`}
-                              className="px-2 sm:px-3 py-1.5 bg-transparent border border-neutral-600 text-neutral-300 hover:bg-neutral-700 hover:text-[#FFFBEB] transition-all rounded-sm text-xs sm:text-sm font-medium"
+                              className="px-2.5 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-sm text-yellow-400 text-xs font-medium hover:bg-yellow-500/20 hover:border-yellow-500/50 transition-colors"
                             >
                               View
                             </Link>
-                            {nft.isForSale && nft.listingId ? (
-                              <BuyDirectListingButton
-                                contractAddress="0x187A56dDfCcc96AA9f4FaAA8C0fE57388820A817"
-                                client={client}
-                                chain={base}
-                                listingId={BigInt(nft.listingId)}
-                                quantity={1n}
-                                onTransactionSent={() => {
-                                  track('NFT Purchase Attempted', { tokenId: nft.tokenId });
-                                }}
-                                onTransactionConfirmed={() => {
-                                  track('NFT Purchase Success', { tokenId: nft.tokenId });
-                                  handlePurchaseSuccess(nft);
-                                }}
-                                onError={(error) => {
-                                  console.error('Purchase failed:', error);
-                                  track('NFT Purchase Failed', { tokenId: nft.tokenId });
-                                }}
-                                className="!px-3 !py-1.5 !bg-blue-500 !text-[#FFFBEB] hover:!bg-blue-600 !transition-all !text-xs !font-medium !disabled:opacity-50 !h-auto !min-h-0 !rounded"
-                                style={{
-                                  padding: '6px 12px',
-                                  fontSize: '12px',
-                                  height: 'auto',
-                                  minHeight: 'unset',
-                                  borderRadius: '2px'
-                                }}
+                            {nft.isForSale ? (
+                              <Link
+                                href={`/nft/${nft.tokenId}`}
+                                className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
                               >
                                 Buy
-                              </BuyDirectListingButton>
+                              </Link>
                             ) : (
-                              <span className="px-1.5 py-1 text-xs text-neutral-400">
-                                {nft.isForSale ? "No Listing" : "Sold"}
+                              <span className="px-2.5 py-1 bg-neutral-500/10 border border-neutral-500/30 rounded-sm text-neutral-400 text-xs font-medium">
+                                Sold
                               </span>
                             )}
                         </div>
@@ -820,4 +1006,5 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     </div>
   );
 }
+
 

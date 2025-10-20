@@ -15,7 +15,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
   const account = useActiveAccount()
 
   return (
-    <header className="border-b border-neutral-700 px-8 sm:px-12 lg:px-16 xl:px-20 py-3 sm:py-4 flex items-center justify-between bg-neutral-950/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
+    <header id="navigation" className="border-b border-neutral-700 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-3 sm:py-4 flex items-center justify-between bg-neutral-950/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
       <div className="flex items-center">
         <a href="https://retinaldelights.io" target="_blank" rel="noopener noreferrer" className="flex items-center">
           <Image
@@ -27,12 +27,13 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           />
         </a>
       </div>
-      <nav className="hidden lg:flex items-center gap-4 lg:gap-5 xl:gap-6 2xl:gap-8 absolute left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+      <nav className="hidden lg:flex items-center gap-6 lg:gap-7 xl:gap-8 2xl:gap-10 absolute left-1/2 transform -translate-x-1/2 whitespace-nowrap">
         <Link
           href="/"
           className={`text-base font-medium relative group ${
             activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
+          aria-label="Navigate to home page"
         >
           HOME
           <span className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ease-out ${
@@ -44,6 +45,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           className={`text-base font-medium relative group ${
             activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
+          aria-label="Navigate to about page"
         >
           ABOUT
           <span className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ease-out ${
@@ -55,6 +57,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           className={`text-base font-medium relative group ${
             activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
+          aria-label="Navigate to NFTs collection page"
         >
           NFTS
           <span className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ease-out ${
@@ -66,6 +69,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           className={`text-base font-medium relative group ${
             activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
+          aria-label="Navigate to provenance page"
         >
           PROVENANCE
           <span className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ease-out ${
@@ -77,6 +81,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           className={`text-base font-medium relative group ${
             activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
           }`}
+          aria-label="Navigate to contact page"
         >
           CONTACT
           <span className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ease-out ${

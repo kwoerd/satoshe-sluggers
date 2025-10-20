@@ -558,6 +558,125 @@ import { designSystem, cn, getSectionHeader, getLabel, getValue } from '@/lib/de
 
 ---
 
-**Last Updated:** January 2026  
-**Version:** 1.0.0
+**Last Updated:** January 2025  
+**Version:** 3.0.0
+
+## 🎨 **COMPREHENSIVE DESIGN SYSTEM (v3.0)**
+
+### **Typography Hierarchy**
+```
+Huge (3rem/48px)     → Hero titles, main banners
+H1 (2.5rem/40px)     → Page titles
+H2 (2rem/32px)       → Section headers
+H3 (1.5rem/24px)     → Subsection headers
+H4 (1.25rem/20px)    → Card titles
+H5 (1.125rem/18px)   → Small headers
+H6 (1rem/16px)       → Micro headers
+Paragraph (1rem/16px) → Body text
+Large (1.125rem/18px) → Large body text
+Default (0.875rem/14px) → Default text
+Small (0.75rem/12px) → Small text
+Extra Small (0.6875rem/11px) → Extra small
+Micro (0.625rem/10px) → Micro text
+```
+
+### **Font Families**
+- **Primary**: Inter (sans-serif) - All UI text, headings, body
+- **Secondary**: JetBrains Mono (monospace) - Values, addresses, blockchain data, technical details
+- **Mono**: JetBrains Mono (monospace) - Code, technical details (replaced Inconsolata)
+
+### **Color System (Tokenized)**
+```
+Brand Colors:
+- Primary: #ff0099 (pink)
+- Primary Hover: #ff0099/90
+- Primary Light: #ff0099/20
+
+Semantic Colors:
+- Success: #10B981 (green) - Buy buttons, success
+- Info: #3B82F6 (blue) - Links, info elements
+- Warning: #F59E0B (amber) - Warnings
+- Error: #EF4444 (red) - Errors
+
+Neutral Grayscale:
+- White: #FFFFFF
+- Off-White: #FFFBEB (primary text)
+- Light Gray: #D1D5DB
+- Mid Gray: #9CA3AF (labels)
+- Placeholder: #6B7280
+- Border: #404040
+- Card: #262626
+- Background: #171717
+- Surface: #0A0A0A
+```
+
+### **Spacing System (Tokenized)**
+```
+Gaps:
+- Extra Extra Small: 0.25rem (4px)
+- Extra Small: 0.5rem (8px)
+- Small: 0.75rem (12px)
+- Medium: 1rem (16px)
+- Large: 1.5rem (24px)
+- Extra Large: 2rem (32px)
+- Extra Extra Large: 3rem (48px)
+
+Padding & Margins: Same scale as gaps
+```
+
+### **Border Radius (Consistent)**
+- **Standard**: `rounded-sm` (2px) - Used everywhere
+- **Circles**: `rounded-full` - Only for circular elements
+- **NO**: `rounded`, `rounded-md`, `rounded-lg` - Inconsistent
+
+### **Component System**
+```
+Buttons:
+- Primary: Pink filled
+- Secondary: Pink outline
+- Success: Green filled
+- Info: Blue filled
+- Small variants of all above
+- Tags: Pill-shaped buttons
+- Ghost: Transparent with hover
+
+Cards:
+- Default: Standard card
+- Frosted Glass: Backdrop blur
+- Compact: Smaller padding
+
+Inputs:
+- Default: Standard input
+- Textarea: Multi-line input
+- All with consistent focus states
+```
+
+### **Design Token Usage**
+```tsx
+// Import design tokens
+import { typography, components, getValue, getLabel } from '@/lib/design-tokens';
+
+// Use typography
+<h1 className={typography.h1}>Page Title</h1>
+<p className={typography.paragraph}>Body text</p>
+<span className={typography.value}>Blockchain value</span>
+
+// Use components
+<button className={components.buttons.primary}>Primary Button</button>
+<div className={components.cards.default}>Card Content</div>
+
+// Use helper functions
+<span className={getValue('large')}>Large value</span>
+<span className={getLabel()}>Label text</span>
+```
+
+### **Implementation Notes**
+- **Consistent corner radius**: Only `rounded-sm` (2px) throughout
+- **Typography hierarchy**: Clear size and weight relationships
+- **Tokenized colors**: No hardcoded color values
+- **Consistent spacing**: Use design tokens for all gaps/padding
+- **Font usage**: Inter for UI, JetBrains Mono for values/data
+- **Component variants**: Standardized button and card styles
+- **Dark mode only**: No light mode toggle
+- **Frosted glass effects**: `backdrop-blur-md` for overlays
 

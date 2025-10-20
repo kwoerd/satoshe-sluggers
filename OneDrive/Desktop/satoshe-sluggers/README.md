@@ -1,81 +1,96 @@
-<!-- README.md -->
 # Satoshe Sluggers NFT Marketplace
 
-A clean, modern NFT marketplace for the Satoshe Sluggers collection built with Next.js 15, Thirdweb v5, and ShadCN.
+A production-ready NFT marketplace for the Satoshe Sluggers collection, built with modern web technologies and optimized for performance, security, and user experience.
+
+## 🎯 Project Overview
+
+Satoshe Sluggers is a unique NFT collection of 7,777 digital sluggers on Base blockchain, representing a commitment to real-world change and social impact. This marketplace provides a seamless experience for discovering, purchasing, and managing these NFTs.
 
 ## 🚀 Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Blockchain**: Thirdweb v5 SDK
-- **Styling**: Tailwind CSS
-- **UI Components**: ShadCN
-- **Package Manager**: PNPM
+- **Framework**: Next.js 15 (App Router) with React 19
+- **Language**: TypeScript for type safety
+- **Blockchain**: Thirdweb v5 SDK for Web3 integration
+- **Styling**: Tailwind CSS v4 with custom design system
+- **UI Components**: ShadCN/ui component library
+- **Package Manager**: PNPM for efficient dependency management
 - **Network**: Base (Chain ID: 8453)
+- **Analytics**: Vercel Analytics for performance monitoring
 
-## 📦 Installation
+## ✨ Key Features
+
+### 🛒 Marketplace Functionality
+- **Direct Listings**: Simple buy/sell functionality with instant transactions
+- **Real-time Pricing**: Dynamic pricing based on rarity tiers
+- **Favorites System**: Wallet-specific NFT favorites with local storage
+- **Advanced Filtering**: Filter by rarity, traits, price range, and more
+- **Search**: Full-text search across NFT names and token IDs
+
+### 🎨 User Experience
+- **Responsive Design**: Mobile-first approach with seamless desktop experience
+- **Dark Theme**: Beautiful dark mode with pink accent colors (#ff0099)
+- **Loading States**: Comprehensive loading indicators and error handling
+- **Transaction Feedback**: Real-time transaction status with confetti animations
+- **Accessibility**: WCAG compliant with keyboard navigation support
+
+### 🔐 Security & Performance
+- **Cloudflare Turnstile**: Bot protection before wallet connection
+- **SIWE Authentication**: Secure Sign-In With Ethereum
+- **RPC Optimization**: Intelligent caching and rate limiting (250 calls/second)
+- **Local Metadata**: Fast filtering using optimized JSON data
+- **Error Boundaries**: Graceful error handling throughout the app
+
+### 📊 Provenance & Transparency
+- **Cryptographic Proofs**: Complete SHA-256 and Keccak-256 hash verification
+- **Merkle Tree**: Immutable proof of collection authenticity
+- **Provenance Records**: Detailed token-by-token verification system
+- **IPFS Integration**: Decentralized metadata and media storage
+
+## 📦 Quick Start
+
+### Prerequisites
+- Node.js 18+ 
+- PNPM package manager
+- Git
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/kwoerd/satoshe-sluggers.git
+cd satoshe-sluggers
+
 # Install dependencies
 pnpm install
+
+# Copy environment variables
+cp .env.example .env.local
 ```
 
-## 🔑 Environment Setup
+### Environment Configuration
 
-1. Create a `.env.local` file in the root directory
-2. Copy the contents from `env.example.txt`
-3. Fill in your actual values:
-   - **NEXT_PUBLIC_THIRDWEB_CLIENT_ID**: Get from [Thirdweb Dashboard](https://thirdweb.com/dashboard)
-   - **NEXT_PUBLIC_NFT_COLLECTION_ADDRESS**: Your ERC-721 Drop contract address
-   - **NEXT_PUBLIC_MARKETPLACE_ADDRESS**: Your v3 Marketplace contract address
-   - **Turnstile Keys**: Get from [Cloudflare Dashboard](https://dash.cloudflare.com/)
+Create a `.env.local` file with the following variables:
 
-## 🎨 Features
+```env
+# Thirdweb Configuration
+NEXT_PUBLIC_THIRDWEB_CLIENT_ID=your_thirdweb_client_id
+NEXT_PUBLIC_NFT_COLLECTION_ADDRESS=0x...
+NEXT_PUBLIC_MARKETPLACE_ADDRESS=0x...
 
-- **Direct Listings Only**: Simple buy/sell functionality (no auctions)
-- **Local Metadata**: Fast filtering and sorting using `complete_metadata.json`
-- **Thirdweb Insight**: Optimized RPC calls for blockchain data
-- **Favorites**: Save NFTs to local favorites (wallet-specific)
-- **Provenance Page**: Complete cryptographic proof of collection authenticity
-- **Responsive Design**: Mobile-first UI with ShadCN components
-- **Dark Theme**: Beautiful dark mode design with pink accents (#ff0099)
-
-## 📂 Project Structure
-
-```
-satoshe-sluggers/
-├── app/                    # Next.js pages
-│   ├── about/             # About page
-│   ├── contact/           # Contact form
-│   ├── my-nfts/           # User's NFT collection
-│   ├── nft/[id]/          # Individual NFT detail page
-│   ├── nfts/              # Browse all NFTs
-│   ├── provenance/        # Provenance record
-│   └── page.tsx           # Home page
-├── components/            # React components
-│   ├── ui/               # ShadCN components
-│   ├── nft-card.tsx      # NFT card component
-│   ├── nft-grid.tsx      # NFT grid with pagination
-│   ├── nft-sidebar.tsx   # Filters sidebar
-│   └── ...
-├── lib/                   # Utilities
-│   ├── thirdweb.ts       # Thirdweb client config
-│   ├── contracts.ts      # Contract instances
-│   └── constants.ts      # App constants
-├── hooks/                 # Custom React hooks
-│   └── useFavorites.ts   # Favorites management
-├── public/               # Static assets
-│   ├── docs/             # Metadata & provenance data
-│   ├── images/           # NFT images
-│   ├── icons/            # UI icons
-│   └── data/             # Provenance files
-└── styles/               # Global styles
+# Cloudflare Turnstile (Optional)
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_turnstile_site_key
+NEXT_PUBLIC_TURNSTILE_SECRET_KEY=your_turnstile_secret_key
 ```
 
-## 🏃 Development
+**Get your credentials:**
+- **Thirdweb Client ID**: [Thirdweb Dashboard](https://thirdweb.com/dashboard)
+- **Contract Addresses**: Deploy your contracts via Thirdweb
+- **Turnstile Keys**: [Cloudflare Dashboard](https://dash.cloudflare.com/)
+
+### Development
 
 ```bash
-# Run development server
+# Start development server
 pnpm dev
 
 # Build for production
@@ -83,34 +98,199 @@ pnpm build
 
 # Start production server
 pnpm start
+
+# Run linting
+pnpm lint
+
+# Type checking
+pnpm type-check
 ```
 
-## 🔐 Security Features
+## 🏗️ Project Architecture
 
-- **Cloudflare Turnstile**: Bot protection before wallet connection
-- **SIWE (Sign-In With Ethereum)**: Secure wallet authentication
-- **RPC Rate Limiting**: Maximum 250 calls/second
-- **Local Metadata**: Reduces blockchain queries
+```
+satoshe-sluggers/
+├── app/                          # Next.js App Router pages
+│   ├── (pages)/                 # Route groups
+│   │   ├── about/               # About page
+│   │   ├── contact/             # Contact form
+│   │   ├── my-nfts/             # User's NFT collection
+│   │   ├── nft/[id]/            # Individual NFT detail page
+│   │   ├── nfts/                # Browse all NFTs
+│   │   ├── provenance/          # Cryptographic proof page
+│   │   └── page.tsx             # Homepage
+│   ├── api/                     # API routes
+│   ├── globals.css              # Global styles
+│   └── layout.tsx               # Root layout
+├── components/                   # React components
+│   ├── ui/                      # ShadCN/ui components
+│   ├── nft-card.tsx             # Individual NFT card
+│   ├── nft-grid.tsx             # NFT grid with pagination
+│   ├── nft-sidebar.tsx          # Filtering sidebar
+│   ├── nft-purchase-modal.tsx   # Purchase modal
+│   ├── marketplace-sell-modal.tsx # Sell modal
+│   ├── error-boundary.tsx       # Error boundary component
+│   └── ...                      # Other components
+├── lib/                         # Utility libraries
+│   ├── thirdweb.ts              # Thirdweb client configuration
+│   ├── contracts.ts             # Smart contract instances
+│   ├── constants.ts             # Application constants
+│   ├── simple-data-service.ts   # Data loading service
+│   ├── design-tokens.ts         # Design system tokens
+│   ├── performance.ts           # Performance monitoring
+│   └── accessibility.ts         # Accessibility utilities
+├── hooks/                       # Custom React hooks
+│   └── useFavorites.ts          # Favorites management
+├── public/                      # Static assets
+│   ├── data/                    # Runtime data files
+│   │   ├── complete_metadata.json    # NFT metadata
+│   │   ├── optimized_pricing.json    # Pricing data
+│   │   ├── token_pricing_mappings.json # Fallback pricing
+│   │   ├── merkle_tree.txt           # Merkle tree data
+│   │   └── sha256_hashes.txt         # Hash verification
+│   ├── docs/                    # Documentation files
+│   ├── nfts/                    # NFT images
+│   └── icons/                   # UI icons
+├── docs/                        # Project documentation
+│   ├── AUTHENTICATION_SETUP.md
+│   ├── BUILD_STATUS.md
+│   ├── DESIGN_CHECKLIST.md
+│   ├── PRE_DEPLOYMENT_CHECKLIST.md
+│   ├── SECURITY_AUDIT.md
+│   ├── SETUP.md
+│   └── STYLE_GUIDE.md
+└── scripts/                     # Build and utility scripts
+    ├── combine-metadata.js      # Metadata combination
+    └── optimize-pricing.js      # Pricing optimization
+```
 
-## 📊 Collection Info
+## 🎨 Design System
+
+The project uses a comprehensive design system with:
+
+- **Typography**: Inter (primary), JetBrains Mono (code), Inconsolata (values)
+- **Colors**: Dark theme with pink accents (#ff0099)
+- **Spacing**: Consistent 8px grid system
+- **Components**: ShadCN/ui with custom modifications
+- **Icons**: Custom SVG icons and Lucide React
+
+## 🔧 Configuration
+
+### Smart Contracts
+
+Update contract addresses in `lib/constants.ts`:
+
+```typescript
+export const CONTRACT_ADDRESS = "0x..."; // Your NFT collection
+export const MARKETPLACE_ADDRESS = "0x..."; // Your marketplace
+export const MERKLE_ROOT = "0x..."; // Collection merkle root
+```
+
+### Performance Optimization
+
+The app includes several performance optimizations:
+
+- **Image Optimization**: WebP format with lazy loading
+- **Code Splitting**: Dynamic imports for heavy components
+- **Caching**: Intelligent data caching and memoization
+- **Bundle Analysis**: Optimized bundle sizes
+
+### Security Features
+
+- **Rate Limiting**: RPC call limits to prevent abuse
+- **Input Validation**: Comprehensive form validation
+- **Error Handling**: Graceful error boundaries
+- **CSRF Protection**: Secure form submissions
+
+## 📊 Collection Information
 
 - **Total Supply**: 7,777 NFTs
-- **Blockchain**: Base
+- **Blockchain**: Base (Ethereum L2)
 - **Token Standard**: ERC-721
-- **Current Limit**: 3,000 NFTs (temporary for development)
+- **Rarity Tiers**: Common, Uncommon, Rare, Epic, Legendary, Ultra-Legendary
+- **Traits**: Background, Skin Tone, Shirt, Eyewear, Hair, Headwear
 
-## 🎯 Next Steps
+## 🚀 Deployment
 
-1. Update environment variables in `.env.local`
-2. Update contract addresses in `lib/constants.ts` (Provenance page)
-3. Test wallet connection and Turnstile integration
-4. Deploy to Vercel
-5. Update `MAX_NFTS` in `lib/contracts.ts` to 7777 when ready
+### Vercel (Recommended)
 
-## 📝 License
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
 
-Proprietary - Retinal Delights © 2024
+### Manual Deployment
 
-## 🙋 Support
+```bash
+# Build the application
+pnpm build
 
-For questions or issues, please contact through the [Contact Page](https://retinaldelights.io/contact).
+# Start production server
+pnpm start
+```
+
+## 🧪 Testing
+
+```bash
+# Run type checking
+pnpm type-check
+
+# Run linting
+pnpm lint
+
+# Build verification
+pnpm build
+```
+
+## 📈 Performance Metrics
+
+The application is optimized for Core Web Vitals:
+
+- **LCP (Largest Contentful Paint)**: < 2.5s
+- **FID (First Input Delay)**: < 100ms
+- **CLS (Cumulative Layout Shift)**: < 0.1
+- **Bundle Size**: Optimized for fast loading
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **Wallet Connection Issues**: Ensure you're on Base network
+2. **Metadata Loading**: Check if `complete_metadata.json` exists
+3. **Build Errors**: Run `pnpm install` to ensure dependencies are installed
+4. **Type Errors**: Run `pnpm type-check` to identify TypeScript issues
+
+### Debug Mode
+
+Enable debug logging by setting `NODE_ENV=development` in your environment.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is proprietary software owned by Retinal Delights © 2024. All rights reserved.
+
+## 🆘 Support
+
+For technical support or questions:
+
+- **Documentation**: Check the `/docs` folder for detailed guides
+- **Issues**: Open an issue on GitHub
+- **Contact**: [Contact Page](https://retinaldelights.io/contact)
+
+## 🙏 Acknowledgments
+
+- **Thirdweb**: Web3 infrastructure and SDK
+- **Vercel**: Hosting and deployment platform
+- **ShadCN**: UI component library
+- **Base**: Ethereum L2 blockchain
+- **Cloudflare**: Security and performance services
+
+---
+
+**Built with ❤️ by the Retinal Delights team**
