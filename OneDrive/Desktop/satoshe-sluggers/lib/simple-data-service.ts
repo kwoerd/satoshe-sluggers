@@ -47,7 +47,7 @@ export async function loadAllNFTs(): Promise<NFTData[]> {
   }
 
   try {
-    const response = await fetch('/data/complete_metadata.json');
+    const response = await fetch('/data/combined_metadata.json');
     if (!response.ok) {
       throw new Error(`Failed to load metadata: ${response.statusText}`);
     }

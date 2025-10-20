@@ -54,7 +54,7 @@ function MyNFTsContent() {
       setIsLoading(true);
       try {
         // Use static metadata - no RPC calls for display
-        const response = await fetch('/data/complete_metadata.json');
+        const response = await fetch('/data/combined_metadata.json');
         const allMetadata = await response.json();
         
         // For demo purposes, show first 10 NFTs as "owned"

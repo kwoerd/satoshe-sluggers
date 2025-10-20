@@ -2,8 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const INPUT_FILE = 'public/data/token_pricing_mappings.json';
-const OUTPUT_FILE = 'public/data/optimized_pricing.json';
+const INPUT_FILE = 'public/data/pricing/token_pricing_mappings.json';
+const OUTPUT_FILE = 'public/data/pricing/optimized_pricing.json';
 
 console.log('🔧 Optimizing pricing data...');
 

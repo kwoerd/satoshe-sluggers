@@ -57,9 +57,9 @@ export default function ProvenancePage() {
     const loadData = async () => {
       try {
         const [merkleRes, sha256Res, keccak256Res] = await Promise.all([
-          fetch("/data/merkle_tree.txt"),
-          fetch("/data/sha256_hashes.txt"),
-          fetch("/data/keccak256_hashes.txt"),
+          fetch("/data/keccak-256/merkle/merkle_tree.txt"),
+          fetch("/data/sha-256/sha256_hashes.txt"),
+          fetch("/data/keccak-256/keccak256_hashes.txt"),
         ])
         
         // Load metadata using simple data service
@@ -171,7 +171,7 @@ export default function ProvenancePage() {
         <div className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-8 max-w-7xl flex-grow">
         <div className="mb-16">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 uppercase tracking-tight">
-            <span className="text-[#FFFBEB] px-1">S</span><span className="text-[#FFFBEB] px-1">A</span><span className="text-[#FFFBEB] px-1">T</span><span className="text-[#FFFBEB] px-1">O</span><span className="text-[#FF0099] px-1">S</span><span className="text-[#FF0099] px-1">H</span><span className="text-[#FF0099] px-1">E</span> <span className="text-[#FFFBEB]">Sluggers</span>
+            <span className="text-[#FFFBEB]">SATOSHE</span> <span className="text-[#FFFBEB]">Sluggers</span>
           </h1>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-8 uppercase tracking-tight text-[#FFFBEB]">
             PROVENANCE RECORD

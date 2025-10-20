@@ -149,7 +149,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
     const loadPricingMappings = async () => {
       try {
         // Try optimized file first
-        let response = await fetch('/data/optimized_pricing.json');
+        let response = await fetch('/data/pricing/optimized_pricing.json');
         
         if (response.ok) {
           const optimizedData = await response.json();
@@ -166,7 +166,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           
           // Load test listings
           try {
-            const testResponse = await fetch('/data/test_listings.json');
+            const testResponse = await fetch('/data/test-nfts/test_listings.json');
             if (testResponse.ok) {
               const testData = await testResponse.json();
               Object.entries(testData.test_listings).forEach(([listingId, data]) => {
@@ -188,7 +188,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         }
         
         // Fallback to original file
-        response = await fetch('/data/token_pricing_mappings.json');
+        response = await fetch('/data/pricing/token_pricing_mappings.json');
         const pricingData = await response.json();
         const mappings: Record<number, { price_eth: number; listing_id?: number }> = {};
         pricingData.forEach((item: { token_id: number; price_eth: number; listing_id?: number }) => {
@@ -200,7 +200,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         
         // Load test listings for fallback too
         try {
-          const testResponse = await fetch('/data/test_listings.json');
+          const testResponse = await fetch('/data/test-nfts/test_listings.json');
           if (testResponse.ok) {
             const testData = await testResponse.json();
             Object.entries(testData.test_listings).forEach(([listingId, data]) => {
@@ -297,7 +297,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         // Load test listings to add test NFTs to metadata (for testing only)
         let testMetadata: any[] = [];
         try {
-          const testResponse = await fetch('/data/test_listings.json');
+          const testResponse = await fetch('/data/test-nfts/test_listings.json');
           if (testResponse.ok) {
             const testData = await testResponse.json();
             testMetadata = Object.entries(testData.test_listings)

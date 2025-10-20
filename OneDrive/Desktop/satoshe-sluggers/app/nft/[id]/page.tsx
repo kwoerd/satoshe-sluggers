@@ -105,7 +105,7 @@ export default function NFTDetailPage() {
       // Load test NFT metadata and listing data
       Promise.all([
         fetch(`/data/test-nfts/${tokenIdNum}.json`).then(res => res.json()),
-        fetch('/data/test_listings.json').then(res => res.json())
+        fetch('/data/test-nfts/test_listings.json').then(res => res.json())
       ])
         .then(([metadata, listingsData]) => {
           const testListing = Object.values(listingsData.test_listings).find((listing: any) => 
