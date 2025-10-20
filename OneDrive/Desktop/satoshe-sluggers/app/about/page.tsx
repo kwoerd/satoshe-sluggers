@@ -4,13 +4,13 @@
 import Image from "next/image"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Satoshe Sluggers | About",
-}
+import { useEffect } from "react"
 
 export default function AboutPage() {
+  useEffect(() => {
+    document.title = "Satoshe Sluggers"
+  }, [])
+
   return (
     <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
       <Navigation activePage="about" />

@@ -8,11 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
 import { MediaRenderer } from "thirdweb/react"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Satoshe Sluggers | My NFTs",
-}
 import { useActiveAccount } from "thirdweb/react"
 import { client } from "@/lib/thirdweb"
 import { useFavorites } from "@/hooks/useFavorites"
@@ -32,6 +27,10 @@ interface NFT {
 function MyNFTsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  
+  useEffect(() => {
+    document.title = "Satoshe Sluggers"
+  }, [])
   const tabParam = searchParams.get("tab")
 
   const [activeTab, setActiveTab] = useState("owned")

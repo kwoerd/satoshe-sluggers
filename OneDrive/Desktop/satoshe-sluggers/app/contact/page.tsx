@@ -1,7 +1,7 @@
 // app/contact/page.tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,13 +9,12 @@ import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Satoshe Sluggers | Contact",
-}
 
 export default function ContactPage() {
+  useEffect(() => {
+    document.title = "Satoshe Sluggers"
+  }, [])
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

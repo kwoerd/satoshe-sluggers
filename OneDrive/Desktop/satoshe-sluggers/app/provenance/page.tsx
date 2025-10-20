@@ -8,11 +8,6 @@ import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import NFTPagination from "@/components/ui/pagination"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Satoshe Sluggers | Provenance",
-}
 
 interface ProvenanceRecord {
   token_id: number
@@ -37,6 +32,10 @@ export default function ProvenancePage() {
   const [itemsPerPage] = useState(50)
   const [sortField, setSortField] = useState<'token_id' | 'nft_number' | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+
+  useEffect(() => {
+    document.title = "Satoshe Sluggers"
+  }, [])
 
   useEffect(() => {
     const loadData = async () => {

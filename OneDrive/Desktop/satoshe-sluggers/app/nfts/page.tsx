@@ -7,15 +7,14 @@ import Navigation from "@/components/navigation"
 import NFTSidebar from "@/components/nft-sidebar"
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Satoshe Sluggers | NFTs",
-}
 
 function NFTsPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  
+  useEffect(() => {
+    document.title = "Satoshe Sluggers"
+  }, [])
   
   const [searchTerm, setSearchTerm] = useState("")
   const [searchMode, setSearchMode] = useState<"contains" | "exact">("contains")

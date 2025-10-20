@@ -17,11 +17,6 @@ import { track } from '@vercel/analytics';
 import { TOTAL_COLLECTION_SIZE } from "@/lib/contracts";
 import confetti from 'canvas-confetti';
 import { Separator } from "@/components/ui/separator";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Satoshe Sluggers | NFT",
-}
 
 // Type definitions
 interface NFTAttribute {
@@ -68,6 +63,10 @@ function getColorForAttribute(attributeName: string) {
 
 export default function NFTDetailPage() {
   const params = useParams<{ id: string }>();
+
+  useEffect(() => {
+    document.title = "Satoshe Sluggers"
+  }, [])
   const tokenId = params.id;
   const [metadata, setMetadata] = useState<NFTData | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("/media/nfts/placeholder-nft.webp");
