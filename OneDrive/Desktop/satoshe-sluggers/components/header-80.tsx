@@ -154,11 +154,11 @@ const Header80: React.FC = () => {
                 placeholder="empty"
               />
             </h1>
-            <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-medium text-center">
+            <p className="relative z-20 text-xl md:text-2xl lg:text-3xl font-medium text-center -mt-2">
               <span className="text-[#FF0099] font-bold">SHE</span> <span className="text-[#EAEAEA]">hits different</span>
             </p>
-            <div className="relative z-20 mt-6 flex items-center justify-center gap-x-4 md:mt-8">
-              <div className="relative group mt-4">
+            <div className="relative z-20 mt-16 flex items-center justify-center gap-x-4 md:mt-20">
+              <div className="relative group">
                 {/* Enhanced glowing effect for the button */}
                 <div className="absolute inset-0 rounded bg-blue-600/25 blur-xl group-hover:bg-blue-500/35 transition-all duration-300 scale-125"></div>
                 <Link href="/nfts">
