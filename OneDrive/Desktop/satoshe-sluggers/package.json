@@ -17,6 +17,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@react-email/render": "^1.4.0",
     "@vercel/analytics": "^1.5.0",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
@@ -24,9 +25,11 @@
     "framer-motion": "^11.18.2",
     "lucide-react": "^0.454.0",
     "next": "15.5.6",
+    "prettier": "^3.6.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "recharts": "2.15.0",
+    "resend": "^6.2.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "thirdweb": "^5.109.0",
@@ -46,7 +49,9 @@
   },
   "pnpm": {
     "auditConfig": {
-      "ignoreCves": ["GHSA-ffrw-9mx8-89p8"]
+      "ignoreCves": [
+        "GHSA-ffrw-9mx8-89p8"
+      ]
     }
   }
 }

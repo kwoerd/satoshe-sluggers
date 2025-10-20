@@ -123,7 +123,7 @@ export default function ContactPage() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="name" className="block text-base font-medium text-neutral-200">
+                  <label htmlFor="name" className="block text-base font-medium text-[#FFFBEB]">
                     Name{" "}
                     <span style={{ color: "#FF0099" }} aria-hidden="true">
                       *
@@ -137,8 +137,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="Satoshe Slugger"
-                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500"
-                    style={{ color: "#FF0099" }}
+                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099]"
                     aria-required="true"
                     aria-describedby="name-error"
                     spellCheck={false}
@@ -148,7 +147,7 @@ export default function ContactPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="email" className="block text-base font-medium text-neutral-200">
+                  <label htmlFor="email" className="block text-base font-medium text-[#FFFBEB]">
                     Email{" "}
                     <span style={{ color: "#FF0099" }} aria-hidden="true">
                       *
@@ -163,8 +162,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="hello@satoshesluggers.com"
-                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500"
-                    style={{ color: "#FF0099" }}
+                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099]"
                     aria-required="true"
                     aria-describedby="email-error"
                     autoComplete="email"
@@ -176,7 +174,7 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label htmlFor="subject" className="block text-base font-medium text-neutral-200">
+                <label htmlFor="subject" className="block text-base font-medium text-[#FFFBEB]">
                   Subject{" "}
                   <span style={{ color: "#FF0099" }} aria-hidden="true">
                     *
@@ -190,8 +188,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder="What is this regarding?"
-                  className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500"
-                  style={{ color: "#FF0099" }}
+                  className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099]"
                   aria-required="true"
                   aria-describedby="subject-error"
                   spellCheck={false}
@@ -201,7 +198,7 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label htmlFor="message" className="block text-base font-medium text-neutral-200">
+                <label htmlFor="message" className="block text-base font-medium text-[#FFFBEB]">
                   Message{" "}
                   <span style={{ color: "#FF0099" }} aria-hidden="true">
                     *
@@ -214,8 +211,7 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  className="min-h-[150px] bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500"
-                  style={{ color: "#FF0099" }}
+                  className="min-h-[150px] bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-400 text-[#FFFBEB] focus:border-[#FF0099]"
                   placeholder="How can we help you?"
                   aria-required="true"
                   aria-describedby="message-error"
@@ -240,7 +236,7 @@ export default function ContactPage() {
                   required
                   aria-required="true"
                 />
-                <Label htmlFor="terms" className="cursor-pointer text-sm font-normal text-neutral-200 leading-tight" id="terms-desc">
+                <Label htmlFor="terms" className="cursor-pointer text-sm font-normal text-[#FFFBEB] leading-tight" id="terms-desc">
                   I accept the{" "}
                   <a
                     href="https://retinaldelights.io/privacy"
@@ -266,7 +262,7 @@ export default function ContactPage() {
                 </Label>
               </div>
 
-              <div className="text-neutral-400 text-sm pt-1">
+              <div className="text-neutral-300 text-sm pt-1">
                 <span style={{ color: "#FF0099" }}>*</span> Required fields
               </div>
 
