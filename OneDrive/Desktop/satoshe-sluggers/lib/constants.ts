@@ -2,6 +2,6 @@
 // Collection constants for Provenance page
 export const COLLECTION_NAME = "Satoshe Sluggers";
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!; 
-export const FINAL_PROOF_HASH = "0aee8280e18ce8e76ddd08256b8fc1ec5eb16416c64aa0c985e1da7393fc66ac"; 
-export const MERKLE_ROOT = "acb780a12b14fe3ffa1a660b84bcb2e9c36e0dc7ea519c85c1e8fe4747ff5e0a";
+export const FINAL_PROOF_HASH = "a0a4dd729d67df70a8c53ed1ded33b327e326d6f52d95f6c19f8897199b5eb04"; 
+export const MERKLE_ROOT = "bc84cdbe96390266f1b288a92da05b0237449c20669a8dab45b98c4ae35f7526";
 

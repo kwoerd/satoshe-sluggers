@@ -27,7 +27,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           />
         </a>
       </div>
-      <nav className="hidden lg:flex items-center gap-4 lg:gap-5 xl:gap-6 2xl:gap-8 absolute left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+      <nav className="hidden lg:flex items-center gap-6 lg:gap-7 xl:gap-8 2xl:gap-10 absolute left-1/2 transform -translate-x-1/2 whitespace-nowrap">
         <Link
           href="/"
           className={`text-base font-medium relative group ${

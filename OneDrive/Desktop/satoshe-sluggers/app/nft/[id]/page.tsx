@@ -17,6 +17,11 @@ import { track } from '@vercel/analytics';
 import { TOTAL_COLLECTION_SIZE } from "@/lib/contracts";
 import confetti from 'canvas-confetti';
 import { Separator } from "@/components/ui/separator";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Satoshe Sluggers | NFT",
+}
 
 // Type definitions
 interface NFTAttribute {

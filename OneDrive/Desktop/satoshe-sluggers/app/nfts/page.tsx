@@ -7,6 +7,11 @@ import Navigation from "@/components/navigation"
 import NFTSidebar from "@/components/nft-sidebar"
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Satoshe Sluggers | NFTs",
+}
 
 function NFTsPageContent() {
   const router = useRouter()

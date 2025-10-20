@@ -4,6 +4,11 @@
 import Image from "next/image"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Satoshe Sluggers | About",
+}
 
 export default function AboutPage() {
   return (

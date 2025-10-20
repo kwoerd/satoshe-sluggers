@@ -8,6 +8,11 @@ import Navigation from "@/components/navigation"
 import Footer from "@/components/footer"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import NFTPagination from "@/components/ui/pagination"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Satoshe Sluggers | Provenance",
+}
 
 interface ProvenanceRecord {
   token_id: number
@@ -20,32 +25,12 @@ interface ProvenanceRecord {
   metadata_url: string
 }
 
-// interface CompleteMetadataItem {
-//   name: string
-//   description: string
-//   token_id: number
-//   card_number: number
-//   collection_number: number
-//   edition: number
-//   series: string
-//   rarity_score: number
-//   merged_data: {
-//     nft: number
-//     token_id: number
-//     listing_id: number
-//     metadata_cid: string
-//     media_cid: string
-//     metadata_url: string
-//     media_url: string
-//     price_eth: number
-//   }
-// }
-
 export default function ProvenancePage() {
   const [copiedHash, setCopiedHash] = useState<string | null>(null)
   const [copiedProof, setCopiedProof] = useState(false)
   const [copiedMerkle, setCopiedMerkle] = useState(false)
   const [merkleTree, setMerkleTree] = useState("")
+  const [concatenatedHash, setConcatenatedHash] = useState("")
   const [provenanceRecords, setProvenanceRecords] = useState<ProvenanceRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
@@ -56,52 +41,66 @@ export default function ProvenancePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [merkleRes, sha256Res, keccak256Res] = await Promise.all([
+        const [merkleRes, sha256Res, keccak256Res, metadataCidsRes, mediaCidsRes, urlsRes, concatenatedRes] = await Promise.all([
           fetch("/data/keccak-256/merkle/merkle_tree.txt"),
           fetch("/data/sha-256/sha256_hashes.txt"),
           fetch("/data/keccak-256/keccak256_hashes.txt"),
+          fetch("/data/ipfs-cids/ipfs_metadata_cids.txt"),
+          fetch("/data/ipfs-cids/ipfs_media_cids.txt"),
+          fetch("/data/urls/ipfs_urls.json"),
+          fetch("/data/sha-256/sha256_concatenated.txt"),
         ])
         
-        // Load metadata using simple data service
-        const { loadAllNFTs } = await import("@/lib/simple-data-service");
-        const metadataData = await loadAllNFTs();
-
         const merkleText = await merkleRes.text()
         const sha256Text = await sha256Res.text()
         const keccak256Text = await keccak256Res.text()
-
-        // Metadata data loaded successfully
+        const metadataCidsText = await metadataCidsRes.text()
+        const mediaCidsText = await mediaCidsRes.text()
+        const urlsData = await urlsRes.json()
+        const concatenatedText = await concatenatedRes.text()
 
         setMerkleTree(merkleText)
+        setConcatenatedHash(concatenatedText.trim())
 
         // Parse hashes text files (one hash per line)
-        const sha256Lines = sha256Text.split("\n")
-        const keccak256Lines = keccak256Text.split("\n")
-        const records: ProvenanceRecord[] = sha256Lines
-          .filter((line) => line.trim())
-          .map((sha256, index) => {
-            const tokenNum = index
-            // Find the corresponding metadata by token_id
-            const metadataItem = metadataData.find((item: { merged_data?: { token_id: number } }) => item.merged_data?.token_id === tokenNum)
-            
-            // Get the corresponding keccak256 hash
-            const keccak256 = keccak256Lines[index]?.trim() || ""
+        const sha256Lines = sha256Text.split("\n").filter(line => line.trim())
+        const keccak256Lines = keccak256Text.split("\n").filter(line => line.trim())
+        const metadataCidsLines = metadataCidsText.split("\n").filter(line => line.trim())
+        const mediaCidsLines = mediaCidsText.split("\n").filter(line => line.trim())
 
-            return {
-              token_id: tokenNum,
-              nft_number: tokenNum + 1,
-              sha256_hash: sha256.trim(),
-              keccak256_hash: keccak256,
-              media_cid: metadataItem?.merged_data?.media_cid || "",
-              metadata_cid: metadataItem?.merged_data?.metadata_cid || "",
-              media_url: metadataItem?.merged_data?.media_url || "",
-              metadata_url: metadataItem?.merged_data?.metadata_url || "",
-            }
+        // Create URL lookup map
+        const urlMap = new Map()
+        urlsData.forEach((item: any) => {
+          urlMap.set(item.TokenID, {
+            mediaUrl: item["Media URL"],
+            metadataUrl: item["Metadata URL"]
           })
+        })
+
+        const records: ProvenanceRecord[] = sha256Lines.map((sha256, index) => {
+          const tokenNum = index
+          const nftNumber = tokenNum + 1
+          const keccak256 = keccak256Lines[index]?.trim() || ""
+          const metadataCid = metadataCidsLines[index]?.trim() || ""
+          const mediaCid = mediaCidsLines[index]?.trim() || ""
+          const urlData = urlMap.get(tokenNum) || { mediaUrl: "", metadataUrl: "" }
+
+          return {
+            token_id: tokenNum,
+            nft_number: nftNumber,
+            sha256_hash: sha256.trim(),
+            keccak256_hash: keccak256,
+            media_cid: mediaCid,
+            metadata_cid: metadataCid,
+            media_url: urlData.mediaUrl,
+            metadata_url: urlData.metadataUrl,
+          }
+        })
 
         setProvenanceRecords(records)
         setLoading(false)
-      } catch {
+      } catch (error) {
+        console.error("Error loading provenance data:", error)
         setLoading(false)
       }
     }
@@ -150,7 +149,6 @@ export default function ProvenancePage() {
       }
     })
   }
-
 
   // Pagination logic
   const sortedRecords = getSortedRecords()
@@ -338,6 +336,30 @@ export default function ProvenancePage() {
           </div>
         </div>
 
+        {/* Concatenated Hash Section */}
+        <div className="mb-12">
+          <div className="bg-card border border-neutral-700 p-4 rounded">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">SHA-256 Concatenated Hash</div>
+              <button
+                onClick={() => copyToClipboard(concatenatedHash, 'concatenated')}
+                className="p-2 text-muted-foreground hover:text-[#FFFBEB] hover:bg-accent transition-colors rounded"
+                title="Copy to clipboard"
+              >
+                {copiedHash === 'concatenated' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              </button>
+            </div>
+            <div className="bg-neutral-900 border border-neutral-600 p-2 rounded max-w-full overflow-hidden">
+              <div
+                className="font-inconsolata text-xs break-all leading-relaxed overflow-y-auto whitespace-pre-wrap scrollbar-custom max-w-full"
+                style={{ fontWeight: '300', height: "100px" }}
+              >
+                {concatenatedHash || "Loading..."}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-6 uppercase tracking-tight">Provenance Record</h2>
 
@@ -432,30 +454,38 @@ export default function ProvenancePage() {
                         </td>
                         <td className="w-52 px-2 py-4">
                           <div className="flex items-center gap-1">
-                            <a
-                              href={record.metadata_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs hover:text-primary transition-colors font-inconsolata break-all"
-                              style={{ fontWeight: '300' }}
-                            >
+                            <span className="text-xs font-inconsolata break-all" style={{ fontWeight: '300' }}>
                               {record.metadata_cid || "N/A"}
-                            </a>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-[#ff0099] transition-colors flex-shrink-0" />
+                            </span>
+                            {record.metadata_url && (
+                              <a
+                                href={record.metadata_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-[#ff0099] transition-colors flex-shrink-0"
+                                title="View on IPFS"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
                           </div>
                         </td>
                         <td className="w-52 pl-2 pr-4 py-4">
                           <div className="flex items-center gap-1">
-                            <a
-                              href={record.media_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs hover:text-primary transition-colors font-inconsolata break-all"
-                              style={{ fontWeight: '300' }}
-                            >
+                            <span className="text-xs font-inconsolata break-all" style={{ fontWeight: '300' }}>
                               {record.media_cid || "N/A"}
-                            </a>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-[#ff0099] transition-colors flex-shrink-0" />
+                            </span>
+                            {record.media_url && (
+                              <a
+                                href={record.media_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-[#ff0099] transition-colors flex-shrink-0"
+                                title="View on IPFS"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -484,4 +514,3 @@ export default function ProvenancePage() {
     </TooltipProvider>
   )
 }
-

@@ -27,7 +27,7 @@ const inconsolata = Inconsolata({
 })
 
 export const metadata: Metadata = {
-  title: "Satoshe Sluggers - Women's Baseball NFT Collection | Digital Sluggers, Real-World Change",
+  title: "Satoshe Sluggers",
   description: "Satoshe Sluggers is a unique women's baseball NFT collection of 7,777 digital sluggers on Base blockchain. Supporting women's sports, the Dow Sports Association, and structural systems for real-world change through Retinal Delights platform.",
   keywords: [
     "NFT", "Satoshe Sluggers", "women's baseball", "women's sports", "baseball NFT", 
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Satoshe Sluggers - Women's Baseball NFT Collection | Digital Sluggers, Real-World Change",
+    title: "Satoshe Sluggers",
     description: "A unique women's baseball NFT collection of 7,777 digital sluggers on Base blockchain. Supporting women's sports, the Dow Sports Association, and structural systems for real-world change through Retinal Delights platform.",
     url: 'https://satoshesluggers.com',
     siteName: 'Satoshe Sluggers by Retinal Delights',
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Satoshe Sluggers - Women's Baseball NFT Collection | Digital Sluggers, Real-World Change",
+    title: "Satoshe Sluggers",
     description: "A unique women's baseball NFT collection of 7,777 digital sluggers on Base blockchain. Supporting women's sports, the Dow Sports Association, and structural systems for real-world change.",
     images: ['/brands/satoshe-sluggers/satoshe-sluggers-home-white.svg'],
   },

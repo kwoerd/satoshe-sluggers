@@ -9,6 +9,11 @@ import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Satoshe Sluggers | Contact",
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
