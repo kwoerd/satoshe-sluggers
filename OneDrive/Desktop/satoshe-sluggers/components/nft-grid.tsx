@@ -146,6 +146,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [isLoading, setIsLoading] = useState(true);
   const [allMetadata, setAllMetadata] = useState<unknown[]>([]);
   const [viewMode, setViewMode] = useState<'grid-large' | 'grid-medium' | 'grid-small' | 'compact'>('grid-large');
+  const [activeTab, setActiveTab] = useState<'live' | 'sold'>('live');
   const [pricingMappings, setPricingMappings] = useState<Record<number, { price_eth: number; listing_id?: number }>>({});
   const [ipfsUrls, setIpfsUrls] = useState<Record<number, { mediaUrl: string; metadataUrl: string }>>({});
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
@@ -328,14 +329,14 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         const mainMetadata = await loadAllNFTs();
         
         // Load test NFTs with full metadata (for testing only)
-        let testMetadata: any[] = [];
+        const testMetadata: any[] = [];
         try {
           // Load test listings for pricing data
           const testResponse = await fetch('/data/test-nfts/test_listings.json');
           if (testResponse.ok) {
             const testData = await testResponse.json();
             const activeListings = Object.entries(testData.test_listings)
-              .filter(([_, data]) => (data as any).status === 'Active')
+              .filter(([, data]) => (data as any).status === 'Active')
               .map(([listingId, data]) => ({ listingId, ...data as any }));
 
             // Load individual test NFT metadata files
@@ -377,9 +378,8 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
   // Reset to page 1 when filters change
   useEffect(() => {
-
     setCurrentPage(1);
-  }, [itemsPerPage, searchTerm]);
+  }, [itemsPerPage, searchTerm, activeTab]);
 
   // Process NFTs from metadata and check marketplace listings
   useEffect(() => {
@@ -464,8 +464,12 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   // Filter NFTs
   const filteredNFTs = useMemo(() => {
     return nfts.filter(nft => {
-    // Search logic with Contains/Exact mode
-    let matchesSearch = true;
+      // Tab filter - Live vs Sold
+      if (activeTab === 'live' && !nft.isForSale) return false;
+      if (activeTab === 'sold' && nft.isForSale) return false;
+      
+      // Search logic with Contains/Exact mode
+      let matchesSearch = true;
     if (searchTerm.trim()) {
       if (searchMode === "exact") {
         // Exact match: Check if token ID, NFT number, or name matches exactly
@@ -550,7 +554,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
       matchesHeadwear
     );
   });
-  }, [nfts, searchTerm, searchMode, selectedFilters]);
+  }, [nfts, searchTerm, searchMode, selectedFilters, activeTab]);
 
   // Restore scroll position after filtering
   useEffect(() => {
@@ -673,6 +677,32 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
 
   return (
     <div className="w-full max-w-full">
+      {/* Live/Sold Tabs */}
+      <div className="mb-6">
+        <div className="flex border-b border-neutral-700">
+          <button
+            onClick={() => setActiveTab('live')}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'live'
+                ? 'text-blue-400 border-b-2 border-blue-400 bg-blue-500/5'
+                : 'text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800/50'
+            }`}
+          >
+            Live ({nfts.filter(nft => nft.isForSale).length})
+          </button>
+          <button
+            onClick={() => setActiveTab('sold')}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'sold'
+                ? 'text-blue-400 border-b-2 border-blue-400 bg-blue-500/5'
+                : 'text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800/50'
+            }`}
+          >
+            Sold ({nfts.filter(nft => !nft.isForSale && nft.priceEth > 0).length})
+          </button>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-2 mb-4 pl-2">
         {/* Header section: Title, stats, and controls all together */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -682,9 +712,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             {filteredNFTs.length > 0 && (
               <>
                 <div className="text-sm font-medium mt-1">
-                  <span className="text-green-400">{filteredNFTs.filter(nft => nft.isForSale).length} Live</span>
-                  <span className="text-neutral-400"> • </span>
-                  <span className="text-blue-400">{filteredNFTs.filter(nft => !nft.isForSale && nft.priceEth > 0).length} Sold</span>
+                  <span className="text-[#FFFBEB]">{filteredNFTs.length} {activeTab === 'live' ? 'Live' : 'Sold'}</span>
                 </div>
                 <div className="text-xs text-neutral-500 mt-1">
                   {startIndex + 1}-{Math.min(endIndex, filteredNFTs.length)} of {filteredNFTs.length} NFTs
@@ -988,7 +1016,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
                                 Buy
                               </Link>
                             ) : (
-                              <span className="px-2.5 py-1 bg-green-500/10 border border-green-500/30 rounded-sm text-green-400 text-xs font-medium">
+                              <span className="px-2.5 py-1 bg-neutral-500/10 border border-neutral-500/30 rounded-sm text-neutral-400 text-xs font-medium">
                                 SOLD
                               </span>
                             )}

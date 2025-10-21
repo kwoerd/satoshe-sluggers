@@ -8,7 +8,7 @@ import { ArrowLeft, Heart, ChevronLeft, ChevronRight, ExternalLink } from "lucid
 import Footer from "@/components/footer";
 import Navigation from "@/components/navigation";
 import AttributeRarityChart from "@/components/attribute-rarity-chart";
-import { MediaRenderer, useActiveAccount, BuyDirectListingButton } from "thirdweb/react";
+import { MediaRenderer, BuyDirectListingButton } from "thirdweb/react";
 import { base } from "thirdweb/chains";
 import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -126,7 +126,7 @@ export default function NFTDetailPage() {
               clearTimeout(timeoutId);
               setIsLoading(false);
             })
-            .catch((error) => {
+            .catch(() => {
               setMetadata(null);
               setImageUrl("/nfts/placeholder-nft.webp");
               clearTimeout(timeoutId);
@@ -359,9 +359,8 @@ export default function NFTDetailPage() {
               </div>
             </div>
 
-
             {/* Artist and Platform - Two Column Layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
               <a 
                 href="https://kristenwoerdeman.com" 
                 target="_blank" 
@@ -442,7 +441,7 @@ export default function NFTDetailPage() {
             </div>
 
             {/* IPFS Links - CID Information */}
-            <div className="space-y-3 mb-4">
+            <div className="space-y-3 mb-6">
                 <a
                   href={metadata?.merged_data?.metadata_url}
                   target="_blank"
@@ -553,7 +552,7 @@ export default function NFTDetailPage() {
               <h3 className="text-lg font-semibold mb-4 text-off-white">Attributes</h3>
               <div className="grid grid-cols-2 gap-3">
                 {attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }, index: number) => (
-                  <div key={index} className="bg-neutral-900 p-3 rounded border border-neutral-700">
+                  <div key={index} className="bg-neutral-800 p-3 rounded border border-neutral-700">
                     <div className="flex items-center mb-2">
                       <div
                         className="w-3 h-3 rounded-full mr-2"
@@ -713,41 +712,41 @@ export default function NFTDetailPage() {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-neutral-400 mb-1">NFT Number</p>
-                  <p className="font-normal text-off-white">{metadata?.card_number ?? parseInt(tokenId) + 1}</p>
+                  <p className="text-sm text-[#FFFBEB]">{metadata?.card_number ?? parseInt(tokenId) + 1}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Token ID</p>
-                  <p className="font-normal text-off-white">{metadata?.token_id ?? parseInt(tokenId) - 1}</p>
+                  <p className="text-sm text-[#FFFBEB]">{metadata?.token_id ?? parseInt(tokenId) - 1}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Collection</p>
-                  <p className="font-normal text-off-white">
+                  <p className="text-sm text-[#FFFBEB]">
                     {metadata?.collection_number ?? "—"}
                   </p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Edition</p>
-                  <p className="font-normal text-off-white">{metadata?.edition ?? "—"}</p>
+                  <p className="text-sm text-[#FFFBEB]">{metadata?.edition ?? "—"}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Series</p>
-                  <p className="font-normal text-off-white">{metadata?.series ?? "—"}</p>
+                  <p className="text-sm text-[#FFFBEB]">{metadata?.series ?? "—"}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Rarity Tier</p>
-                  <p className="font-normal text-off-white">{metadata?.rarity_tier ?? "Unknown"}</p>
+                  <p className="text-sm text-[#FFFBEB]">{metadata?.rarity_tier ?? "Unknown"}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Rarity Score</p>
-                  <p className="font-normal text-off-white">{metadata?.rarity_score ?? "—"}</p>
+                  <p className="text-sm text-[#FFFBEB]">{metadata?.rarity_score ?? "—"}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Rank</p>
-                  <p className="font-normal text-off-white">{metadata?.rank ?? "—"} of {TOTAL_COLLECTION_SIZE}</p>
+                  <p className="text-sm text-[#FFFBEB]">{metadata?.rank ?? "—"} of {TOTAL_COLLECTION_SIZE}</p>
                 </div>
                 <div>
                   <p className="text-neutral-400 mb-1">Rarity Percentage</p>
-                  <p className="font-normal text-off-white">{metadata?.rarity_percent ?? "—"}%</p>
+                  <p className="text-sm text-[#FFFBEB]">{metadata?.rarity_percent ?? "—"}%</p>
                 </div>
               </div>
             </div>
@@ -758,12 +757,14 @@ export default function NFTDetailPage() {
               <h3 className="text-lg font-semibold mb-4 text-off-white">Contract Details</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between items-center">
-                    <span className="text-neutral-400">Contract Address</span>
+                    <span className="text-neutral-400 text-sm">Contract Address</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-off-white">0xf167...1d9C</span>
+                      <span className="text-sm text-[#FFFBEB]">
+                        {process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS?.slice(0, 6)}...{process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS?.slice(-4)}
+                      </span>
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText('0xf167...1d9C');
+                          navigator.clipboard.writeText(process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || '');
                           // You could add a toast notification here if desired
                         }}
                         className="p-1 hover:bg-neutral-700 rounded transition-colors group"
@@ -790,18 +791,18 @@ export default function NFTDetailPage() {
                   </div>
                   <Separator className="bg-neutral-600" />
                   <div className="flex justify-between items-center">
-                    <span className="text-neutral-400">Token ID</span>
-                    <span className="text-off-white">{metadata?.token_id ?? tokenId}</span>
+                    <span className="text-neutral-400 text-sm">Token ID</span>
+                    <span className="text-sm text-[#FFFBEB]">{metadata?.token_id ?? tokenId}</span>
                   </div>
                   <Separator className="bg-neutral-600" />
                   <div className="flex justify-between items-center">
-                    <span className="text-neutral-400">Token Standard</span>
-                    <span className="text-off-white">ERC-721</span>
+                    <span className="text-neutral-400 text-sm">Token Standard</span>
+                    <span className="text-sm text-[#FFFBEB]">ERC-721</span>
                   </div>
                   <Separator className="bg-neutral-600" />
                   <div className="flex justify-between items-center">
-                    <span className="text-neutral-400">Blockchain</span>
-                    <span className="text-off-white">Base</span>
+                    <span className="text-neutral-400 text-sm">Blockchain</span>
+                    <span className="text-sm text-[#FFFBEB]">Base</span>
                   </div>
                 </div>
             </div>

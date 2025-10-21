@@ -7,6 +7,7 @@ import { MobileMenu } from "@/components/mobile-menu"
 import { ConnectButton } from "thirdweb/react"
 import { useActiveAccount } from "thirdweb/react"
 import { client } from "@/lib/thirdweb"
+import { useState, useEffect } from "react"
 
 interface NavigationProps {
   activePage?: "home" | "about" | "nfts" | "provenance" | "contact"
@@ -14,6 +15,11 @@ interface NavigationProps {
 
 export default function Navigation({ activePage = "home" }: NavigationProps) {
   const account = useActiveAccount()
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   return (
     <header id="navigation" className="border-b border-neutral-700 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-3 sm:py-4 flex items-center justify-between bg-neutral-950/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50">
@@ -91,7 +97,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
         </Link>
       </nav>
       <div className="flex items-center gap-6">
-        {account && (
+        {isClient && account ? (
           <Link
             href="/my-nfts"
             className="hidden lg:flex items-center justify-center group"
@@ -105,7 +111,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
                       className="w-6 h-6 group-hover:scale-110 transition-transform duration-200"
                     />
           </Link>
-        )}
+        ) : null}
                 <div className="hidden lg:block">
                   <ConnectButton client={client} />
                 </div>
