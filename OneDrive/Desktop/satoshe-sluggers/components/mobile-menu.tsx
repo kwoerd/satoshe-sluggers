@@ -7,9 +7,10 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import SimpleConnectButton from "@/components/simple-connect-button"
+import { ConnectButton } from "thirdweb/react"
 import { createPortal } from "react-dom"
 import { prefersReducedMotion } from "@/lib/reduced-motion"
+import { client } from "@/lib/thirdweb"
 
 interface MobileMenuProps {
   isWalletConnected?: boolean
@@ -153,7 +154,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
 
         <div className="flex flex-col gap-2 py-2 items-center">
                   <div className="mb-4 flex items-center justify-center w-full">
-                    <SimpleConnectButton />
+                    <ConnectButton client={client} />
                   </div>
           <nav className="flex flex-col space-y-3 items-center w-full">
             <Link

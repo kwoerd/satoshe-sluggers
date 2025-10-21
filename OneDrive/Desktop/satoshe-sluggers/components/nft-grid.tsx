@@ -13,15 +13,30 @@ import {
 import Pagination from "@/components/ui/pagination";
 // Removed BuyDirectListingButton imports - using regular buttons to avoid RPC calls
 import NFTCard from "./nft-card";
-import { LayoutGrid, Rows3, Grid3x3, Heart, Square } from "lucide-react";
+import { LayoutGrid, Rows3, Grid3x3, Heart, Square, ShoppingCart } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useCart } from "@/hooks/useCart";
+import CartDrawer from "./cart-drawer";
 import Link from "next/link";
 import Image from "next/image";
 import { loadAllNFTs } from "@/lib/simple-data-service";
 import { announceToScreenReader } from "@/lib/accessibility-utils";
 
 
+
+// Type definitions
+interface UrlDataItem {
+  TokenID: number
+  "Media URL": string
+  "Metadata URL": string
+}
+
+interface TestListing {
+  token_id: number
+  price_eth: number
+  status: string
+}
 
 type NFTGridItem = {
   id: string;
@@ -150,7 +165,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
   const [pricingMappings, setPricingMappings] = useState<Record<number, { price_eth: number; listing_id?: number }>>({});
   const [ipfsUrls, setIpfsUrls] = useState<Record<number, { mediaUrl: string; metadataUrl: string }>>({});
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const { items: cartItems } = useCart();
   const [scrollPosition, setScrollPosition] = useState<number>(0);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
   
   // Load IPFS URLs
@@ -162,7 +179,7 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           const urlsData = await response.json();
           const urlMap: Record<number, { mediaUrl: string; metadataUrl: string }> = {};
           
-          urlsData.forEach((item: any) => {
+          urlsData.forEach((item: UrlDataItem) => {
             urlMap[item.TokenID] = {
               mediaUrl: item["Media URL"],
               metadataUrl: item["Metadata URL"]
@@ -329,15 +346,15 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         const mainMetadata = await loadAllNFTs();
         
         // Load test NFTs with full metadata (for testing only)
-        const testMetadata: any[] = [];
+        const testMetadata: TestListing[] = [];
         try {
           // Load test listings for pricing data
           const testResponse = await fetch('/data/test-nfts/test_listings.json');
           if (testResponse.ok) {
             const testData = await testResponse.json();
             const activeListings = Object.entries(testData.test_listings)
-              .filter(([, data]) => (data as any).status === 'Active')
-              .map(([listingId, data]) => ({ listingId, ...data as any }));
+              .filter(([, data]) => (data as TestListing).status === 'Active')
+              .map(([listingId, data]) => ({ listingId, ...data as TestListing }));
 
             // Load individual test NFT metadata files
             for (const listing of activeListings) {
@@ -801,6 +818,22 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
               </div>
             </TooltipProvider>
 
+            {/* Cart Button */}
+            <div className="flex items-center gap-3">
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-[#ff0099] hover:bg-[#ff0099]/90 text-white rounded-lg transition-colors"
+                onClick={() => setIsCartOpen(true)}
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span className="text-sm font-medium">Cart</span>
+                {cartItems.length > 0 && (
+                  <span className="bg-white text-[#ff0099] rounded-full px-2 py-1 text-xs font-bold">
+                    {cartItems.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
             {/* Dropdowns - Below view toggles */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
@@ -1041,6 +1074,12 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         totalItems={filteredNFTs.length}
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
+      />
+
+      {/* Cart Drawer */}
+      <CartDrawer 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)} 
       />
     </div>
   );

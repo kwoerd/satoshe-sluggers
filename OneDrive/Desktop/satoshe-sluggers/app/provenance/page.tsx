@@ -20,6 +20,13 @@ interface ProvenanceRecord {
   metadata_url: string
 }
 
+// Type definitions
+interface UrlDataItem {
+  TokenID: number
+  "Media URL": string
+  "Metadata URL": string
+}
+
 export default function ProvenancePage() {
   const [copiedHash, setCopiedHash] = useState<string | null>(null)
   const [copiedProof, setCopiedProof] = useState(false)
@@ -70,7 +77,7 @@ export default function ProvenancePage() {
 
         // Create URL lookup map
         const urlMap = new Map()
-        urlsData.forEach((item: any) => {
+        urlsData.forEach((item: UrlDataItem) => {
           urlMap.set(item.TokenID, {
             mediaUrl: item["Media URL"],
             metadataUrl: item["Metadata URL"]

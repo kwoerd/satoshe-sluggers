@@ -1,6 +1,5 @@
 // scripts/optimize-pricing.js
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
 
 const INPUT_FILE = 'public/data/pricing/token_pricing_mappings.json';
 const OUTPUT_FILE = 'public/data/pricing/optimized_pricing.json';

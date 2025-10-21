@@ -23,7 +23,7 @@ export function usePurchase() {
 
   const { mutate: sendTransaction, isPending } = useSendTransaction();
 
-  const purchase = async ({ listingId, price }: PurchaseParams) => {
+  const purchase = async ({ listingId }: PurchaseParams) => {
     if (!account) {
       throw new Error("No wallet connected");
     }

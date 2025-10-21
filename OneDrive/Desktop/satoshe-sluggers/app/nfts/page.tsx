@@ -4,7 +4,7 @@ import NFTGrid from "@/components/nft-grid"
 import CollectionStats from "@/components/collection-stats"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
-import NFTSidebar from "@/components/nft-sidebar"
+import NFTSidebar, { FilterState } from "@/components/nft-sidebar"
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
@@ -18,7 +18,7 @@ function NFTsPageContent() {
   
   const [searchTerm, setSearchTerm] = useState("")
   const [searchMode, setSearchMode] = useState<"contains" | "exact">("contains")
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({})
+  const [selectedFilters, setSelectedFilters] = useState<FilterState>({})
   const [traitCounts, setTraitCounts] = useState<Record<string, Record<string, number>>>({})
   const [isInitialized, setIsInitialized] = useState(false)
 
@@ -29,7 +29,7 @@ function NFTsPageContent() {
       const urlSearchMode = (searchParams.get('mode') as "contains" | "exact") || "contains"
       
       // Parse filters from URL
-          const urlFilters: Record<string, any> = {}
+          const urlFilters: FilterState = {}
       const simpleFilterKeys = ['rarity', 'background', 'skinTone', 'shirt', 'eyewear']
       const nestedFilterKeys = ['hair', 'headwear']
       
@@ -81,7 +81,7 @@ function NFTsPageContent() {
             params.set(key, encodeURIComponent(JSON.stringify(value)))
           } else if (typeof value === 'object' && value !== null) {
             // Nested object filters (hair, headwear)
-            const hasValues = Object.values(value).some((arr: any) => Array.isArray(arr) && arr.length > 0)
+            const hasValues = Object.values(value).some((arr: string[]) => Array.isArray(arr) && arr.length > 0)
             if (hasValues) {
               params.set(key, encodeURIComponent(JSON.stringify(value)))
             }

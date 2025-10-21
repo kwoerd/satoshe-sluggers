@@ -5,8 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Plus, ShoppingCart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useCart } from "@/hooks/useCart";
 import { track } from '@vercel/analytics';
 import { TOTAL_COLLECTION_SIZE } from "@/lib/contracts";
 // Removed BuyDirectListingButton imports - using regular buttons to avoid RPC calls
@@ -47,6 +48,31 @@ export default function NFTCard({
   // Favorites functionality
   const { isFavorited, toggleFavorite, isConnected } = useFavorites();
   const isFav = isFavorited(tokenId);
+
+  // Cart functionality
+  const { addToCart, items: cartItems } = useCart();
+  const isInCart = cartItems.some(item => item.tokenId === tokenId);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isInCart) return; // Already in cart
+    
+    addToCart({
+      id: `${tokenId}-${Date.now()}`, // Unique ID
+      tokenId,
+      name,
+      image,
+      price: priceEth.toString(),
+      priceWei: (priceEth * 1e18).toString(), // Convert to Wei
+      rarity,
+      rank: rank.toString(),
+      rarityPercent: rarityPercent.toString(),
+    });
+    
+    track('NFT Added to Cart', { tokenId, name, price: priceEth });
+  };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -193,7 +219,22 @@ export default function NFTCard({
                     {priceEth} ETH
                   </div>
                 </div>
-                <div className="flex-shrink-0 -mt-1">
+                <div className="flex-shrink-0 -mt-1 flex gap-2">
+                  {!isInCart ? (
+                    <button
+                      onClick={handleAddToCart}
+                      className="px-3 py-1.5 bg-[#ff0099]/10 border-2 border-[#ff0099]/30 rounded-sm text-[#ff0099] text-xs font-medium hover:bg-[#ff0099]/20 transition-colors flex items-center gap-1"
+                      aria-label={`Add ${name} to cart`}
+                    >
+                      <Plus className="h-3 w-3" />
+                      CART
+                    </button>
+                  ) : (
+                    <div className="px-3 py-1.5 bg-green-500/10 border-2 border-green-500/30 rounded-sm text-green-400 text-xs font-medium flex items-center gap-1">
+                      <ShoppingCart className="h-3 w-3" />
+                      IN CART
+                    </div>
+                  )}
                   <Link
                     href={`/nft/${cardNumber}`}
                     className="px-3 py-1.5 bg-blue-500/10 border-2 border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"

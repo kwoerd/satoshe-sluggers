@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { announceToScreenReader } from "@/lib/accessibility-utils"
 
 // Simple types
-interface FilterState {
+export interface FilterState {
   rarity?: string[];
   background?: string[];
   skinTone?: string[];
@@ -16,6 +16,7 @@ interface FilterState {
   hair?: Record<string, string[]>;
   eyewear?: string[];
   headwear?: Record<string, string[]>;
+  [key: string]: string[] | Record<string, string[]> | undefined;
 }
 
 interface NFTSidebarProps {
@@ -24,7 +25,7 @@ interface NFTSidebarProps {
   searchMode: "exact" | "contains";
   setSearchMode: (mode: "exact" | "contains") => void;
   selectedFilters: FilterState;
-  setSelectedFilters: (val: FilterState) => void;
+  setSelectedFilters: (filters: FilterState) => void;
   traitCounts?: Record<string, Record<string, number>>;
 }
 
