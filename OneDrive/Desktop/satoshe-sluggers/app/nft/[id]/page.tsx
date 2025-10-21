@@ -104,81 +104,34 @@ export default function NFTDetailPage() {
 
     const tokenIdNum = parseInt(tokenId);
     
-    // Check if this is a test NFT first (token IDs 7777-7781)
-    if (tokenIdNum >= 7777 && tokenIdNum <= 7781) {
-      // Load test NFT metadata and listing data
-      Promise.all([
-        fetch(`/data/test-nfts/${tokenIdNum}.json`).then(res => res.json()),
-        fetch('/data/test-nfts/test_listings.json').then(res => res.json())
-      ])
-        .then(([metadata, listingsData]) => {
-          const testListing = Object.values(listingsData.test_listings).find((listing: any) => 
-            listing.token_id === tokenIdNum && listing.status === 'Active'
-          ) as any;
-          
-          if (testListing) {
-            // Merge the real metadata with listing data
-            const testMetadata = {
-              ...metadata,
-              merged_data: {
-                nft: testListing.token_id,
-                token_id: testListing.token_id,
-                listing_id: parseInt(Object.keys(listingsData.test_listings).find(key => 
-                  listingsData.test_listings[key].token_id === tokenIdNum
-                ) || "0"),
-                metadata_cid: "test-cid",
-                media_cid: "test-cid",
-                metadata_url: "/nfts/placeholder-nft.webp",
-                media_url: "/nfts/placeholder-nft.webp",
-                price_eth: testListing.price_eth
-              }
-            };
-            setMetadata(testMetadata);
-            setImageUrl("/nfts/placeholder-nft.webp");
-          } else {
-            setMetadata(null);
-            setImageUrl("/nfts/placeholder-nft.webp");
-          }
-          clearTimeout(timeoutId);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          setMetadata(null);
-          setImageUrl("/nfts/placeholder-nft.webp");
-          clearTimeout(timeoutId);
-          setIsLoading(false);
-        });
-    } else {
-      // Load main collection NFT data using data service
-      // Note: token IDs in metadata start from 0, but URLs use human-friendly numbers (1-based)
-      const actualTokenId = tokenIdNum - 1;
-      getNFTByTokenId(actualTokenId)
+    // Load NFT data using data service for all NFTs (including test NFTs now in combined_metadata.json)
+    // Note: token IDs in metadata start from 0, but URLs use human-friendly numbers (1-based)
+    const actualTokenId = tokenIdNum - 1;
+    getNFTByTokenId(actualTokenId)
             .then((nftData: NFTData | null) => {
-            
-            if (nftData) {
-              setMetadata(nftData);
-              
-              // Set image URL from metadata
-              const mediaUrl = nftData.merged_data?.media_url;
-              if (mediaUrl) {
-                setImageUrl(mediaUrl);
+              if (nftData) {
+                setMetadata(nftData);
+                
+                // Set image URL from metadata
+                const mediaUrl = nftData.merged_data?.media_url;
+                if (mediaUrl) {
+                  setImageUrl(mediaUrl);
+                } else {
+                  setImageUrl("/nfts/placeholder-nft.webp");
+                }
               } else {
+                setMetadata(null);
                 setImageUrl("/nfts/placeholder-nft.webp");
               }
-            } else {
+              clearTimeout(timeoutId);
+              setIsLoading(false);
+            })
+            .catch((error) => {
               setMetadata(null);
               setImageUrl("/nfts/placeholder-nft.webp");
-            }
-            clearTimeout(timeoutId);
-            setIsLoading(false);
-          })
-          .catch(() => {
-            setMetadata(null);
-            setImageUrl("/nfts/placeholder-nft.webp");
-            clearTimeout(timeoutId);
-            setIsLoading(false);
-          });
-    }
+              clearTimeout(timeoutId);
+              setIsLoading(false);
+            });
 
     // Cleanup timeout on unmount
     return () => clearTimeout(timeoutId);
@@ -201,9 +154,15 @@ export default function NFTDetailPage() {
           percentage = Math.abs(hash) % 50 + 1; // 1-50% range
         }
         
+        // Clean up redundant prefixes in values
+        let cleanValue = attr.value;
+        if (attr.trait_type === 'Eyewear' && attr.value.startsWith('Eyewear ')) {
+          cleanValue = attr.value.replace('Eyewear ', '');
+        }
+        
         return {
           name: attr.trait_type,
-          value: attr.value,
+          value: cleanValue,
           percentage: percentage,
           occurrence: attr.occurrence
         };
@@ -216,7 +175,12 @@ export default function NFTDetailPage() {
   // Get pricing data from metadata
   const priceEth = metadata?.merged_data?.price_eth || 0;
   const listingId = metadata?.merged_data?.listing_id || 0;
-  const isForSale = priceEth > 0 && !isPurchased;
+  
+  // Check if NFT is sold based on token_id
+  // NFT 7826 is completed/sold, others are active
+  const tokenIdNum = parseInt(tokenId);
+  const isSold = tokenIdNum === 7826;
+  const isForSale = priceEth > 0 && !isPurchased && !isSold;
 
   // Confetti celebration function
   const triggerConfetti = () => {
@@ -378,9 +342,9 @@ export default function NFTDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-start">
           {/* Left Column - Image */}
-          <div className="space-y-6 order-1 lg:order-1">
+          <div className="flex flex-col space-y-6 order-1 lg:order-1 h-full">
             {/* NFT Image Card */}
             <div className="relative" style={{ aspectRatio: "2700/3000" }}>
               <div className="relative w-full h-full">
@@ -396,8 +360,89 @@ export default function NFTDetailPage() {
             </div>
 
 
+            {/* Artist and Platform - Two Column Layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <a 
+                href="https://kristenwoerdeman.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/brands/kristen-woerdeman/kwoerd-circular-offwhite-32.png"
+                    alt="Kristen Woerdeman"
+                    width={26}
+                    height={26}
+                    className="w-6 h-6"
+                    sizes="26px"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-off-white">Artist</p>
+                    <p className="text-xs text-neutral-400">Kristen Woerdeman</p>
+                  </div>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+
+              <a 
+                href="https://retinaldelights.io" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/brands/retinal-delights/retinal-delights-cicular-offwhite-32.png"
+                    alt="Retinal Delights"
+                    width={26}
+                    height={26}
+                    className="w-6 h-6"
+                    sizes="26px"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-off-white">Platform</p>
+                    <p className="text-xs text-neutral-400">Retinal Delights</p>
+                  </div>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+            </div>
+
             {/* IPFS Links - CID Information */}
-            <div className="space-y-3">
+            <div className="space-y-3 mb-4">
                 <a
                   href={metadata?.merged_data?.metadata_url}
                   target="_blank"
@@ -504,7 +549,7 @@ export default function NFTDetailPage() {
               </div>
 
             {/* Attributes - 3 rows, 2 columns */}
-            <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+            <div className="bg-neutral-800 p-4 rounded border border-neutral-700 mt-auto">
               <h3 className="text-lg font-semibold mb-4 text-off-white">Attributes</h3>
               <div className="grid grid-cols-2 gap-3">
                 {attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }, index: number) => (
@@ -528,7 +573,7 @@ export default function NFTDetailPage() {
           </div>
 
           {/* Right Column - NFT Details */}
-          <div className="space-y-6 order-2 lg:order-2">
+          <div className="flex flex-col space-y-6 order-2 lg:order-2 h-full">
             {/* NFT Name with Heart Icon */}
             <div className="flex items-start justify-between gap-4">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight text-off-white">
@@ -555,15 +600,15 @@ export default function NFTDetailPage() {
 
             {/* Buy Now Section - Simplified */}
             {isForSale ? (
-              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+              <div className="bg-neutral-800 p-6 rounded border border-neutral-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-blue-500 mb-1">Buy Now Price</p>
-                    <p className="text-2xl font-bold text-blue-500">
+                    <p className="text-sm text-blue-500 mb-2">Buy Now Price</p>
+                    <p className="text-3xl font-bold text-blue-500">
                       {priceEth} ETH
                     </p>
                     {transactionState === 'pending' && (
-                      <p className="text-xs text-yellow-400 mt-1">
+                      <p className="text-xs text-yellow-400 mt-2">
                         ⏳ Transaction pending... Please wait for confirmation.
                       </p>
                     )}
@@ -589,12 +634,12 @@ export default function NFTDetailPage() {
                   </BuyDirectListingButton>
                 </div>
               </div>
-            ) : isPurchased ? (
-              <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
+            ) : isSold || isPurchased ? (
+              <div className="bg-neutral-800 p-6 rounded border border-neutral-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-green-500 mb-1">Sold At</p>
-                    <p className="text-2xl font-bold text-green-500">
+                    <p className="text-sm text-green-500 mb-2">SOLD</p>
+                    <p className="text-3xl font-bold text-green-500">
                       {priceEth} ETH
                     </p>
                   </div>
@@ -614,6 +659,10 @@ export default function NFTDetailPage() {
                     <ExternalLink className="w-4 h-4" />
                   </Link>
                 </div>
+              </div>
+            ) : isSold ? (
+              <div className="bg-green-500/10 p-4 rounded border border-green-500/30">
+                <p className="text-green-400 text-center font-semibold">SOLD</p>
               </div>
             ) : (
               <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
@@ -703,76 +752,6 @@ export default function NFTDetailPage() {
               </div>
             </div>
 
-            {/* Artist and Platform - Two Column Layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/brands/kristen-woerdeman/kwoerd-circular-offwhite-32.png"
-                    alt="Kristen Woerdeman"
-                    width={26}
-                    height={26}
-                    className="w-6 h-6"
-                    sizes="26px"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-off-white">Artist</p>
-                    <p className="text-xs text-neutral-400">Kristen Woerdeman</p>
-                  </div>
-                </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
-                  aria-hidden="true"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-              </div>
-
-              <div className="flex items-center justify-between w-full px-4 py-3 bg-neutral-800 hover:bg-[#171717] border border-neutral-600 rounded transition-colors group">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/brands/retinal-delights/retinal-delights-cicular-offwhite-32.png"
-                    alt="Retinal Delights"
-                    width={26}
-                    height={26}
-                    className="w-6 h-6"
-                    sizes="26px"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-off-white">Platform</p>
-                    <p className="text-xs text-neutral-400">Retinal Delights</p>
-                  </div>
-                </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-neutral-400 group-hover:text-[#ff0099] transition-colors"
-                  aria-hidden="true"
-                >
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-              </div>
-            </div>
 
             {/* Contract Details - Moved from Women's Baseball Card */}
             <div className="bg-neutral-800 p-4 rounded border border-neutral-700">
@@ -828,25 +807,27 @@ export default function NFTDetailPage() {
             </div>
 
             {/* Rarity Distribution - Right Side, No Box */}
-            <h3 className="text-lg font-semibold mb-4 text-off-white">Rarity Distribution</h3>
-            {attributes.length > 0 ? (
-              <AttributeRarityChart
-                attributes={attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }) => ({
-                  name: attr.name,
-                  value: attr.value,
-                  percentage: attr.percentage || 0,
-                  occurrence: attr.occurrence,
-                  color: getColorForAttribute(attr.name)
-                }))}
-                overallRarity={metadata?.rarity_percent || "93.5"}
-              />
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-neutral-400">No attributes available for rarity distribution</p>
-                <p className="text-xs text-neutral-500 mt-2">Attributes count: {attributes.length}</p>
-                <p className="text-xs text-neutral-500 mt-1">Metadata: {metadata ? 'Loaded' : 'Not loaded'}</p>
-              </div>
-            )}
+            <div className="bg-neutral-800 p-4 rounded border border-neutral-700 mt-auto">
+              <h3 className="text-lg font-semibold mb-4 text-off-white">Rarity Distribution</h3>
+              {attributes.length > 0 ? (
+                <AttributeRarityChart
+                  attributes={attributes.map((attr: { name: string; value: string; percentage?: number; occurrence?: number }) => ({
+                    name: attr.name,
+                    value: attr.value,
+                    percentage: attr.percentage || 0,
+                    occurrence: attr.occurrence,
+                    color: getColorForAttribute(attr.name)
+                  }))}
+                  overallRarity={metadata?.rarity_percent || "93.5"}
+                />
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-neutral-400">No attributes available for rarity distribution</p>
+                  <p className="text-xs text-neutral-500 mt-2">Attributes count: {attributes.length}</p>
+                  <p className="text-xs text-neutral-500 mt-1">Metadata: {metadata ? 'Loaded' : 'Not loaded'}</p>
+                </div>
+              )}
+            </div>
 
 
 

@@ -401,6 +401,12 @@ export default function ProvenancePage() {
                   </button>
                 )}
               </div>
+              <button
+                onClick={() => setSearchTerm("")}
+                className="bg-[#ff0099] hover:bg-[#e6008a] text-[#FFFBEB] text-sm font-medium px-3 py-2 rounded transition-colors duration-200"
+              >
+                Clear
+              </button>
               {searchTerm && (
                 <div className="text-sm text-neutral-400">
                   {filteredRecords.length} result{filteredRecords.length !== 1 ? 's' : ''}

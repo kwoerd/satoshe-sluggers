@@ -141,7 +141,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="Satoshe Slugger"
-                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
+                    className="bg-neutral-800 border-neutral-700 font-light placeholder:text-neutral-300 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
                     style={{
                       WebkitBoxShadow: '0 0 0 1000px #262626 inset',
                       WebkitTextFillColor: '#FFFBEB'
@@ -170,7 +170,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="hello@satoshesluggers.com"
-                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
+                    className="bg-neutral-800 border-neutral-700 font-light placeholder:text-neutral-300 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
                     style={{
                       WebkitBoxShadow: '0 0 0 1000px #262626 inset',
                       WebkitTextFillColor: '#FFFBEB'
@@ -200,7 +200,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder="What is this regarding?"
-                  className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
+                  className="bg-neutral-800 border-neutral-700 font-light placeholder:text-neutral-300 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
                   style={{
                     WebkitBoxShadow: '0 0 0 1000px #262626 inset',
                     WebkitTextFillColor: '#FFFBEB'
@@ -227,7 +227,7 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  className="min-h-[150px] bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
+                  className="min-h-[150px] bg-neutral-800 border-neutral-700 font-light placeholder:text-neutral-300 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
                   style={{
                     WebkitBoxShadow: '0 0 0 1000px #262626 inset',
                     WebkitTextFillColor: '#FFFBEB'
@@ -277,7 +277,7 @@ export default function ContactPage() {
                     style={{ color: "#FF0099" }}
                     aria-label="Terms of Service (opens in a new window)"
                   >
-                    Terms</a><span style={{ color: "#FF0099" }} aria-hidden="true">.*</span>
+                    Terms</a><span style={{ color: "#FFFBEB" }} aria-hidden="true">.</span><span style={{ color: "#FF0099" }} aria-hidden="true">*</span>
                   <span className="sr-only">(required)</span>
                 </Label>
               </div>

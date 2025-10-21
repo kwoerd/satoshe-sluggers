@@ -4,8 +4,9 @@
 import Link from "next/link"
 import Image from "next/image"
 import { MobileMenu } from "@/components/mobile-menu"
-import SimpleConnectButton from "@/components/simple-connect-button"
+import { ConnectButton } from "thirdweb/react"
 import { useActiveAccount } from "thirdweb/react"
+import { client } from "@/lib/thirdweb"
 
 interface NavigationProps {
   activePage?: "home" | "about" | "nfts" | "provenance" | "contact"
@@ -89,7 +90,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           }`}></span>
         </Link>
       </nav>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-6">
         {account && (
           <Link
             href="/my-nfts"
@@ -106,7 +107,7 @@ export default function Navigation({ activePage = "home" }: NavigationProps) {
           </Link>
         )}
                 <div className="hidden lg:block">
-                  <SimpleConnectButton />
+                  <ConnectButton client={client} />
                 </div>
         <MobileMenu isWalletConnected={!!account} />
       </div>

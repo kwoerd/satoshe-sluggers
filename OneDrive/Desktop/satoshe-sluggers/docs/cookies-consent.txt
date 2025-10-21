@@ -1,0 +1,9 @@
+// docs
+https://support.termly.io/hc/en-us/articles/30710477395089-How-to-install-Termly-s-Consent-Management-Platform-in-a-Next-js-App
+
+// nextJS
+Use your website UUID below in your TermlyCMP component.
+ba09ca99-2e6c-4e83-adca-6b3e27ffe054
+
+// HTML
+<script src="https://app.termly.io/resource-blocker/ba09ca99-2e6c-4e83-adca-6b3e27ffe054?autoBlock=on"></script>
