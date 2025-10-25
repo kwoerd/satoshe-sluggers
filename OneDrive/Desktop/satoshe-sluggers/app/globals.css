@@ -2,6 +2,21 @@
 @import "tailwindcss";
 
 @layer base {
+  input::placeholder,
+  textarea::placeholder {
+    color: #6b7280 !important;
+  }
+  
+  /* Fix autofill styling for dark theme */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #262626 inset !important;
+    -webkit-text-fill-color: #FFFBEB !important;
+    color: #FFFBEB !important;
+  }
+  
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;

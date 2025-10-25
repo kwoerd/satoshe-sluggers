@@ -67,7 +67,7 @@ export const designTokens = {
     // Neutral Grayscale
     neutral: {
       white: '#FFFFFF',
-      'off-white': '#FFFBEB',  // Primary text color
+      'off-white': '#F2EAD4',  // Primary text color
       'light-gray': '#D1D5DB', // Light text
       'mid-gray': '#9CA3AF',   // Labels, categories
       'placeholder': '#6B7280', // Placeholder text

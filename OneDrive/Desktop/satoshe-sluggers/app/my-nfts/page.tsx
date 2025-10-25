@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
-import { MediaRenderer } from "thirdweb/react"
+import Image from "next/image"
+import Link from "next/link"
 import { useActiveAccount } from "thirdweb/react"
 import { client } from "@/lib/thirdweb"
 import { useFavorites } from "@/hooks/useFavorites"
 import { Heart, Package } from "lucide-react"
-import MarketplaceSellModal from "@/components/marketplace-sell-modal"
 
 // Types for NFT data
 interface NFT {
@@ -21,6 +21,7 @@ interface NFT {
   name: string;
   image: string;
   rarity?: string;
+  isLocallyUnfavorited?: boolean; // Optional flag for visual state
   [key: string]: unknown;
 }
 
@@ -29,11 +30,10 @@ function MyNFTsContent() {
   const searchParams = useSearchParams()
   const tabParam = searchParams.get("tab")
 
-  const [activeTab, setActiveTab] = useState("owned")
+  const [activeTab, setActiveTab] = useState("favorites")
   const [isLoading, setIsLoading] = useState(true)
   const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([])
-  const [sellModalOpen, setSellModalOpen] = useState(false)
-  const [selectedNFT, setSelectedNFT] = useState<{ id: string; name: string; tokenId: string } | null>(null)
+  const [locallyUnfavorited, setLocallyUnfavorited] = useState<Set<string>>(new Set())
 
   const account = useActiveAccount()
   const { favorites, removeFromFavorites } = useFavorites()
@@ -44,6 +44,27 @@ function MyNFTsContent() {
     }
   }, [tabParam])
 
+  // Clean up locally unfavorited NFTs when switching tabs or navigating away
+  useEffect(() => {
+    if (activeTab !== "favorites") {
+      // Actually remove from favorites when switching away from favorites tab
+      locallyUnfavorited.forEach(tokenId => {
+        removeFromFavorites(tokenId)
+      })
+      setLocallyUnfavorited(new Set())
+    }
+  }, [activeTab, locallyUnfavorited])
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      // Actually remove from favorites when component unmounts
+      locallyUnfavorited.forEach(tokenId => {
+        removeFromFavorites(tokenId)
+      })
+    }
+  }, [locallyUnfavorited])
+
   useEffect(() => {
     const loadUserData = async () => {
       if (!account?.address) {
@@ -53,20 +74,9 @@ function MyNFTsContent() {
 
       setIsLoading(true);
       try {
-        // Use static metadata - no RPC calls for display
-        const response = await fetch('/data/combined_metadata.json');
-        const allMetadata = await response.json();
-        
-        // For demo purposes, show first 10 NFTs as "owned"
-        const demoOwnedNFTs = allMetadata.slice(0, 10).map((meta: { token_id?: number; name?: string; media_url?: string; rarity_tier?: string }) => ({
-          id: meta.token_id?.toString() || "0",
-          tokenId: meta.token_id?.toString() || "0",
-          name: meta.name || `Satoshe Slugger #${meta.token_id}`,
-          image: meta.media_url || `/nfts/${meta.token_id}.webp`,
-          rarity: meta.rarity_tier || "Common",
-        }));
-
-        setOwnedNFTs(demoOwnedNFTs);
+        // TODO: Implement actual wallet NFT fetching
+        // For now, show empty array - no demo/placeholder NFTs
+        setOwnedNFTs([]);
       } catch {
         setOwnedNFTs([]);
       } finally {
@@ -76,18 +86,28 @@ function MyNFTsContent() {
     loadUserData();
   }, [account?.address])
 
-  const handleListForSale = (nft: { id: string; name: string; tokenId: string }) => {
-    setSelectedNFT(nft)
-    setSellModalOpen(true)
-  }
-
   const handleUnfavorite = (tokenId: string) => {
-    removeFromFavorites(tokenId)
+    // Add to locally unfavorited set (visual feedback only)
+    setLocallyUnfavorited(prev => new Set(prev).add(tokenId))
   }
 
-  const handleCloseSellModal = () => {
-    setSellModalOpen(false)
-    setSelectedNFT(null)
+  const handleRefavorite = (tokenId: string) => {
+    // Remove from locally unfavorited set (re-favorite)
+    setLocallyUnfavorited(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(tokenId)
+      return newSet
+    })
+  }
+
+  // Actually remove from favorites when navigating away or switching tabs
+  const handleConfirmUnfavorite = (tokenId: string) => {
+    removeFromFavorites(tokenId)
+    setLocallyUnfavorited(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(tokenId)
+      return newSet
+    })
   }
 
 
@@ -106,7 +126,7 @@ function MyNFTsContent() {
       }))
     } else if (activeTab === "favorites") {
       return favorites.map((fav) => ({
-        id: fav.tokenId,
+        id: (parseInt(fav.tokenId) + 1).toString(), // Use card number for navigation
         tokenId: fav.tokenId,
         name: fav.name,
         image: fav.image,
@@ -114,6 +134,7 @@ function MyNFTsContent() {
         highestBid: "",
         rarity: fav.rarity || "Common",
         isListed: false,
+        isLocallyUnfavorited: locallyUnfavorited.has(fav.tokenId), // Add flag for visual state
       }))
     } else {
       return []
@@ -136,7 +157,7 @@ function MyNFTsContent() {
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-[#FFFBEB] flex flex-col pt-24 sm:pt-28">
-      <Navigation />
+      <Navigation activePage="my-nfts" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-24 py-8 flex-grow">
         {/* Header */}
@@ -151,18 +172,18 @@ function MyNFTsContent() {
         <div className="mb-6">
           <div className="flex border-b border-neutral-700">
             <button
-              className={`py-2 px-4 flex items-center gap-2 ${activeTab === "owned" ? "border-b-2 border-[#ff0099] text-offwhite font-medium" : "text-neutral-400 hover:text-offwhite"}`}
-              onClick={() => setActiveTab("owned")}
-            >
-              <Package className={`w-4 h-4 ${activeTab === "owned" ? "text-[#ff0099]" : ""}`} />
-              Owned ({ownedNFTs?.length || 0})
-            </button>
-            <button
               className={`py-2 px-4 flex items-center gap-2 ${activeTab === "favorites" ? "border-b-2 border-[#ff0099] text-offwhite font-medium" : "text-neutral-400 hover:text-offwhite"}`}
               onClick={() => setActiveTab("favorites")}
             >
               <Heart className={`w-4 h-4 ${activeTab === "favorites" ? "fill-[#ff0099] text-[#ff0099]" : ""}`} />
               Favorites ({favorites.length})
+            </button>
+            <button
+              className={`py-2 px-4 flex items-center gap-2 ${activeTab === "owned" ? "border-b-2 border-[#ff0099] text-offwhite font-medium" : "text-neutral-400 hover:text-offwhite"}`}
+              onClick={() => setActiveTab("owned")}
+            >
+              <Package className={`w-4 h-4 ${activeTab === "owned" ? "text-[#ff0099]" : ""}`} />
+              Owned ({ownedNFTs?.length || 0})
             </button>
           </div>
         </div>
@@ -199,59 +220,49 @@ function MyNFTsContent() {
                     {nft.rarity}
                   </Badge>
                   
-                  {/* Heart icon for favorites tab */}
-                  {activeTab === "favorites" && (
-                    <button
-                      onClick={() => handleUnfavorite(nft.id)}
-                      className="absolute top-3 left-3 z-20 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors group"
-                      aria-label="Remove from favorites"
-                    >
-                      <Heart className="w-4 h-4 fill-[#ff0099] text-[#ff0099] group-hover:scale-110 transition-transform" />
-                    </button>
-                  )}
                   
-                  <div className="w-full h-full flex items-center justify-center">
-                    <MediaRenderer
+                  <Link 
+                    href={`/nft/${nft.id}`}
+                    className="w-full h-full flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
+                  >
+                    <Image
                       src={nft.image || "/placeholder-nft.webp"}
                       alt={nft.name}
-                      width="250"
-                      height="278"
+                      width={250}
+                      height={278}
                       className="max-w-full max-h-full object-contain"
-                      client={client}
+                      loading="lazy"
                     />
-                  </div>
+                  </Link>
                 </div>
 
                 <div className="p-4">
-                  <h3 className="font-medium text-base mb-3">{nft.name}</h3>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-medium text-base">{nft.name}</h3>
+                    {activeTab === "favorites" && (
+                      <button
+                        onClick={() => (nft as any).isLocallyUnfavorited ? handleRefavorite(nft.tokenId) : handleUnfavorite(nft.tokenId)}
+                        className="w-6 h-6 flex items-center justify-center hover:bg-neutral-800 rounded transition-colors group cursor-pointer"
+                        aria-label={(nft as any).isLocallyUnfavorited ? "Re-favorite this NFT" : "Remove from favorites"}
+                      >
+                        <Heart className={`w-4 h-4 group-hover:scale-110 transition-transform ${
+                          (nft as any).isLocallyUnfavorited 
+                            ? "text-neutral-400 hover:text-red-500" // Outlined when locally unfavorited
+                            : "fill-[#ff0099] text-[#ff0099]" // Filled when favorited
+                        }`} />
+                      </button>
+                    )}
+                  </div>
                   
-                  {activeTab === "favorites" && (
-                    <Button
-                      onClick={() => router.push(`/nft/${nft.id}`)}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-offwhite text-xs font-medium py-1.5 rounded"
-                      style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
-                    >
-                      View on Marketplace
-                    </Button>
-                  )}
 
                   {activeTab === "owned" && (
-                    <div className="space-y-2">
-                      <Button
-                        onClick={() => router.push(`/nft/${nft.id}`)}
-                        className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-[#FFFBEB] text-xs font-medium py-1.5 rounded-sm"
-                        style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        onClick={() => handleListForSale(nft)}
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-offwhite text-xs font-medium py-1.5 rounded-sm"
-                        style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
-                      >
-                        List for Sale
-                      </Button>
-                    </div>
+                    <Button
+                      onClick={() => router.push(`/nft/${nft.id}`)}
+                      className="w-full bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-[#FFFBEB] text-xs font-medium py-1.5 rounded-sm"
+                      style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '2px' }}
+                    >
+                      View Details
+                    </Button>
                   )}
                 </div>
               </div>
@@ -260,18 +271,6 @@ function MyNFTsContent() {
         )}
       </div>
 
-      {/* Marketplace Sell Modal */}
-      {selectedNFT && (
-        <MarketplaceSellModal
-          isOpen={sellModalOpen}
-          onClose={handleCloseSellModal}
-          nft={{
-            id: selectedNFT.id,
-            name: selectedNFT.name,
-            tokenId: selectedNFT.tokenId
-          }}
-        />
-      )}
 
       <Footer />
     </main>

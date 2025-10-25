@@ -137,11 +137,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="Satoshe Slugger"
-                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
-                    style={{
-                      WebkitBoxShadow: '0 0 0 1000px #262626 inset',
-                      WebkitTextFillColor: '#FFFBEB'
-                    }}
+                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-600 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
                     aria-required="true"
                     aria-describedby="name-error"
                     spellCheck={false}
@@ -166,11 +162,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="hello@satoshesluggers.com"
-                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
-                    style={{
-                      WebkitBoxShadow: '0 0 0 1000px #262626 inset',
-                      WebkitTextFillColor: '#FFFBEB'
-                    }}
+                    className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-600 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
                     aria-required="true"
                     aria-describedby="email-error"
                     autoComplete="email"
@@ -196,11 +188,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder="What is this regarding?"
-                  className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
-                  style={{
-                    WebkitBoxShadow: '0 0 0 1000px #262626 inset',
-                    WebkitTextFillColor: '#FFFBEB'
-                  }}
+                  className="bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-600 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
                   aria-required="true"
                   aria-describedby="subject-error"
                   spellCheck={false}
@@ -223,11 +211,7 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  className="min-h-[150px] bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-500 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
-                  style={{
-                    WebkitBoxShadow: '0 0 0 1000px #262626 inset',
-                    WebkitTextFillColor: '#FFFBEB'
-                  }}
+                  className="min-h-[150px] bg-neutral-800 border-neutral-700 font-normal placeholder:text-neutral-600 text-[#FFFBEB] focus:border-[#FF0099] autofill:bg-neutral-800 autofill:text-[#FFFBEB] autofill:border-neutral-700"
                   placeholder="How can we help you?"
                   aria-required="true"
                   aria-describedby="message-error"
@@ -244,10 +228,6 @@ export default function ContactPage() {
                   checked={consentChecked}
                   onCheckedChange={(checked) => setConsentChecked(checked === true)}
                   className="h-5 w-5 shrink-0"
-                  style={{
-                    backgroundColor: consentChecked ? "#FF0099" : "transparent",
-                    borderColor: "#FF0099"
-                  }}
                   aria-describedby="terms-desc"
                   required
                   aria-required="true"

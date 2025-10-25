@@ -20,6 +20,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { loadAllNFTs } from "@/lib/simple-data-service";
 import { announceToScreenReader } from "@/lib/accessibility-utils";
+import { convertIpfsUrl } from "@/lib/utils";
 
 
 
@@ -59,6 +60,7 @@ interface SelectedFilters {
 interface NFTMetadata {
   token_id?: number;
   name?: string;
+  image?: string;
   media_url?: string;
   rarity_tier?: string;
   rarity_percent?: number | string;
@@ -164,24 +166,6 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             };
           });
           
-          // Load test listings
-          try {
-            const testResponse = await fetch('/data/test-nfts/test_listings.json');
-            if (testResponse.ok) {
-              const testData = await testResponse.json();
-              Object.entries(testData.test_listings).forEach(([listingId, data]) => {
-                const testListing = data as { token_id: number; price_eth: number; status: string };
-                if (testListing.status === 'Active') {
-                  mappings[testListing.token_id] = {
-                    price_eth: testListing.price_eth,
-                    listing_id: parseInt(listingId)
-                  };
-                }
-              });
-            }
-          } catch (error) {
-            console.warn('Failed to load test listings:', error);
-          }
           
           setPricingMappings(mappings);
           return;
@@ -198,24 +182,6 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
           };
         });
         
-        // Load test listings for fallback too
-        try {
-          const testResponse = await fetch('/data/test-nfts/test_listings.json');
-          if (testResponse.ok) {
-            const testData = await testResponse.json();
-            Object.entries(testData.test_listings).forEach(([listingId, data]) => {
-              const testListing = data as { token_id: number; price_eth: number; status: string };
-              if (testListing.status === 'Active') {
-                mappings[testListing.token_id] = {
-                  price_eth: testListing.price_eth,
-                  listing_id: parseInt(listingId)
-                };
-              }
-            });
-          }
-        } catch (error) {
-          console.warn('Failed to load test listings:', error);
-        }
         
         setPricingMappings(mappings);
       } catch {
@@ -294,43 +260,8 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
         // Load main collection using simple data service
         const mainMetadata = await loadAllNFTs();
         
-        // Load test listings to add test NFTs to metadata (for testing only)
-        let testMetadata: any[] = [];
-        try {
-          const testResponse = await fetch('/data/test-nfts/test_listings.json');
-          if (testResponse.ok) {
-            const testData = await testResponse.json();
-            testMetadata = Object.entries(testData.test_listings)
-              .filter(([_, data]) => (data as any).status === 'Active')
-              .map(([listingId, data]) => {
-                const testListing = data as any;
-                return {
-                  token_id: testListing.token_id,
-                  name: testListing.name,
-                  rarity_tier: "Test",
-                  merged_data: {
-                    media_url: "/nfts/placeholder-nft.webp",
-                    price_eth: testListing.price_eth,
-                    listing_id: parseInt(listingId)
-                  },
-                  attributes: [
-                    { trait_type: "Background", value: "Test" },
-                    { trait_type: "Skin Tone", value: "Test" },
-                    { trait_type: "Shirt", value: "Test" },
-                    { trait_type: "Eyewear", value: "Test" },
-                    { trait_type: "Hair", value: "Test" },
-                    { trait_type: "Headwear", value: "Test" }
-                  ]
-                };
-              });
-          }
-        } catch (error) {
-          console.warn('Failed to load test listings for metadata:', error);
-        }
-        
-        // Combine main collection with test NFTs (for testing)
-        const combinedMetadata = [...(mainMetadata || []), ...testMetadata];
-        setAllMetadata(combinedMetadata);
+        // Set metadata directly
+        setAllMetadata(mainMetadata || []);
 
       } catch {
       } finally {
@@ -357,9 +288,9 @@ export default function NFTGrid({ searchTerm, searchMode, selectedFilters, onFil
             .map(async (meta: NFTMetadata) => {
               const tokenId = meta.token_id?.toString() || "";
               
-              // Use actual media_url from metadata
-              const mediaUrl = meta.merged_data?.media_url || meta.media_url;
-              const imageUrl = mediaUrl || `/nfts/placeholder-nft.webp`;
+              // Use actual image URL from metadata
+              const mediaUrl = meta.merged_data?.media_url || meta.media_url || meta.image;
+              const imageUrl = convertIpfsUrl(mediaUrl);
 
               const name = meta.name || `Satoshe Slugger #${parseInt(tokenId) + 1}`;
               const rank = (meta.rank as number | string) ?? "—";

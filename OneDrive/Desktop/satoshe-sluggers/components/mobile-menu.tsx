@@ -8,17 +8,21 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SimpleConnectButton from "@/components/simple-connect-button"
+import { NavLink } from "@/components/nav-link"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { createPortal } from "react-dom"
 import { prefersReducedMotion } from "@/lib/reduced-motion"
 
 interface MobileMenuProps {
   isWalletConnected?: boolean
+  hasUserActivity?: boolean
 }
 
-export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
+export function MobileMenu({ isWalletConnected = false, hasUserActivity = false }: MobileMenuProps) {
   const [open, setOpen] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
   const [walletConnected, setWalletConnected] = useState(isWalletConnected)
+  const [userActivity, setUserActivity] = useState(hasUserActivity)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const menuRef = useRef<HTMLDivElement>(null)
@@ -31,7 +35,8 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
   // Sync with prop changes
   useEffect(() => {
     setWalletConnected(isWalletConnected)
-  }, [isWalletConnected])
+    setUserActivity(hasUserActivity)
+  }, [isWalletConnected, hasUserActivity])
 
   // Also listen for wallet connection events
   useEffect(() => {
@@ -118,7 +123,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
     >
           <div 
             ref={menuRef}
-            className={`w-80 max-w-[90vw] fixed left-1/2 -translate-x-1/2 rounded-lg pt-4 pb-8 px-8 bg-neutral-950 ${
+            className={`w-80 max-w-[90vw] fixed left-1/2 -translate-x-1/2 rounded-lg pt-4 pb-8 px-8 ${
               prefersReducedMotion() 
                 ? '' 
                 : `transition-all duration-700 ease-out ${
@@ -130,6 +135,7 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
         style={{
           top: '76px', // Position below navbar (navbar height is ~76px)
           maxHeight: 'calc(100vh - 100px)', // Leave some margin
+          backgroundColor: '#0a0a0a',
         }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
@@ -156,71 +162,62 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
                     <SimpleConnectButton />
                   </div>
           <nav className="flex flex-col space-y-3 items-center w-full">
-            <Link
-              href="/"
-              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
-                activePage === "home" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
-              }`}
+            <NavLink 
+              href="/" 
+              isActive={activePage === "home"} 
               onClick={handleClose}
-              aria-label="Navigate to home page"
+              ariaLabel="Navigate to home page"
+              variant="mobile"
             >
               HOME
-              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
-                activePage === "home" ? "w-16 bg-[#ff0099]" : "w-0 group-hover:w-16 bg-neutral-100"
-              }`}></span>
-            </Link>
-            <Link
-              href="/about"
-              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
-                activePage === "about" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
-              }`}
+            </NavLink>
+            <NavLink 
+              href="/about" 
+              isActive={activePage === "about"} 
               onClick={handleClose}
-              aria-label="Navigate to about page"
+              ariaLabel="Navigate to about page"
+              variant="mobile"
             >
               ABOUT
-              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
-                activePage === "about" ? "w-16 bg-[#ff0099]" : "w-0 group-hover:w-16 bg-neutral-100"
-              }`}></span>
-            </Link>
-            <Link
-              href="/nfts"
-              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
-                activePage === "nfts" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
-              }`}
+            </NavLink>
+            <NavLink 
+              href="/nfts" 
+              isActive={activePage === "nfts"} 
               onClick={handleClose}
-              aria-label="Navigate to NFTs collection page"
+              ariaLabel="Navigate to NFTs collection page"
+              variant="mobile"
             >
               NFTS
-              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
-                activePage === "nfts" ? "w-16 bg-[#ff0099]" : "w-0 group-hover:w-16 bg-neutral-100"
-              }`}></span>
-            </Link>
-            <Link
-              href="/provenance"
-              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
-                activePage === "provenance" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
-              }`}
+            </NavLink>
+            <NavLink 
+              href="/provenance" 
+              isActive={activePage === "provenance"} 
               onClick={handleClose}
-              aria-label="Navigate to provenance page"
+              ariaLabel="Navigate to provenance page"
+              variant="mobile"
             >
               PROVENANCE
-              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
-                activePage === "provenance" ? "w-28 bg-[#ff0099]" : "w-0 group-hover:w-28 bg-neutral-100"
-              }`}></span>
-            </Link>
-            <Link
-              href="/contact"
-              className={`text-base sm:text-lg font-medium py-2 w-full text-center relative group transition-all duration-300 ${
-                activePage === "contact" ? "text-[#ff0099]" : "text-neutral-400 hover:text-[#FFFBEB]"
-              }`}
+            </NavLink>
+            <NavLink 
+              href="/contact" 
+              isActive={activePage === "contact"} 
               onClick={handleClose}
-              aria-label="Navigate to contact page"
+              ariaLabel="Navigate to contact page"
+              variant="mobile"
             >
               CONTACT
-              <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 ease-out ${
-                activePage === "contact" ? "w-20 bg-[#ff0099]" : "w-0 group-hover:w-20 bg-neutral-100"
-              }`}></span>
-            </Link>
+            </NavLink>
+            {walletConnected && (
+              <NavLink 
+                href="/my-nfts" 
+                isActive={activePage === "my-nfts"} 
+                onClick={handleClose}
+                ariaLabel="Navigate to My NFTs page"
+                variant="mobile"
+              >
+                MY NFTS
+              </NavLink>
+            )}
           </nav>
         </div>
           </div>
@@ -228,26 +225,46 @@ export function MobileMenu({ isWalletConnected = false }: MobileMenuProps) {
   )
 
   return (
-    <div className="lg:hidden flex items-center gap-4">
-      {walletConnected && (
-        <Link
-          href="/my-nfts"
-          className="flex items-center justify-center group"
-          aria-label="My NFTs"
-        >
+    <div className="lg:hidden flex items-center gap-2 sm:gap-4">
+      {walletConnected && userActivity && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/my-nfts"
+                className="flex items-center justify-center group hover:scale-110 transition-transform duration-200"
+                aria-label="Go to My NFTs page"
+              >
+                <Image
+                  src="/icons/profile-icons/pink-profile-icon-48.png"
+                  alt="My NFTs"
+                  width={24}
+                  height={24}
+                  className="w-6 h-6"
+                />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>My NFTs</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      {walletConnected && !userActivity && (
+        <div className="flex items-center justify-center">
           <Image
             src="/icons/profile-icons/pink-profile-icon-48.png"
-            alt="My NFTs"
+            alt="Wallet Connected"
             width={24}
             height={24}
-            className="w-6 h-6 group-hover:scale-110 transition-transform duration-200"
+            className="w-6 h-6"
           />
-        </Link>
+        </div>
       )}
       <Button
         variant="ghost"
         size="icon"
-        className="p-2 hover:bg-accent rounded-full transition-colors border border-neutral-700"
+        className="p-2 hover:bg-accent rounded-full transition-colors border border-neutral-700 cursor-pointer"
         onClick={() => setOpen(!open)}
       >
         <Menu className="h-9 w-9" />

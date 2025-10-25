@@ -25,6 +25,7 @@ export interface NFTData {
   compiler: string;
   copyright: string;
   date: number;
+  image?: string;
   merged_data: {
     nft: number;
     token_id: number;

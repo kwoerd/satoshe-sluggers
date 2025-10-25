@@ -128,7 +128,6 @@ satoshe-sluggers/
 │   ├── nft-grid.tsx             # NFT grid with pagination
 │   ├── nft-sidebar.tsx          # Filtering sidebar
 │   ├── nft-purchase-modal.tsx   # Purchase modal
-│   ├── marketplace-sell-modal.tsx # Sell modal
 │   ├── error-boundary.tsx       # Error boundary component
 │   └── ...                      # Other components
 ├── lib/                         # Utility libraries
@@ -184,6 +183,7 @@ Update contract addresses in `lib/constants.ts`:
 export const CONTRACT_ADDRESS = "0x..."; // Your NFT collection
 export const MARKETPLACE_ADDRESS = "0x..."; // Your marketplace
 export const MERKLE_ROOT = "0x..."; // Collection merkle root
+export const FINAL_PROOF_HASH = "0x..."; // Collection final proof hash
 ```
 
 ### Performance Optimization
@@ -293,4 +293,5 @@ For technical support or questions:
 
 ---
 
-**Built with ❤️ by the Retinal Delights team**
+**2025 © Retinal Delights, Inc.  All Rights Reserved.**
+**Created with ♥ in Los Angeles, by kwoerd**

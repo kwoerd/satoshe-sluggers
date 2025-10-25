@@ -196,7 +196,7 @@ export default function NFTCard({
                 <div className="flex-shrink-0 -mt-1">
                   <Link
                     href={`/nft/${cardNumber}`}
-                    className="px-3 py-1.5 bg-blue-500/10 border-2 border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
+                    className="px-3 py-1.5 bg-blue-500/10 border border-blue-500/30 rounded-sm text-blue-400 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/50 transition-colors"
                     aria-label={`Buy ${name} for ${priceEth} ETH`}
                   >
                     BUY
