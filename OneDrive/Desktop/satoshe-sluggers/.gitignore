@@ -39,3 +39,61 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Ignore parent directory files that are causing performance issues
+../*
+!../satoshe-sluggers/
+!../satoshe-sluggers/**
+
+# Ignore system and cache directories
+../../../AppData/
+../../../Documents/
+../../../Downloads/
+../../../Favorites/
+../../../Searches/
+../../../bin/
+../../../insight/
+../../../ntuser.dat*
+../../../NTUSER.DAT*
+
+# Ignore other project directories
+../w3b/
+../old-ui/
+../collection-11/
+../websites/
+../Fonts/
+../NFTs/
+../Brands/
+../Projects/
+../Promo/
+../kwoerd/
+../desktop.ini
+
+# Ignore npm/pnpm global caches
+../../../AppData/Local/npm-cache/
+../../../AppData/Local/pnpm/
+../../../AppData/Roaming/npm/
+../../../AppData/Roaming/pnpm/
+
+# Ignore Cursor/VS Code files
+../../../AppData/Roaming/Cursor/
+../../../.vscode/
+../../../.cursor/
+
+# Ignore other development tools
+../../../.bash_history
+../../../.bash_profile
+../../../.bashrc
+../../../.bun/
+../../../.codex/
+../../../.config/
+../../../.docker/
+../../../.gitconfig
+../../../.ipfs/
+../../../.lesshst
+../../../.minttyrc
+../../../.scalar-config
+../../../.ssh/
+../../../.storybook/
+../../../.viminfo
+../../../.yarnrc

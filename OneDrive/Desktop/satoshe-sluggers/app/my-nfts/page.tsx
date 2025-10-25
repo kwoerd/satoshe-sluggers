@@ -10,7 +10,6 @@ import Navigation from "@/components/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { useActiveAccount } from "thirdweb/react"
-import { client } from "@/lib/thirdweb"
 import { useFavorites } from "@/hooks/useFavorites"
 import { Heart, Package } from "lucide-react"
 
@@ -100,15 +99,6 @@ function MyNFTsContent() {
     })
   }
 
-  // Actually remove from favorites when navigating away or switching tabs
-  const handleConfirmUnfavorite = (tokenId: string) => {
-    removeFromFavorites(tokenId)
-    setLocallyUnfavorited(prev => {
-      const newSet = new Set(prev)
-      newSet.delete(tokenId)
-      return newSet
-    })
-  }
 
 
   // Get active NFTs based on tab
@@ -241,12 +231,12 @@ function MyNFTsContent() {
                     <h3 className="font-medium text-base">{nft.name}</h3>
                     {activeTab === "favorites" && (
                       <button
-                        onClick={() => (nft as any).isLocallyUnfavorited ? handleRefavorite(nft.tokenId) : handleUnfavorite(nft.tokenId)}
+                        onClick={() => (nft as NFT).isLocallyUnfavorited ? handleRefavorite(nft.tokenId) : handleUnfavorite(nft.tokenId)}
                         className="w-6 h-6 flex items-center justify-center hover:bg-neutral-800 rounded transition-colors group cursor-pointer"
-                        aria-label={(nft as any).isLocallyUnfavorited ? "Re-favorite this NFT" : "Remove from favorites"}
+                        aria-label={(nft as NFT).isLocallyUnfavorited ? "Re-favorite this NFT" : "Remove from favorites"}
                       >
                         <Heart className={`w-4 h-4 group-hover:scale-110 transition-transform ${
-                          (nft as any).isLocallyUnfavorited 
+                          (nft as NFT).isLocallyUnfavorited 
                             ? "text-neutral-400 hover:text-red-500" // Outlined when locally unfavorited
                             : "fill-[#ff0099] text-[#ff0099]" // Filled when favorited
                         }`} />

@@ -66,9 +66,6 @@ export default function ProvenancePage() {
           fetch("/data/ipfs-cids/ipfs_metadata_cids.txt"),
         ])
         
-        // Load metadata using simple data service
-        const { loadAllNFTs } = await import("@/lib/simple-data-service");
-        const metadataData = await loadAllNFTs();
 
         const merkleText = await merkleRes.text()
         const sha256Text = await sha256Res.text()
@@ -93,8 +90,6 @@ export default function ProvenancePage() {
           .filter((line) => line.trim())
           .map((sha256, index) => {
             const tokenNum = index
-            // Find the corresponding metadata by token_id
-            const metadataItem = metadataData.find((item: { token_id: number }) => item.token_id === tokenNum)
             
             // Get the corresponding keccak256 hash and IPFS CIDs
             const keccak256 = keccak256Lines[index]?.trim() || ""

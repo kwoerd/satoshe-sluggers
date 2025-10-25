@@ -14,7 +14,15 @@ function NFTsPageContent() {
   
   const [searchTerm, setSearchTerm] = useState("")
   const [searchMode, setSearchMode] = useState<"contains" | "exact">("contains")
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({})
+  const [selectedFilters, setSelectedFilters] = useState<{
+    rarity?: string[];
+    background?: string[];
+    skinTone?: string[];
+    shirt?: string[];
+    hair?: Record<string, string[]>;
+    headwear?: Record<string, string[]>;
+    eyewear?: string[];
+  }>({})
   const [traitCounts, setTraitCounts] = useState<Record<string, Record<string, number>>>({})
   const [isInitialized, setIsInitialized] = useState(false)
 
@@ -25,7 +33,15 @@ function NFTsPageContent() {
       const urlSearchMode = (searchParams.get('mode') as "contains" | "exact") || "contains"
       
       // Parse filters from URL
-          const urlFilters: Record<string, any> = {}
+          const urlFilters: {
+            rarity?: string[];
+            background?: string[];
+            skinTone?: string[];
+            shirt?: string[];
+            hair?: Record<string, string[]>;
+            headwear?: Record<string, string[]>;
+            eyewear?: string[];
+          } = {}
       const simpleFilterKeys = ['rarity', 'background', 'skinTone', 'shirt', 'eyewear']
       const nestedFilterKeys = ['hair', 'headwear']
       
@@ -34,10 +50,10 @@ function NFTsPageContent() {
         const value = searchParams.get(key)
         if (value) {
           try {
-            urlFilters[key] = JSON.parse(decodeURIComponent(value))
+            (urlFilters as any)[key] = JSON.parse(decodeURIComponent(value))
           } catch {
             // If parsing fails, treat as single value
-            urlFilters[key] = [value]
+            (urlFilters as any)[key] = [value]
           }
         }
       })
@@ -47,7 +63,7 @@ function NFTsPageContent() {
         const value = searchParams.get(key)
         if (value) {
           try {
-            urlFilters[key] = JSON.parse(decodeURIComponent(value))
+            (urlFilters as any)[key] = JSON.parse(decodeURIComponent(value))
           } catch {
             // If parsing fails, skip this filter
             console.warn(`Failed to parse ${key} filter from URL`)
@@ -77,7 +93,7 @@ function NFTsPageContent() {
             params.set(key, encodeURIComponent(JSON.stringify(value)))
           } else if (typeof value === 'object' && value !== null) {
             // Nested object filters (hair, headwear)
-            const hasValues = Object.values(value).some((arr: any) => Array.isArray(arr) && arr.length > 0)
+            const hasValues = Object.values(value).some((arr: unknown) => Array.isArray(arr) && arr.length > 0)
             if (hasValues) {
               params.set(key, encodeURIComponent(JSON.stringify(value)))
             }

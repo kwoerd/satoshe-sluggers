@@ -8,7 +8,7 @@ import { ArrowLeft, Heart, ChevronLeft, ChevronRight, ExternalLink } from "lucid
 import Footer from "@/components/footer";
 import Navigation from "@/components/navigation";
 import AttributeRarityChart from "@/components/attribute-rarity-chart";
-import { MediaRenderer, useActiveAccount, BuyDirectListingButton } from "thirdweb/react";
+import { MediaRenderer, BuyDirectListingButton } from "thirdweb/react";
 import { base } from "thirdweb/chains";
 import { client } from "../../../lib/thirdweb";
 import { useFavorites } from "@/hooks/useFavorites";
